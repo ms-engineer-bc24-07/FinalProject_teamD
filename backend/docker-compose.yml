@@ -1,0 +1,29 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: . # backend ディレクトリをビルドコンテキストに
+      dockerfile: Dockerfile # Dockerfileのパス
+    container_name: backend
+    volumes:
+      - .:/app # バックエンドコードをコンテナ内の/appにマウント
+    ports:
+      - "8000:8000" # ポート8000を開放
+    environment:
+      - DATABASE_URL=postgres://postgres:password@db:5432/mydatabase # データベースのURL
+    depends_on:
+      - db # データベースが起動してから実行
+
+  db:
+    image: postgres:13
+    container_name: db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: mydatabase
+    volumes:
+      - ./db_data:/var/lib/postgresql/data # データ永続化
+    ports:
+      - "5432:5432" # ポート5432を開放
+

@@ -7,6 +7,7 @@ services:
     container_name: frontend
     volumes:
       - ./frontend:/app
+      - /app/node_modules  # コンテナ内のnode_modulesを保持
     ports:
       - "3000:3000"
     environment:

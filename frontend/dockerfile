@@ -5,16 +5,13 @@ FROM node:18
 WORKDIR /app
 
 # パッケージファイルをコピー（package.json）
-COPY package*.json ./
+COPY package*.json ./ 
 
 # 依存関係をインストール
 RUN npm install
 
-# プロジェクトファイルをコピー
+# アプリケーションファイルをコピー
 COPY . .
-
-# Next.jsのビルドを実行
-RUN npm run build
 
 # ポート3000を開放
 EXPOSE 3000

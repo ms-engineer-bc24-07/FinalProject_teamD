@@ -1,0 +1,49 @@
+# Python
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+.pytest_cache/
+instance/
+*.db
+*.sqlite3
+
+# Django
+*.log
+*.pot
+*.pyc
+*.pyo
+*.sqlite3
+*.log
+media/
+static/
+
+# VS Code
+.vscode/
+
+# Virtualenv
+venv/
+env/
+*.env
+
+# Python wheel and egg files
+*.egg
+*.egg-info
+dist/
+build/
+
+# IDEs
+.idea/
+
+# Docker
+.docker/
+
+# PostgreSQL
+*.pid
+*.sock
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+
+# PostgreSQLのデータファイルを無視
+db_data/

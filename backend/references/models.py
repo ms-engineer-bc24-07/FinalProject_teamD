@@ -7,7 +7,7 @@ class Reference(models.Model):
     image_url = models.TextField()  # 見本画像URL
     user = models.ForeignKey(User, related_name='references', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now_add=True) 
+    updated_at = models.DateTimeField(auto_now=True) 
 
     def __str__(self):
         return self.reference_name

@@ -12,10 +12,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . /app
 
 # データベースマイグレーションを実行
-RUN python manage.py migrate
+# RUN python manage.py migrate
 
 # ポート8000を開放
 EXPOSE 8000
 
 # Django開発サーバーを起動
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+# CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]

@@ -37,6 +37,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'users',
+    'scores',
+    'references',
+    'comparison_images',
 ]
 
 MIDDLEWARE = [
@@ -75,8 +79,12 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'mydatabase',  # Dockerで指定されたデータベース名（POSTGRES_DB）
+        'USER': 'postgres',    # Dockerで指定されたユーザー名（POSTGRES_USER）
+        'PASSWORD': 'password',  # Dockerで指定されたパスワード（POSTGRES_PASSWORD）
+        'HOST': 'db',          # Dockerコンテナ名（db）を指定。コンテナ間で接続する場合
+        'PORT': '5432',        # PostgreSQLのデフォルトポート
     }
 }
 

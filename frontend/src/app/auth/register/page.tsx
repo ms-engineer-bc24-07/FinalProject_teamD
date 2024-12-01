@@ -3,7 +3,7 @@
 import React from "react";
 import RegisterForm from "../../../features/RegisterForm";
 
-export default function RegisterPage() {
+export default function Register() {
   return (
     <div>
       <RegisterForm />

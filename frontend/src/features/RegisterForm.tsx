@@ -103,7 +103,7 @@ const RegisterForm = () => {
           すでにアカウントをお持ちですか？{" "}
           <a
             href="/auth/login"
-            className="text-blue-500 underline text-blue-700"
+            className="text-blue-600 font-semibold hover:underline"
           >
             ログイン
           </a>

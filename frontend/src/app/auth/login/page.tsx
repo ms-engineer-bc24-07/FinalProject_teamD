@@ -1,9 +1,12 @@
-import React from 'react'
+"use client";
 
-const Login = () => {
+import React from "react";
+import LoginForm from "../../../features/LoginForm";
+
+export default function Login() {
   return (
-    <div>Login</div>
-  )
+    <div>
+      <LoginForm />
+    </div>
+  );
 }
-
-export default Login

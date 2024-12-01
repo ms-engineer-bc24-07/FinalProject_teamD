@@ -5,10 +5,11 @@ services:
     container_name: backend
     volumes:
       - ./backend:/app
+      - ./path/to/.env:/app/.env # ここで .env ファイルをマウント
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=postgres://postgres:password@db:5432/mydatabase
+      - DATABASE_URL=${DATABASE_URL}
     depends_on:
       - db
     command: >
@@ -21,6 +22,7 @@ services:
     container_name: frontend
     volumes:
       - ./frontend:/app
+      - ./path/to/.env:/app/.env # ここでも .env ファイルをマウント
     ports:
       - "3000:3000"
     environment:

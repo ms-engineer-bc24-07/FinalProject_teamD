@@ -2,27 +2,40 @@
 
 import React, { useState, useEffect } from "react";
 import { getAuth, updateProfile } from "firebase/auth";
+import { getDatabase, ref, onValue } from "firebase/database";
 import Image from "next/image";
 
 const MyPage = () => {
   const [user, setUser] = useState<any>(null);
   const [username, setUsername] = useState("");
-  const [members, setMembers] = useState<string[]>([]); // メンバー一覧
+  const [members, setMembers] = useState<{ name: string; icon: string }[]>([]); // メンバー一覧
   const [inviteUrl, setInviteUrl] = useState<string | null>(null); // 招待URL
   const [isEditing, setIsEditing] = useState(false);
   const [isIconModalOpen, setIsIconModalOpen] = useState(false); // モーダル表示状態
   const [selectedIcon, setSelectedIcon] = useState<string | null>(null); // 選択したアイコン
 
   const auth = getAuth();
+  const db = getDatabase();
 
   useEffect(() => {
     const currentUser = auth.currentUser;
     if (currentUser) {
       setUser(currentUser);
       setUsername(currentUser.displayName || "ゲスト");
-      setSelectedIcon(currentUser.photoURL || null); // Firebaseに保存されたアイコンをセット
-      // ダミーデータでメンバーリストを設定（Firebase連携に変更可能）
-      setMembers(["メンバー1", "メンバー2"]);
+      setSelectedIcon(currentUser.photoURL || null);
+
+      // Firebaseからメンバーリストを取得
+      const membersRef = ref(db, `users/${currentUser.uid}/members`);
+      onValue(membersRef, (snapshot) => {
+        const data = snapshot.val();
+        const membersArray = data
+          ? Object.values(data).map((member: any) => ({
+              name: member.name,
+              icon: member.icon,
+            }))
+          : [];
+        setMembers(membersArray);
+      });
     }
   }, [auth.currentUser]);
 
@@ -40,9 +53,11 @@ const MyPage = () => {
   };
 
   const handleInvite = () => {
-    const generatedUrl = `${window.location.origin}/invite/${auth.currentUser?.uid}`;
-    setInviteUrl(generatedUrl);
-    alert("招待URLを生成しました！");
+    if (auth.currentUser) {
+      const generatedUrl = `${window.location.origin}/invite/${auth.currentUser.uid}`;
+      setInviteUrl(generatedUrl);
+      alert("招待URLを生成しました！");
+    }
   };
 
   const handleIconSelect = async (iconPath: string) => {
@@ -64,26 +79,24 @@ const MyPage = () => {
       <div className="bg-white p-6 rounded shadow-md w-96">
         <h1 className="text-2xl font-bold mb-4">マイページ</h1>
 
-        {/* アイコン表示と設定ボタン */}
+        {/* アイコン表示 */}
         <div className="mb-4 text-center">
-          <div className="mb-2">
-            {selectedIcon ? (
-              <Image
-                src={selectedIcon}
-                alt="ユーザーアイコン"
-                width={64}
-                height={64}
-                className="rounded-full"
-              />
-            ) : (
-              <div className="w-16 h-16 bg-gray-300 rounded-full flex items-center justify-center">
-                <span>アイコン</span>
-              </div>
-            )}
-          </div>
+          {selectedIcon ? (
+            <Image
+              src={selectedIcon}
+              alt="ユーザーアイコン"
+              width={64}
+              height={64}
+              className="rounded-full"
+            />
+          ) : (
+            <div className="w-16 h-16 bg-gray-300 rounded-full flex items-center justify-center">
+              <span>アイコン</span>
+            </div>
+          )}
           <button
             onClick={() => setIsIconModalOpen(true)}
-            className="bg-blue-500 text-white px-3 py-1 rounded"
+            className="mt-2 bg-blue-500 text-white px-3 py-1 rounded"
           >
             アイコンを設定
           </button>
@@ -122,14 +135,6 @@ const MyPage = () => {
           )}
         </div>
 
-        {/* メールアドレス */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">
-            メールアドレス:
-          </label>
-          <p className="text-gray-900">{user?.email || "メールアドレスなし"}</p>
-        </div>
-
         {/* メンバー */}
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700">
@@ -140,7 +145,16 @@ const MyPage = () => {
           ) : (
             <ul className="list-disc pl-5 text-gray-900">
               {members.map((member, index) => (
-                <li key={index}>{member}</li>
+                <li key={index} className="flex items-center">
+                  <Image
+                    src={member.icon}
+                    alt={`${member.name}のアイコン`}
+                    width={32}
+                    height={32}
+                    className="rounded-full mr-2"
+                  />
+                  {member.name}
+                </li>
               ))}
             </ul>
           )}

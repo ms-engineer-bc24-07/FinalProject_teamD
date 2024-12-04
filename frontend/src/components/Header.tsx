@@ -5,6 +5,7 @@ import { FaUser } from 'react-icons/fa';// React Iconsからユーザーアイ�
 const Header = () => {
   return (
     <header className="bg-customBlue p-4 shadow-md flex items-center justify-between">
+      
        {/* 左側: タイトル */}
       <h1 className="text-customYellow text-2xl font-bold">Tide Up</h1>
       {/* 右側: マイページアイコン */}

@@ -1,3 +1,7 @@
-from django.shortcuts import render
+from rest_framework import generics
+from .models import Score
+from .serializers import ScoreSerializer
 
-# Create your views here.
+class ScoreListCreate(generics.ListCreateAPIView):
+  queryset = Score.objects.all()
+  serializer_class = ScoreSerializer

@@ -1,8 +1,24 @@
 'use client'
 
+import { useEffect } from "react"
 import { ReactCompareSlider, ReactCompareSliderImage } from "react-compare-slider"
+import axios from 'axios'
+
 
 export default function Analysis() {
+  // const [score, setScore] = useState([])
+
+  useEffect(() => {
+    axios.get('http://localhost:8000/api/score/')
+      .then(response => {
+        console.log("OK", response.data);
+      })
+      .catch(error => {
+        console.error("エラー発生", error);
+      });
+  }, []);
+
+
   return (
     <div className="flex flex-col h-screen">
       {/* 仮ヘッダー */}

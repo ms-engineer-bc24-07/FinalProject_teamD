@@ -1,3 +1,9 @@
-from django.shortcuts import render
+# references/views.py
+from rest_framework import viewsets
+from .models import Reference
+from .serializers import ReferenceSerializer
 
-# Create your views here.
+class ReferenceViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Reference.objects.all()
+    serializer_class = ReferenceSerializer
+

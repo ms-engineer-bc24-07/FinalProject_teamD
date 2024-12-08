@@ -6,35 +6,42 @@ import { FaCamera } from "react-icons/fa"; // カメラアイコンをインポ�
 import Image from "next/image"; // Next.jsのImageコンポーネントをインポート
 import { auth } from "../lib/firebase"; // Firebaseの初期化設定をインポート
 import ToppageButton from "../components/ToppageButton";
+import axios from "axios"; // axiosをインポート
 
 const Page = () => {
-  const [userName, setUserName] = useState<string | null>("ゲスト");
-  const [userIcon, setUserIcon] = useState<string | null>("/icons/icon-1.png");
+  const [userName, setUserName] = useState<string>("ゲスト");
+  const [userIcon, setUserIcon] = useState<string>("/icons/icon-1.png");
 
   useEffect(() => {
     const fetchUser = async () => {
-      // Firebaseから現在のユーザーを取得
-      const user = auth.currentUser;
-      if (user) {
-        const email = user.email;
-        const token = await user.getIdToken(); // Firebaseトークンを取得
+      try {
+        // Firebaseから現在のユーザーを取得
+        const user = auth.currentUser;
+        if (user) {
+          const email = user.email;
+          const token = await user.getIdToken(); // Firebaseトークンを取得
 
-        // バックエンドからユーザー名を取得
-        const response = await fetch("http://localhost:8000/api/users/get_user/", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // Firebaseトークンを送信
-          },
-          body: JSON.stringify({ email }),
-        });
+          // バックエンドからユーザー情報を取得
+          const response = await axios.post(
+            "http://localhost:8000/api/users/get_user/",
+            { email }, // リクエストボディにメールアドレスを送信
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`, // Firebaseトークンを送信
+              },
+            }
+          );
 
-        if (response.ok) {
-          const data = await response.json();
-          setUserName(data.user_name);
-        } else {
-          console.error("ユーザー情報の取得に失敗しました。");
+          if (response.status === 200) {
+            const data = response.data;
+            setUserName(data.user_name); // ユーザー名を更新
+          } else {
+            console.error("ユーザー情報の取得に失敗しました。");
+          }
         }
+      } catch (error) {
+        console.error("エラーが発生しました:", error);
       }
     };
 
@@ -44,7 +51,7 @@ const Page = () => {
   return (
     <div className="flex flex-col min-h-screen">
       {/* 上部のユーザー情報 */}
-      <div className="flex justify-between items-center p-6 ">
+      <div className="flex justify-between items-center p-6">
         {/* 左側: ユーザー名 */}
         <div className="text-lg font-bold text-customBlue">
           {userName}さん

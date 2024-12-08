@@ -30,7 +30,7 @@ const LoginForm = () => {
       // Firebase Authenticationでログイン
       await signInWithEmailAndPassword(auth, email, password);
       alert("ログイン成功しました！");
-      router.push("/mypage"); // ホームページにリダイレクト
+      router.push("/"); // ホームページにリダイレクト
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message || "ログイン中にエラーが発生しました。");

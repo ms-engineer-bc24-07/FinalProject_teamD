@@ -1,11 +1,9 @@
 # scores/urls.py
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from .views import ScoreViewSet
-
-router = DefaultRouter()
-router.register(r'scores', ScoreViewSet)
+from django.urls import path
+from .views import ScoreListCreate, ScoreDetail
 
 urlpatterns = [
-    path('api/', include(router.urls)),
+    # path('score/', ScoreListCreate.as_view(), name='extract-score'),  # これだとgetできない
+    path('', ScoreListCreate.as_view(), name='extract-score'),
+    path('<int:id>/', ScoreDetail.as_view(), name='score-detail'),  # スコア詳細の取得
 ]

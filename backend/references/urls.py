@@ -1,11 +1,7 @@
 # references/urls.py
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from .views import ReferenceViewSet
-
-router = DefaultRouter()
-router.register(r'references', ReferenceViewSet)
+from django.urls import path
+from .views import ReferenceDetail
 
 urlpatterns = [
-    path('api/', include(router.urls)),
+    path('<int:reference_id>/', ReferenceDetail.as_view(), name='reference-detail'),  # 'api/references/<int:reference_id>/' に対応
 ]

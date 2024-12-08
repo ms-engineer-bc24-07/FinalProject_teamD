@@ -5,7 +5,7 @@ urlpatterns = [
     path('register/', RegisterUserView.as_view(), name='register_user'),
 ]
 
-urlpatterns = [
-    path('register/', RegisterUserView.as_view(), name='register_user'),
-    path('<str:uid>/', GetUserView.as_view(), name='get_user'),
-]
+# urlpatterns = [
+#     path('register/', RegisterUserView.as_view(), name='register_user'),
+#     path('<str:uid>/', GetUserView.as_view(), name='get_user'),
+# ]

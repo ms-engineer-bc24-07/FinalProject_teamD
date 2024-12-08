@@ -1,7 +1,5 @@
-"use client";
-
 import React, { useState } from "react";
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { createUserWithEmailAndPassword, updateProfile, getIdToken } from "firebase/auth";
 import { useRouter } from "next/navigation"; // Next.js のルーター
 import { auth } from "../lib/firebase"; // Firebase の設定と初期化をインポート
 
@@ -35,6 +33,24 @@ const RegisterForm = () => {
       // ユーザー名を設定
       await updateProfile(user, { displayName: username });
 
+      // Firebaseからトークンを取得
+      const idToken = await getIdToken(user);
+
+      // バックエンドにユーザー情報を保存
+      const response = await fetch("http://localhost:8000/api/users/register/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${idToken}`, // トークンをヘッダーに追加
+        },
+        body: JSON.stringify({ user_name: username, email, password }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to save user in backend.");
+      }
+
       alert("Registration successful!");
       router.push("/auth/login"); // ログインページにリダイレクト
     } catch (err: any) {
@@ -50,7 +66,7 @@ const RegisterForm = () => {
       >
         <h1 className="text-2xl font-bold mb-4">新規登録</h1>
         {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
-  
+
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700">
             ユーザー名
@@ -64,7 +80,7 @@ const RegisterForm = () => {
             placeholder="ユーザー名を入力してください"
           />
         </div>
-  
+
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700">
             メールアドレス
@@ -78,7 +94,7 @@ const RegisterForm = () => {
             placeholder="メールアドレスを入力してください"
           />
         </div>
-  
+
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700">
             パスワード
@@ -92,7 +108,7 @@ const RegisterForm = () => {
             placeholder="パスワードを入力してください"
           />
         </div>
-  
+
         <button
           type="submit"
           className="bg-blue-500 text-white px-4 py-2 rounded w-full"
@@ -111,7 +127,6 @@ const RegisterForm = () => {
       </form>
     </div>
   );
-  
 };
 
 export default RegisterForm;

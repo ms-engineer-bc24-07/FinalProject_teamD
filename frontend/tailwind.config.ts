@@ -9,6 +9,9 @@ export default {
   theme: {
     extend: {
       colors: {
+        customBlue: '#5292ca', // カスタムカラーを定義
+        customYellow: '#fff168', 
+        customPink: '#f7c9dd', 
         background: "var(--background)",
         foreground: "var(--foreground)",
       },

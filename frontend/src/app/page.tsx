@@ -1,101 +1,88 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import { FaCamera } from "react-icons/fa"; // カメラアイコンをインポート
+import Image from "next/image"; // Next.jsのImageコンポーネントをインポート
+import { auth } from "../lib/firebase"; // Firebaseの初期化設定をインポート
+import ToppageButton from "../components/ToppageButton";
+
+const Page = () => {
+  const [userName, setUserName] = useState<string | null>("ゲスト");
+  const [userIcon, setUserIcon] = useState<string | null>("/icons/icon-1.png");
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      // Firebaseから現在のユーザーを取得
+      const user = auth.currentUser;
+      if (user) {
+        const email = user.email;
+        const token = await user.getIdToken(); // Firebaseトークンを取得
+
+        // バックエンドからユーザー名を取得
+        const response = await fetch("http://localhost:8000/api/users/get_user/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // Firebaseトークンを送信
+          },
+          body: JSON.stringify({ email }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setUserName(data.user_name);
+        } else {
+          console.error("ユーザー情報の取得に失敗しました。");
+        }
+      }
+    };
+
+    fetchUser();
+  }, []);
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className="flex flex-col min-h-screen">
+      {/* 上部のユーザー情報 */}
+      <div className="flex justify-between items-center p-6 ">
+        {/* 左側: ユーザー名 */}
+        <div className="text-lg font-bold text-customBlue">
+          {userName}さん
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        {/* 右側: ユーザーアイコン */}
+        <div className="w-25 h-25">
           <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+            src={userIcon || "/icons/icon-1.png"} // アイコンのパス
+            alt={`${userName}のアイコン`}
+            width={100} // アイコンの幅
+            height={100} // アイコンの高さ
+            className="rounded-full" // アイコンを丸く表示
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        </div>
+      </div>
+
+      {/* メインコンテンツ */}
+      <div className="flex-grow p-5 text-center">
+        {/* ボタンのコンテナ */}
+        <div className="grid grid-cols-2 gap-10 mt-4">
+          <Link href="/page1">
+            <ToppageButton text="Page 1" />
+          </Link>
+          <Link href="/page2">
+            <ToppageButton text="Page 2" />
+          </Link>
+          <Link href="/page3">
+            <ToppageButton text="Page 3" />
+          </Link>
+          <Link href="/page4">
+            <ToppageButton
+              icon={<FaCamera className="text-customBlue text-4xl" />}
+            />
+          </Link>
+        </div>
+      </div>
     </div>
   );
-}
+};
+
+export default Page;

@@ -11,4 +11,3 @@ class ComparisonImage(models.Model):
 
     def __str__(self):
         return f"Comparison Image for {self.reference.reference_name}"
-

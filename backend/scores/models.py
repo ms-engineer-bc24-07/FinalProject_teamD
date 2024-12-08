@@ -9,4 +9,3 @@ class Score(models.Model):
 
     def __str__(self):
         return f"Score for {self.comparison_image.id} - {self.score}"
-

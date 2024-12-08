@@ -13,3 +13,9 @@ class User(models.Model):
 
     def __str__(self):
         return self.user_name
+    
+
+
+
+
+    # id フィールドはDjangoが自動生成するので明示的に記述しない

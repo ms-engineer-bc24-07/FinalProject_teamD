@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -24,11 +26,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="ja">
+      {/* max-w-sm: TailwindCSSのクラスで、コンテナの最大幅を「スモールサイズ」に制限します（通常640px）。 mx-auto: 水平方向に中央揃えします。 */}
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased max-w-sm mx-auto`}
       >
+        <Header />
         {children}
+        <Footer />
       </body>
     </html>
   );

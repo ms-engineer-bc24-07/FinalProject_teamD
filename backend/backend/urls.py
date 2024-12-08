@@ -8,3 +8,4 @@ urlpatterns = [
     path('api/scores/', include('scores.urls')),  # scores APIの設定
     path('api/comparison-images/', include('comparison_images.urls')),  # comparison-images APIの設定
 ]
+

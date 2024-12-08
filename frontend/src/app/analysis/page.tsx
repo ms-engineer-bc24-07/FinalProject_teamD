@@ -9,7 +9,7 @@ export default function Analysis() {
   // const [score, setScore] = useState([])
 
   useEffect(() => {
-    axios.get('http://localhost:8000/api/score/')
+    axios.post('http://localhost:8000/api/score/')
       .then(response => {
         console.log("OK", response.data);
       })

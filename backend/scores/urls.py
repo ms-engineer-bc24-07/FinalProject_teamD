@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import ScoreListCreate
+from .views import ScoreView
 
 urlpatterns = [
-  path('score/', ScoreListCreate.as_view(), name='extract-score'),
+  path('score/', ScoreView.as_view(), name='score'),
 ]

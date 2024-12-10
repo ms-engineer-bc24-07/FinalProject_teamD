@@ -3,7 +3,12 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.contrib.auth.hashers import make_password  # パスワードハッシュ化のため
 import json
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 from .models import User
+from rest_framework import status
+
 
 @method_decorator(csrf_exempt, name='dispatch')  # CSRFを無効化（必要ならToken認証を追加）
 def register_user(request):
@@ -65,3 +70,17 @@ def get_user(request):
             return JsonResponse({"error": str(e)}, status=500)
     else:
         return JsonResponse({"error": "Invalid HTTP method."}, status=405)
+
+class UpdateIconAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user = request.user  # 現在ログインしているユーザーを取得
+        icon_url = request.data.get("icon")  # リクエストボディからアイコンURLを取得
+
+        if icon_url:
+            user.icon_url = icon_url  # アイコンURLを更新
+            user.save()
+            return Response({"message": "アイコンが更新されました"}, status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "アイコンURLが提供されていません"}, status=status.HTTP_400_BAD_REQUEST)

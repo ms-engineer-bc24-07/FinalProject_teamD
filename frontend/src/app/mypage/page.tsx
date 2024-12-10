@@ -34,6 +34,7 @@ const Mypage = () => {
         const data = response.data;
         setUserName(data.user_name);
         setEmail(data.email);
+        setIcon(data.icon_url || "/icons/icon-1.png"); // アイコンURLを取得
       } catch (error) {
         console.error("ユーザー情報の取得中にエラーが発生しました:", error);
       }
@@ -51,9 +52,37 @@ const Mypage = () => {
     return () => unsubscribe(); // コンポーネントがアンマウントされたら監視を停止
   }, []);
 
-  const handleIconSelect = (newIcon: string) => {
+  // const handleIconSelect = (newIcon: string) => {
+  //   setIcon(newIcon);
+  //   setIsEditing(false); // 編集モードを終了
+  // };
+
+  const handleIconSelect = async (newIcon: string) => {
     setIcon(newIcon);
-    setIsEditing(false); // 編集モードを終了
+    setIsEditing(false);
+  
+    const user = auth.currentUser;
+    if (user) {
+      const idToken = await user.getIdToken();
+  
+      try {
+        const response = await axios.post(
+          "http://localhost:8000/api/users/update_icon/",  // アイコン更新のAPIエンドポイント
+          { icon: newIcon },  // アイコンの新しいURL
+          {
+            headers: {
+              Authorization: `Bearer ${idToken}`,
+            },
+          }
+        );
+  
+        if (response.status === 200) {
+          console.log("アイコンが更新されました");
+        }
+      } catch (error) {
+        console.error("アイコン更新エラー:", error);
+      }
+    }
   };
 
   return (

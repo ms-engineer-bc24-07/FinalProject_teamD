@@ -62,7 +62,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # フロントエンドのURL（Reactなど）
 ]
 
-
+CORS_ALLOW_CREDENTIALS = True 
 ROOT_URLCONF = 'backend.urls'
 
 TEMPLATES = [

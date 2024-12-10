@@ -45,7 +45,6 @@ INSTALLED_APPS = [
     'scores',
     'references',
     'comparison_images',
-    'corsheaders',  # corsheadersを追加
 ]
 
 MIDDLEWARE = [

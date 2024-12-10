@@ -12,3 +12,9 @@ class ReferenceDetail(APIView):
             return Response(serializer.data)
         except Reference.DoesNotExist:
             return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+
+class ReferenceList(APIView):
+    def get(self, request):
+        references = Reference.objects.all()
+        serializer = ReferenceSerializer(references, many=True)
+        return Response(serializer.data)

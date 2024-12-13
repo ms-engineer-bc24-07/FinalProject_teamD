@@ -8,7 +8,7 @@ def create_test_data():
     user_a = User.objects.create(user_name='User A', email='usera@example.com')
 
     # 見本画像のURL（S3にアップロード済みの画像URL）
-    reference_image_url = 'https://teamd-finalproject.s3.ap-northeast-1.amazonaws.com/images/reference_image.jpg'
+    reference_image_url = 'https://teamd-finalproject.s3.ap-northeast-1.amazonaws.com/images/output_image.jpeg'
 
     # Referenceを作成
     reference = Reference.objects.create(
@@ -20,7 +20,7 @@ def create_test_data():
     user_b = User.objects.create(user_name='User B', email='userb@example.com')
 
     # 比較画像のURL（S3にアップロード済みの画像URL）
-    comparison_image_url = 'https://teamd-finalproject.s3.ap-northeast-1.amazonaws.com/images/comparison_image.jpg'
+    comparison_image_url = 'https://teamd-finalproject.s3.ap-northeast-1.amazonaws.com/images/compressed_comparison_image.jpg'
 
     # ComparisonImageを作成
     comparison_image = ComparisonImage.objects.create(

@@ -41,7 +41,7 @@ const ReferencePage = () => {
       <div className="flex flex-col items-center justify-center mt-6 gap-4">
         {/* 記録を見るボタン */}
         <button
-          onClick={() => router.push(`/cleanup-records/${id}`)}
+          onClick={() => router.push(`/cleanup-records/list/${id}`)}
           className="bg-customBlue text-white px-8 py-2 rounded-full mr-4"
         >
           記録をみる

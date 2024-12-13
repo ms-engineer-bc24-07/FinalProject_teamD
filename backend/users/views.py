@@ -65,3 +65,96 @@ def get_user(request):
             return JsonResponse({"error": str(e)}, status=500)
     else:
         return JsonResponse({"error": "Invalid HTTP method."}, status=405)
+    
+# 招待リンク生成エンドポイントの追加
+@csrf_exempt
+def send_invite(request):
+    """
+    招待リンクを生成して送信するエンドポイント
+    """
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            email = data.get('email')  # 招待先のメールアドレス
+            group_id = data.get('group_id')  # 家族グループのID
+
+            # 必要なデータがない場合はエラーを返す
+            if not email or not group_id:
+                return JsonResponse({"error": "Email and group_id are required."}, status=400)
+
+            # 招待トークンを生成
+            from django.utils.crypto import get_random_string
+            from django.utils.timezone import now, timedelta
+            from .models import Invitations, FamilyGroup
+
+            token = get_random_string(length=32)
+            expires_at = now() + timedelta(days=7)
+
+            # 家族グループが存在するか確認
+            group = FamilyGroup.objects.filter(id=group_id).first()
+            if not group:
+                return JsonResponse({"error": "Group not found."}, status=404)
+
+            # 招待をデータベースに保存
+            invitation = Invitations.objects.create(
+                group=group,
+                email=email,
+                token=token,
+                expires_at=expires_at
+            )
+
+            # 招待リンクを生成
+            invite_link = f"http://localhost:8000/users/accept_invite/{token}"
+
+            # 本番ではメール送信機能を追加
+            # send_email_function(email, invite_link)
+
+            return JsonResponse({"invite_link": invite_link, "message": "Invitation sent successfully."}, status=201)
+
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+    else:
+        return JsonResponse({"error": "Invalid HTTP method."}, status=405)
+
+#招待リンク処理エンドポイントの追加
+@csrf_exempt
+def accept_invite(request, token):
+    """
+    招待リンクを受け入れるエンドポイント
+    """
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            user_id = data.get('user_id')  # 招待を受け入れるユーザーのID
+
+            if not user_id:
+                return JsonResponse({"error": "User ID is required."}, status=400)
+
+            # 招待を検索
+            from django.utils.timezone import now
+            from .models import Invitations, FamilyMembers
+
+            invitation = Invitations.objects.filter(token=token).first()
+            if not invitation:
+                return JsonResponse({"error": "Invalid invitation token."}, status=404)
+
+            # 招待が期限切れでないか確認
+            if invitation.expires_at < now():
+                return JsonResponse({"error": "Invitation token has expired."}, status=400)
+
+            # 家族グループにユーザーを追加
+            FamilyMembers.objects.create(
+                group_id=invitation.group.id,
+                user_id=user_id
+            )
+
+            # 招待ステータスを更新
+            invitation.status = "accepted"
+            invitation.save()
+
+            return JsonResponse({"message": "Invitation accepted successfully."}, status=200)
+
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+    else:
+        return JsonResponse({"error": "Invalid HTTP method."}, status=405)

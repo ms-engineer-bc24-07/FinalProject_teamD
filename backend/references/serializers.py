@@ -1,7 +1,7 @@
 from rest_framework import serializers
-from .models import ImageModel
+from .models import Reference
 
-class ImageModelSerializer(serializers.ModelSerializer):
+class ReferenceSerializer(serializers.ModelSerializer):
     class Meta:
-        model = ImageModel
+        model = Reference
         fields = ["image"]

@@ -1,6 +1,7 @@
 from django.urls import path
-from .views import ImageUploadView
+from .views import ReferenceView
 
 urlpatterns = [
-    path("upload/", ImageUploadView.as_view(), name="file-upload"),
+    path("upload/", ReferenceView.as_view(), name="file-upload"),
+ # referencesアプリのURLパターンを統合
 ]

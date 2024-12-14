@@ -11,10 +11,14 @@ from django.utils.timezone import now, timedelta
 def send_invite(request):
     # Authorizationヘッダーからトークンを取得
     token = request.headers.get("Authorization", "").split("Bearer ")[-1]
+    print(f"受け取ったトークン: {token}")
+    
     user = authenticate(request, token=token)  # カスタムバックエンドを使用して認証
-
     if user is None:
+        print("認証に失敗しました")
         return Response({"error": "Authentication failed."}, status=401)
+
+    print(f"認証成功: {user}")
 
     try:
         email = request.data.get('email')

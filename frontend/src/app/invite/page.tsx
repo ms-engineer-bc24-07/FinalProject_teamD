@@ -5,11 +5,11 @@ import axios from "../../lib/axios";
 import { getAuth } from "firebase/auth";
 
 const InvitePage = () => {
-  const [email, setEmail] = useState("");
   const [groupName, setGroupName] = useState("");
+  const [inviteLink, setInviteLink] = useState(""); // 招待リンクを保存するステート
   const [message, setMessage] = useState("");
 
-  const handleInvite = async () => {
+  const handleGenerateLink = async () => {
     try {
       // Firebaseから現在のユーザーを取得
       const auth = getAuth();
@@ -25,10 +25,10 @@ const InvitePage = () => {
       const idToken = await user.getIdToken();
       console.log("取得したトークン:", idToken);
 
-      // バックエンドに招待リクエストを送信
+      // バックエンドにリンク生成リクエストを送信
       const response = await axios.post(
-        "http://localhost:8000/family/send_invite/",
-        { email, groupName }, // 招待データ
+        "http://localhost:8000/family/generate_invite_link/",
+        { groupName }, // 必要なデータ
         {
           headers: {
             Authorization: `Bearer ${idToken}`, // トークンをヘッダーに含める
@@ -36,10 +36,13 @@ const InvitePage = () => {
         }
       );
 
-      setMessage(`「${groupName}」グループへの招待メールを送信しました！`);
+      // 招待リンクをステートに保存
+      const { inviteLink } = response.data;
+      setInviteLink(inviteLink);
+      setMessage(`「${groupName}」グループの招待リンクを生成しました！`);
     } catch (error) {
       setMessage("エラーが発生しました。もう一度お試しください。");
-      console.error("招待送信エラー:", error);
+      console.error("リンク生成エラー:", error);
     }
   };
 
@@ -53,20 +56,28 @@ const InvitePage = () => {
         placeholder="グループ名を入力"
         className="mb-4 border p-2 w-full max-w-md"
       />
-      <input
-        type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder="メールアドレスを入力"
-        className="mb-4 border p-2 w-full max-w-md"
-      />
       <button
-        onClick={handleInvite}
+        onClick={handleGenerateLink}
         className="bg-blue-500 text-white px-4 py-2 rounded w-full max-w-md"
       >
-        招待を送信
+        メンバーを招待する
       </button>
       {message && <p className="mt-4 text-gray-700">{message}</p>}
+      {inviteLink && (
+        <div className="mt-4 p-4 bg-gray-100 rounded shadow">
+          <p className="text-gray-800">以下のリンクをコピーして共有してください:</p>
+          <input
+            type="text"
+            value={inviteLink}
+            readOnly
+            className="w-full mt-2 p-2 border"
+            onClick={(e) => {
+              navigator.clipboard.writeText(inviteLink);
+              alert("リンクをコピーしました！");
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 };

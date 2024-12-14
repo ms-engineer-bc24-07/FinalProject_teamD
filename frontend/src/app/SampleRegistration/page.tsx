@@ -2,41 +2,54 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import axios from 'axios';
 import PhotoSelector from '@/components/PhotoSelector';
 
+interface FormError {
+  message:string;
+}
 export default function PhotoRegistration() {
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [photoName, setPhotoName] = useState('');
+  const [error, setError] = useState<FormError | null>(null);
 
   const handlePhotoSelect = (imageData: string) => {
     setSelectedImage(imageData);
+    setError(null);
     setCurrentStep(3);
   };
 
   const handleSubmit = async () => {
-    try {
-      if (!selectedImage) return;
-      const base64Response = await fetch(selectedImage);
-      const blob = await base64Response.blob();
+    if (!selectedImage || !photoName.trim()) {
+      setError({ message: '画像と名前を入力してください' });
+      return;
+    }
 
+    try {
+      const base64Data = selectedImage.split(',')[1];
+      const blob = await fetch(`data:image/jpeg;base64,${base64Data}`).then(res => res.blob());
+      
       const formData = new FormData();
       formData.append('image', blob, 'image.jpg');
       formData.append('name', photoName);
 
-      const response = await fetch('http://localhost:8000/api/photos/', {
-        method: 'POST',
-        body: formData,
+      const response = await axios.post('http://localhost:8000/api/references/upload/', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
-
-      if (response.ok) {
-        setCurrentStep(4);
-      }
+      console.log('Success:', response.data);
     } catch (error) {
-      console.error('Error submitting photo:', error);
+        if (axios.isAxiosError(error)) {
+            console.error('Axios Error:', {
+                message: error.message,
+                response: error.response?.data,
+                status: error.response?.status
+            });
+        } else {
+            console.error('Unknown Error:', error);
+        }
     }
-  };
-
+  }
   return (
     <div className="min-h-screen bg-gray-100">
       <div className="max-w-md mx-auto p-4">
@@ -44,7 +57,14 @@ export default function PhotoRegistration() {
           <h1 className="text-center text-lg">おかたづけチェッカー</h1>
         </header>
 
-        {/* Step 1: 写真選択画面 */}
+        {/* エラーメッセージ表示を追加 */}
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+            <p>{error.message}</p>
+          </div>
+        )}
+
+        {/* Step 1.2: 写真選択画面 */}
         {currentStep === 1 && (
           <PhotoSelector 
             onPhotoSelect={handlePhotoSelect}

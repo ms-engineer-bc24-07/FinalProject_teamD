@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'references',
     'comparison_images',
     'corsheaders',  # corsheadersを追加
+    'family', # 新しいアプリを登録
 ]
 
 MIDDLEWARE = [
@@ -158,3 +159,9 @@ AWS_S3_SIGNATURE_VERSION = os.getenv('AWS_S3_SIGNATURE_VERSION')
 
 # S3ストレージの設定
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+# メールバックエンドをコンソールに設定
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+#DEBUG=True が設定されている場合、ブラウザにエラーの詳細が表示されます。
+DEBUG = True

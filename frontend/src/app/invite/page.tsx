@@ -9,8 +9,8 @@ const InvitePage = () => {
 
   const handleInvite = async () => {
     try {
-      const response = await axios.post("/api/invite", { email });
-      setMessage("招待リンクを送信しました！");
+      await axios.post("http://localhost:8000/users/send_invite/", { email });// 必要なデータを送信
+      setMessage("招待メールを送信しました！");
     } catch (error) {
       setMessage("エラーが発生しました。");
       console.error(error);

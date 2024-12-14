@@ -1,5 +1,8 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.core.mail import send_mail
+from django.utils.crypto import get_random_string
+from django.utils.timezone import now, timedelta
 from django.utils.decorators import method_decorator
 from django.contrib.auth.hashers import make_password  # パスワードハッシュ化のため
 import json
@@ -70,32 +73,27 @@ def get_user(request):
 @csrf_exempt
 def send_invite(request):
     """
-    招待リンクを生成して送信するエンドポイント
+    招待リンクを生成してメールを送信するエンドポイント
     """
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
-            email = data.get('email')  # 招待先のメールアドレス
-            group_id = data.get('group_id')  # 家族グループのID
+            email = data.get('email')
+            group_id = data.get('group_id')  # 必要ならグループ情報をフロントエンドから送信
 
-            # 必要なデータがない場合はエラーを返す
-            if not email or not group_id:
-                return JsonResponse({"error": "Email and group_id are required."}, status=400)
-
-            # 招待トークンを生成
-            from django.utils.crypto import get_random_string
-            from django.utils.timezone import now, timedelta
-            from .models import Invitations, FamilyGroup
+            # 必要なデータがない場合
+            if not email:
+                return JsonResponse({"error": "Email is required."}, status=400)
 
             token = get_random_string(length=32)
             expires_at = now() + timedelta(days=7)
 
-            # 家族グループが存在するか確認
+            # グループが存在するか確認
             group = FamilyGroup.objects.filter(id=group_id).first()
             if not group:
                 return JsonResponse({"error": "Group not found."}, status=404)
 
-            # 招待をデータベースに保存
+            # 招待を保存
             invitation = Invitations.objects.create(
                 group=group,
                 email=email,
@@ -104,55 +102,49 @@ def send_invite(request):
             )
 
             # 招待リンクを生成
-            invite_link = f"http://localhost:8000/users/accept_invite/{token}"
+            invite_link = f"http://localhost:3000/register?token={token}"
 
-            # 本番ではメール送信機能を追加
-            # send_email_function(email, invite_link)
+            # 招待メールを送信
+            send_mail(
+                "招待リンク",
+                f"以下のリンクから登録を完了してください:\n\n{invite_link}",
+                "noreply@example.com",
+                [email],
+                fail_silently=False,
+            )
 
-            return JsonResponse({"invite_link": invite_link, "message": "Invitation sent successfully."}, status=201)
+            return JsonResponse({"message": "招待メールを送信しました。"}, status=201)
 
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
     else:
         return JsonResponse({"error": "Invalid HTTP method."}, status=405)
 
-#招待リンク処理エンドポイントの追加
 @csrf_exempt
-def accept_invite(request, token):
+def accept_invite(request):
     """
-    招待リンクを受け入れるエンドポイント
+    招待リンクのトークンを検証し、新規登録に進む
     """
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
-            user_id = data.get('user_id')  # 招待を受け入れるユーザーのID
+            token = data.get('token')
 
-            if not user_id:
-                return JsonResponse({"error": "User ID is required."}, status=400)
+            # トークンがない場合
+            if not token:
+                return JsonResponse({"error": "Token is required."}, status=400)
 
-            # 招待を検索
-            from django.utils.timezone import now
-            from .models import Invitations, FamilyMembers
-
+            # トークンの検証
             invitation = Invitations.objects.filter(token=token).first()
             if not invitation:
-                return JsonResponse({"error": "Invalid invitation token."}, status=404)
+                return JsonResponse({"error": "Invalid token."}, status=404)
 
-            # 招待が期限切れでないか確認
+            # トークンが期限切れか確認
             if invitation.expires_at < now():
-                return JsonResponse({"error": "Invitation token has expired."}, status=400)
+                return JsonResponse({"error": "Token has expired."}, status=400)
 
-            # 家族グループにユーザーを追加
-            FamilyMembers.objects.create(
-                group_id=invitation.group.id,
-                user_id=user_id
-            )
-
-            # 招待ステータスを更新
-            invitation.status = "accepted"
-            invitation.save()
-
-            return JsonResponse({"message": "Invitation accepted successfully."}, status=200)
+            # トークンが有効な場合は新規登録に進む（フロントエンドで処理）
+            return JsonResponse({"message": "Token is valid."}, status=200)
 
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)

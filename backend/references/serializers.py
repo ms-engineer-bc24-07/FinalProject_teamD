@@ -4,4 +4,4 @@ from .models import Reference
 class ReferenceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Reference
-        fields = ["image"]
+        fields = '__all__'

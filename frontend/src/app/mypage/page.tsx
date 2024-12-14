@@ -18,7 +18,7 @@ const Mypage = () => {
     const fetchUserData = async (user: any) => {
       try {
         const idToken = await user.getIdToken();
-
+        
         // バックエンドからユーザー情報を取得
         const response = await axios.post(
           "http://localhost:8000/api/users/get_user/",
@@ -64,6 +64,7 @@ const Mypage = () => {
     const user = auth.currentUser;
     if (user) {
       const idToken = await user.getIdToken();
+      console.log("ID Token:", idToken);
   
       try {
         const response = await axios.post(

@@ -5,6 +5,7 @@ from django.contrib.auth.hashers import make_password  # パスワードハッ�
 import json
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from .models import User
 from rest_framework import status
@@ -73,6 +74,7 @@ def get_user(request):
 
 class UpdateIconAPIView(APIView):
     permission_classes = [IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
 
     def post(self, request):
         user = request.user  # 現在ログインしているユーザーを取得

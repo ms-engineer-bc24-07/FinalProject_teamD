@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"; // next/navigation の useRouter �
 import { FaCamera } from "react-icons/fa"; // カメラアイコンをインポート
 import Image from "next/image"; // Next.jsのImageコンポーネントをインポート
 import { auth } from "../lib/firebase"; // Firebaseの初期化設定をインポート
+import { onAuthStateChanged } from "firebase/auth"; // Firebaseの認証状態を確認する
 import ToppageButton from "../components/ToppageButton";
 import axios from "axios"; // axiosをインポート
 
@@ -13,33 +14,44 @@ const Page = () => {
   const [userIcon, setUserIcon] = useState<string>("/icons/icon-1.png");
   const [references, setReferences] = useState<any[]>([]); // references を保存するためのステート
 
-  const router = useRouter(); 
+  const router = useRouter();
 
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const user = auth.currentUser;
+    const checkAuth = () => {
+      // Firebaseの認証状態を監視
+      const unsubscribe = onAuthStateChanged(auth, (user) => {
         if (user) {
-          const email = user.email;
-          const token = await user.getIdToken(); // Firebaseトークンを取得
+          // ログイン状態の場合、ユーザー情報を取得
+          fetchUser(user);
+        } else {
+          // ログインしていない場合はログインページにリダイレクト
+          router.push("/auth/login");
+        }
+      });
+      return unsubscribe; // クリーンアップ
+    };
 
-          const response = await axios.post(
-            "http://localhost:8000/api/users/get_user/",
-            { email }, 
-            {
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
+    const fetchUser = async (user: any) => {
+      try {
+        const email = user.email;
+        const token = await user.getIdToken(); // Firebaseトークンを取得
 
-          if (response.status === 200) {
-            const data = response.data;
-            setUserName(data.user_name); // ユーザー名を更新
-          } else {
-            console.error("ユーザー情報の取得に失敗しました。");
+        const response = await axios.post(
+          "http://localhost:8000/api/users/get_user/",
+          { email },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
           }
+        );
+
+        if (response.status === 200) {
+          const data = response.data;
+          setUserName(data.user_name); // ユーザー名を更新
+        } else {
+          console.error("ユーザー情報の取得に失敗しました。");
         }
       } catch (error) {
         console.error("エラーが発生しました:", error);
@@ -48,7 +60,9 @@ const Page = () => {
 
     const fetchReferences = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/references/");
+        const response = await axios.get(
+          "http://localhost:8000/api/references/"
+        );
         if (response.status === 200) {
           setReferences(response.data); // 取得したreferencesをstateに保存
         }
@@ -57,11 +71,13 @@ const Page = () => {
       }
     };
 
-    fetchUser();
+    const unsubscribe = checkAuth();
     fetchReferences();
-  }, []);
 
-  // // `references` のidに基づいて、ページボタンを作成
+    return () => unsubscribe(); // コンポーネントがアンマウントされたら監視を停止
+  }, [router]);
+
+  // `references` のidに基づいて、ページボタンを作成
   const getReferenceButton = (id: number) => {
     const reference = references.find((ref) => ref.id === id);
 
@@ -78,7 +94,7 @@ const Page = () => {
         <ToppageButton
           key={`no-reference-${id}`}
           icon={<FaCamera className="text-customBlue text-4xl" />}
-          onClick={() => router.push("/register-reference/${id}")} // 参考写真がない場合、カメラアイコンを表示
+          onClick={() => router.push(`/register-reference/${id}`)} // 参考写真がない場合、カメラアイコンを表示
         />
       );
     }
@@ -92,7 +108,7 @@ const Page = () => {
   }
 
   return (
-    <div className="flex-grow p-5 text-center">
+    <div className="flex flex-col min-h-screen">
       {/* 上部のユーザー情報 */}
       <div className="flex justify-between items-center p-6">
         <div className="text-lg font-bold text-customBlue">{userName}さん</div>

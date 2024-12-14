@@ -1,14 +1,21 @@
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth import authenticate
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import FamilyGroup, Invitation
-from firebase_admin import auth as firebase_auth
+from django.core.mail import send_mail
 from django.utils.crypto import get_random_string
 from django.utils.timezone import now, timedelta
 
+# send_inviteでトークンを検証してからユーザーを認証する
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])  # DRFの認証を使用
 def send_invite(request):
+    # Authorizationヘッダーからトークンを取得
+    token = request.headers.get("Authorization", "").split("Bearer ")[-1]
+    user = authenticate(request, token=token)  # カスタムバックエンドを使用して認証
+
+    if user is None:
+        return Response({"error": "Authentication failed."}, status=401)
+
     try:
         email = request.data.get('email')
         group_name = request.data.get('groupName')
@@ -16,12 +23,13 @@ def send_invite(request):
         if not email or not group_name:
             return Response({"error": "Email and groupName are required."}, status=400)
 
-        user = request.user
         token = get_random_string(length=32)
         expires_at = now() + timedelta(days=7)
 
+        # グループを作成または取得
         group, created = FamilyGroup.objects.get_or_create(name=group_name, owner_id=user.id)
 
+        # 招待を作成
         invitation = Invitation.objects.create(
             group=group,
             email=email,
@@ -31,7 +39,7 @@ def send_invite(request):
 
         invite_link = f"http://localhost:3000/invite_accept?token={token}"
 
-        # メールを送信
+        # 招待メールを送信
         send_mail(
             "招待リンク",
             f"以下のリンクから登録を完了してください:\n\n{invite_link}",
@@ -49,9 +57,7 @@ def send_invite(request):
 
 
 
-
-
-@csrf_exempt
+@api_view(['POST'])
 def accept_invite(request):
     """
     招待リンクのトークンを検証し、招待を受け入れるエンドポイント

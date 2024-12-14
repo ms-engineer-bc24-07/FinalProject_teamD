@@ -1,11 +1,12 @@
 from django.contrib.auth import authenticate
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .models import FamilyGroup
+from .models import FamilyGroup, Invitation
 from django.utils.crypto import get_random_string
 from django.utils.timezone import now, timedelta
 from firebase_admin import auth
 
+# generate_invite_linkエンドポイント
 @api_view(['POST'])
 def generate_invite_link(request):
     print(f"リクエストヘッダー: {request.headers}")
@@ -41,41 +42,28 @@ def generate_invite_link(request):
 
 
 
-
-
+#validate_inviteエンドポイントを追加して、トークンの検証を行う処理を実装
 @api_view(['POST'])
-def accept_invite(request):
+def validate_invite(request):
     """
-    招待リンクのトークンを検証し、招待を受け入れるエンドポイント
+    招待トークンを検証するエンドポイント
     """
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            token = data.get('token')
-            user_id = data.get('user_id')  # 登録または既存ユーザーIDを取得
+    try:
+        token = request.data.get('token')
 
-            if not token or not user_id:
-                return JsonResponse({"error": "Token and user_id are required."}, status=400)
+        if not token:
+            return Response({"error": "トークンが必要です。"}, status=400)
 
-            # トークンの検証
-            invitation = Invitation.objects.filter(token=token).first()
-            if not invitation:
-                return JsonResponse({"error": "Invalid token."}, status=404)
+        # トークンが有効かどうか確認
+        invitation = Invitation.objects.filter(token=token).first()
 
-            # トークンが期限切れか確認
-            if invitation.expires_at < now():
-                return JsonResponse({"error": "Token has expired."}, status=400)
+        if not invitation:
+            return Response({"error": "無効なトークンです。"}, status=404)
 
-            # メンバーをグループに追加
-            FamilyMember.objects.create(group=invitation.group, user_id=user_id)
+        if invitation.expires_at < now():
+            return Response({"error": "トークンが期限切れです。"}, status=400)
 
-            # 招待を更新
-            invitation.status = "accepted"
-            invitation.save()
+        return Response({"message": "トークンは有効です。", "groupName": invitation.group.name}, status=200)
 
-            return JsonResponse({"message": "招待を受け入れました。"}, status=200)
-
-        except Exception as e:
-            return JsonResponse({"error": str(e)}, status=500)
-    else:
-        return JsonResponse({"error": "Invalid HTTP method."}, status=405)
+    except Exception as e:
+        return Response({"error": str(e)}, status=500)

@@ -6,7 +6,7 @@ import { FaCamera } from "react-icons/fa"; // カメラアイコンをインポ�
 import Image from "next/image"; // Next.jsのImageコンポーネントをインポート
 import { auth } from "../lib/firebase"; // Firebaseの初期化設定をインポート
 import ToppageButton from "../components/ToppageButton";
-import axios from "axios"; // axiosをインポート
+import axios from "../lib/axios"; // axiosをインポート
 
 const Page = () => {
   const [userName, setUserName] = useState<string>("ゲスト");

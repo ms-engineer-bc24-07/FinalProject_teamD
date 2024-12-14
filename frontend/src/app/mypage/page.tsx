@@ -1,11 +1,13 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation"; 
 import axios from "axios";
 import { auth } from "../../lib/firebase";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import Image from "next/image"; // Next.js の Image コンポーネント
 import Link from "next/link";
+import CustomButton from "../../components/CustomButton"; // ボタンコンポーネントのインポート
 
 const Mypage = () => {
   const [userName, setUserName] = useState<string>("ゲスト");
@@ -13,13 +15,12 @@ const Mypage = () => {
   const [icon, setIcon] = useState<string>("/icons/icon-1.png");
   const [isEditing, setIsEditing] = useState<boolean>(false); // 編集モード
   const [members, setMembers] = useState<string[]>([]);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchUserData = async (user: any) => {
       try {
         const idToken = await user.getIdToken();
-        
-        // バックエンドからユーザー情報を取得
         const response = await axios.post(
           "http://localhost:8000/api/users/get_user/",
           { email: user.email },
@@ -30,53 +31,45 @@ const Mypage = () => {
           }
         );
 
-        // レスポンスデータをステートに設定
         const data = response.data;
         setUserName(data.user_name);
         setEmail(data.email);
-        setIcon(data.icon_url || "/icons/icon-1.png"); // アイコンURLを取得
+        setIcon(data.icon_url || "/icons/icon-1.png");
       } catch (error) {
         console.error("ユーザー情報の取得中にエラーが発生しました:", error);
       }
     };
 
-    // Firebase Auth のログイン状態を監視
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         fetchUserData(user);
       } else {
         console.error("ログインしていません");
+        router.push("/auth/login"); // ログインしていない場合はログインページにリダイレクト
       }
     });
 
-    return () => unsubscribe(); // コンポーネントがアンマウントされたら監視を停止
-  }, []);
-
-  // const handleIconSelect = (newIcon: string) => {
-  //   setIcon(newIcon);
-  //   setIsEditing(false); // 編集モードを終了
-  // };
+    return () => unsubscribe();
+  }, [router]);
 
   const handleIconSelect = async (newIcon: string) => {
     setIcon(newIcon);
     setIsEditing(false);
-  
+
     const user = auth.currentUser;
     if (user) {
       const idToken = await user.getIdToken();
-      console.log("ID Token:", idToken);
-  
       try {
         const response = await axios.post(
-          "http://localhost:8000/api/users/update_icon/",  // アイコン更新のAPIエンドポイント
-          { icon: newIcon },  // アイコンの新しいURL
+          "http://localhost:8000/api/users/update_icon/",
+          { icon: newIcon },
           {
             headers: {
               Authorization: `Bearer ${idToken}`,
             },
           }
         );
-  
+
         if (response.status === 200) {
           console.log("アイコンが更新されました");
         }
@@ -86,6 +79,14 @@ const Mypage = () => {
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      await signOut(auth); // ログアウト処理
+      router.push("/auth/login"); // ログインページに遷移
+    } catch (error) {
+      console.error("ログアウト中にエラーが発生しました:", error);
+    }
+  };
   return (
     <div className="flex flex-col items-center p-6">
       <h1 className="text-2xl font-bold mb-4">マイページ</h1>
@@ -112,12 +113,14 @@ const Mypage = () => {
         </div>
         {isEditing && (
           <div className="grid grid-cols-4 gap-2 mt-2">
-            {[1, 2, 3, 4,].map((num) => (
+            {[1, 2, 3, 4].map((num) => (
               <button
                 key={num}
                 onClick={() => handleIconSelect(`/icons/icon-${num}.png`)}
                 className={`border-2 rounded ${
-                  icon === `/icons/icon-${num}.png` ? "border-blue-500" : "border-gray-300"
+                  icon === `/icons/icon-${num}.png`
+                    ? "border-blue-500"
+                    : "border-gray-300"
                 }`}
               >
                 <Image
@@ -152,37 +155,20 @@ const Mypage = () => {
         <hr className="mt-2 border-gray-300" />
       </div>
 
-      {/* メンバー */}
-      <div className="mb-4 w-full max-w-md">
-        <label className="block text-base font-medium text-gray-900">メンバー</label>
-        <div className="mt-2">
-          {members.length === 0 ? (
-            <p className="text-gray-500">誰もいません</p>
-          ) : (
-            <ul className="list-disc pl-5">
-              {members.map((member, index) => (
-                <li key={index} className="text-gray-900">
-                  {member}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      </div>
-
       {/* 招待するボタン */}
       <Link href="/invite">
-        <button className="mt-4 bg-customPink text-customBlue px-4 py-2 rounded w-full max-w-md">
-          招待する
-        </button>
+        <CustomButton
+          text="招待する"
+          //className="bg-customPink text-customBlue"
+        />
       </Link>
 
-      {/* ホームに戻るボタン */}
-      <Link href="/">
-        <button className="mt-4 bg-customPink text-customBlue px-4 py-2 rounded w-full max-w-md">
-          戻る
-        </button>
-      </Link>
+      {/* ログアウトボタン */}
+      <CustomButton
+        text="ログアウト"
+        onClick={handleLogout}
+        //className="mt-4 bg-red-500 text-white"
+      />
     </div>
   );
 };

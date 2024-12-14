@@ -1,21 +1,18 @@
 from django.contrib.auth import authenticate
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .models import FamilyGroup, Invitation
-from django.core.mail import send_mail
+from .models import FamilyGroup
 from django.utils.crypto import get_random_string
 from django.utils.timezone import now, timedelta
 from firebase_admin import auth
-import firebase # Firebase初期化コードをインポート
 
-# send_inviteでトークンを検証してからユーザーを認証する
 @api_view(['POST'])
-def send_invite(request):
+def generate_invite_link(request):
     print(f"リクエストヘッダー: {request.headers}")
     # Authorizationヘッダーからトークンを取得
     token = request.headers.get("Authorization", "").split("Bearer ")[-1]
-    print(f"受け取ったトークン: {token}")# トークンをログに出力
-    
+    print(f"受け取ったトークン: {token}")
+
     user = authenticate(request, token=token)  # カスタムバックエンドを使用して認証
     if user is None:
         print("認証に失敗しました")
@@ -24,11 +21,10 @@ def send_invite(request):
     print(f"認証成功: {user}")
 
     try:
-        email = request.data.get('email')
         group_name = request.data.get('groupName')
 
-        if not email or not group_name:
-            return Response({"error": "Email and groupName are required."}, status=400)
+        if not group_name:
+            return Response({"error": "グループ名が必要です。"}, status=400)
 
         token = get_random_string(length=32)
         expires_at = now() + timedelta(days=7)
@@ -36,26 +32,9 @@ def send_invite(request):
         # グループを作成または取得
         group, created = FamilyGroup.objects.get_or_create(name=group_name, owner_id=user.id)
 
-        # 招待を作成
-        invitation = Invitation.objects.create(
-            group=group,
-            email=email,
-            token=token,
-            expires_at=expires_at
-        )
-
         invite_link = f"http://localhost:3000/invite_accept?token={token}"
 
-        # 招待メールを送信
-        send_mail(
-            "招待リンク",
-            f"以下のリンクから登録を完了してください:\n\n{invite_link}",
-            "noreply@example.com",
-            [email],
-            fail_silently=False,
-        )
-
-        return Response({"message": "招待メールを送信しました。"}, status=201)
+        return Response({"inviteLink": invite_link}, status=201)
 
     except Exception as e:
         return Response({"error": str(e)}, status=500)

@@ -5,13 +5,16 @@ from .models import FamilyGroup, Invitation
 from django.core.mail import send_mail
 from django.utils.crypto import get_random_string
 from django.utils.timezone import now, timedelta
+from firebase_admin import auth
+import firebase # Firebase初期化コードをインポート
 
 # send_inviteでトークンを検証してからユーザーを認証する
 @api_view(['POST'])
 def send_invite(request):
+    print(f"リクエストヘッダー: {request.headers}")
     # Authorizationヘッダーからトークンを取得
     token = request.headers.get("Authorization", "").split("Bearer ")[-1]
-    print(f"受け取ったトークン: {token}")
+    print(f"受け取ったトークン: {token}")# トークンをログに出力
     
     user = authenticate(request, token=token)  # カスタムバックエンドを使用して認証
     if user is None:

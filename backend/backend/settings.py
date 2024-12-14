@@ -169,7 +169,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 #DEBUG=True が設定されている場合、ブラウザにエラーの詳細が表示されます。
 DEBUG = True
 
-#デフォルトで Django の認証バックエンドを使用する場合、以下の設定が必要
+#カスタム認証バックエンドを追加
 AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',
+    'django.contrib.auth.backends.ModelBackend',  # デフォルト
+    'users.authentication.FirebaseAuthenticationBackend',  # Firebase認証バックエンド
 ]

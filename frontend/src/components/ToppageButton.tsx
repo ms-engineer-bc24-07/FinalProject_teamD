@@ -6,19 +6,21 @@ type ToppageButtonProps = {
   onClick?: () => void; // ボタンがクリックされた時の動作
 };
 
-const ToppageButton: React.FC<ToppageButtonProps> = ({ text, icon,onClick }) => {
+const ToppageButton: React.FC<ToppageButtonProps> = ({ text, icon, onClick }) => {
   return (
     <div
       onClick={onClick}
-      className="relative bg-customBlue p-4 shadow-lg rounded-3xl cursor-pointer hover:shadow-2xl transition"
-      style={{ width: '150px', height: '150px' }} // 四角形の大きさ
+      className="relative bg-customBlue p-2 sm:p-4 shadow-lg rounded-3xl cursor-pointer hover:shadow-2xl transition"
+      style={{ width: '120px', height: '120px', maxWidth: '150px', maxHeight: '150px' }}
     >
       {/* ピンクの小さい四角 */}
       <div
         className="absolute bg-customPink text-customBlue font-bold rounded-xl flex items-center justify-center"
         style={{
-          width: '100px',
-          height: '100px',
+          width: '80px',
+          height: '80px',
+          maxWidth: '100px',
+          maxHeight: '100px',
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)', // 中央に配置

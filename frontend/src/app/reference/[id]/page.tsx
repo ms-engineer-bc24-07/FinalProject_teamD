@@ -27,7 +27,7 @@ const ReferencePage = () => {
   if (!reference) return <div>Loading...</div>;
 
   return (
-      <div className="flex flex-col min-h-screen px-5 py-6">
+      <div className="flex-grow p-5 text-center">
         {/* ヘッダー部分 */}
       <div className="flex flex-col items-start justify-center mt-6"> 
         <h1 className="text-2xl font-bold text-customBlue">{reference.reference_name}</h1>

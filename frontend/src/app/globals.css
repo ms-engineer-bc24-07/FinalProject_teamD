@@ -6,26 +6,43 @@
 html, body {
   margin: 0;
   padding: 0;
-  font-family: "Arial", "Helvetica", sans-serif; /* フォント */
   width: 100%;
   height: 100%;
-  background-color: #f8f9fa;
-  color: #333;
+  font-family: "Arial", "Helvetica", sans-serif;
+  background-color: #e0f7fa; /* 背景色（余白部分） */
 }
 
-body {
+/* アプリ全体のラッパーを中央に配置 */
+#app-wrapper {
   display: flex;
   flex-direction: column;
-  justify-content: space-between; /* ヘッダーとフッターを画面内に配置 */
-  overflow-x: hidden; /* 横スクロールを防止 */
-  background-color: #f8eecb;
+  justify-content: space-between; /* header, main, footer を均等に配置 */
+  width: 375px; /* スマホ幅に合わせた最大幅 */
+  height: 667px; /* スマホ高さに合わせた最大高さ */
+  background-color: #ffffff; /* アプリの背景色 */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* 軽い影で立体感を演出 */
+  border-radius: 16px; /* 角丸でデザインを整える */
+  margin: auto; /* ブラウザ中央に配置 */
+  overflow: hidden; /* はみ出す部分を非表示 */
 }
 
+/* header, main, footerが収まるようにflexを使用 */
 main {
-  flex: 1; /* メインコンテンツをヘッダーとフッターの間に拡張 */
+  flex: 1; /* メイン部分をヘッダーとフッターの間に拡張 */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+
+header, footer {
   padding: 1rem;
+  text-align: center;
+}
+
+/* フッターのデザイン */
+footer {
+  background-color: #5292ca; /* カスタムブルー */
+  color: #ffffff;
+  font-size: 0.9rem;
 }

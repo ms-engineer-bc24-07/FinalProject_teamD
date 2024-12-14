@@ -13,22 +13,24 @@ const CustomButton: React.FC<ButtonProps> = ({ text, icon, onClick, className = 
       onClick={onClick}
       className={`flex items-center justify-center bg-customBlue rounded-xl shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer ${className}`}
       style={{
-        width: '210px', // 青枠の幅
-        height: '80px', // 青枠の高さ
-        padding: '5px', // 内側の余白
+        width: '20vw', // 画面幅に応じて調整
+        height: '10vw',
+        maxWidth: '210px',
+        maxHeight: '80px',
+        padding: '5px',
       }}
     >
       <div
         className="bg-customPink rounded-lg flex items-center justify-center"
         style={{
-          width: '180px', // ピンク部分の幅
-          height: '55px', // ピンク部分の高さ
+          width: '90%',
+          height: '80%',
         }}
       >
         {icon ? (
-          <div className="text-customBlue text-xl">{icon}</div> // アイコンの場合
+          <div className="text-customBlue text-lg sm:text-xl">{icon}</div>
         ) : (
-          <span className="text-customBlue font-bold text-lg">{text}</span> // テキストの場合
+          <span className="text-customBlue font-bold text-sm sm:text-lg">{text}</span>
         )}
       </div>
     </div>

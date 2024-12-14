@@ -92,7 +92,7 @@ const Page = () => {
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex-grow p-5 text-center">
       {/* 上部のユーザー情報 */}
       <div className="flex justify-between items-center p-6">
         <div className="text-lg font-bold text-customBlue">{userName}さん</div>

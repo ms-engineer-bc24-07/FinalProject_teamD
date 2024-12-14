@@ -29,5 +29,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/users/', include('users.urls')),  # users アプリのAPIエンドポイント
     path('users/', include('users.urls')), 
+    path('family/', include('family.urls')),  # family アプリのルーティングを追加
 ]
 

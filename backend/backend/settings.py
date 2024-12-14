@@ -53,7 +53,7 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware', #認証が有効であることを確認
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -61,6 +61,9 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # フロントエンドURLを許可
 ]
+
+# 認証情報（Cookie）を含める場合
+CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOW_METHODS = [
     "GET",
@@ -165,3 +168,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 #DEBUG=True が設定されている場合、ブラウザにエラーの詳細が表示されます。
 DEBUG = True
+
+#デフォルトで Django の認証バックエンドを使用する場合、以下の設定が必要
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]

@@ -40,7 +40,7 @@ const ReferencePage = () => {
         />
       </div>
     
-      <div className="flex flex-col gap-4 w-full max-w-md">
+      <div className="flex flex-col items-center gap-4 w-full max-w-md mx-auto">
       
         {/* 記録を見るボタン */}
         <CustomButton

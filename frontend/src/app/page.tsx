@@ -1,101 +1,137 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation"; // next/navigation の useRouter をインポート
+import { FaCamera } from "react-icons/fa"; // カメラアイコンをインポート
+import Image from "next/image"; // Next.jsのImageコンポーネントをインポート
+import { auth } from "../lib/firebase"; // Firebaseの初期化設定をインポート
+import { onAuthStateChanged } from "firebase/auth"; // Firebaseの認証状態を確認する
+import ToppageButton from "../components/ToppageButton";
+import axios from "axios"; // axiosをインポート
+
+const Page = () => {
+  const [userName, setUserName] = useState<string>("ゲスト");
+  const [userIcon, setUserIcon] = useState<string>("/icons/icon-1.png");
+  const [references, setReferences] = useState<any[]>([]); // references を保存するためのステート
+
+  const router = useRouter();
+
+  useEffect(() => {
+    const checkAuth = () => {
+      // Firebaseの認証状態を監視
+      const unsubscribe = onAuthStateChanged(auth, (user) => {
+        if (user) {
+          // ログイン状態の場合、ユーザー情報を取得
+          fetchUser(user);
+        } else {
+          // ログインしていない場合はログインページにリダイレクト
+          router.push("/auth/login");
+        }
+      });
+      return unsubscribe; // クリーンアップ
+    };
+
+    const fetchUser = async (user: any) => {
+      try {
+        const email = user.email;
+        const token = await user.getIdToken(); // Firebaseトークンを取得
+
+        const response = await axios.post(
+          "http://localhost:8000/api/users/get_user/",
+          { email },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (response.status === 200) {
+          const data = response.data;
+          setUserName(data.user_name); // ユーザー名を更新
+        } else {
+          console.error("ユーザー情報の取得に失敗しました。");
+        }
+      } catch (error) {
+        console.error("エラーが発生しました:", error);
+      }
+    };
+
+    const fetchReferences = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:8000/api/references/"
+        );
+        if (response.status === 200) {
+          setReferences(response.data); // 取得したreferencesをstateに保存
+        }
+      } catch (error) {
+        console.error("Error fetching references:", error);
+      }
+    };
+
+    const unsubscribe = checkAuth();
+    fetchReferences();
+
+    return () => unsubscribe(); // コンポーネントがアンマウントされたら監視を停止
+  }, [router]);
+
+  // `references` のidに基づいて、ページボタンを作成
+  const getReferenceButton = (id: number) => {
+    const reference = references.find((ref) => ref.id === id);
+
+    if (reference) {
+      return (
+        <ToppageButton
+          key={reference.id}
+          text={reference.reference_name}
+          onClick={() => router.push(`/reference/${reference.id}`)} // 動的に遷移
         />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+      );
+    } else {
+      return (
+        <ToppageButton
+          key={`no-reference-${id}`}
+          icon={<FaCamera className="text-customBlue text-4xl" />}
+          onClick={() => router.push(`/register-reference/${id}`)} // 参考写真がない場合、カメラアイコンを表示
+        />
+      );
+    }
+  };
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  // ボタンが常に4つ表示されるように、足りない分は見本写真登録ボタンを追加
+  const buttonCount = 4;
+  const buttons = [];
+  for (let i = 1; i <= buttonCount; i++) {
+    buttons.push(getReferenceButton(i));
+  }
+
+  return (
+    <div className="flex flex-col min-h-screen">
+      {/* 上部のユーザー情報 */}
+      <div className="flex justify-between items-center p-6">
+        <div className="text-lg font-bold text-customBlue">{userName}さん</div>
+        <div className="w-25 h-25">
+          <Image
+            src={userIcon || "/icons/icon-1.png"}
+            alt={`${userName}のアイコン`}
+            width={100}
+            height={100}
+            className="rounded-full"
+          />
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
+
+      {/* メインコンテンツ */}
+      <div className="flex-grow p-5 text-center">
+        <div className="grid grid-cols-2 gap-10 mt-4">
+          {/* 動的にボタンを表示 */}
+          {buttons}
+        </div>
+      </div>
     </div>
   );
-}
+};
+
+export default Page;

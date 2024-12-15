@@ -7,7 +7,7 @@ from .views import ReferenceView
 urlpatterns = [
     path('', ReferenceList.as_view(), name='reference-list'),
     path('<int:reference_id>/', ReferenceDetail.as_view(), name='reference-detail'),  # 'api/references/<int:reference_id>/' に対応
-    path('upload/', ReferenceView.as_view(), name="file-upload"),　# referencesアプリのURLパターンを統合
+    path('upload/', ReferenceView.as_view(), name="file-upload"),
 ]
 
 

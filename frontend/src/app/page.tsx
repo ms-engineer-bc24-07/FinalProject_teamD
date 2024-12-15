@@ -94,7 +94,7 @@ const Page = () => {
         <ToppageButton
           key={`no-reference-${id}`}
           icon={<FaCamera className="text-customBlue text-4xl" />}
-          onClick={() => router.push(`/register-reference/${id}`)} // 参考写真がない場合、カメラアイコンを表示
+          onClick={() => router.push(`/SampleRegistration`)} // 参考写真がない場合、カメラアイコンを表示
         />
       );
     }

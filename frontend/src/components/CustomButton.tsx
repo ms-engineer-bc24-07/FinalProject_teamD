@@ -14,7 +14,7 @@ const CustomButton: React.FC<ButtonProps> = ({ text, icon, onClick, className = 
       className={`flex items-center justify-center bg-customBlue rounded-xl shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer ${className}`}
       style={{
         width: '20vw', // 画面幅に応じて調整
-        height: '10vw',
+        height: '8vw',
         maxWidth: '210px',
         maxHeight: '80px',
         padding: '5px',

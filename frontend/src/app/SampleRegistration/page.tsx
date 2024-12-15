@@ -98,7 +98,7 @@ export default function PhotoRegistration() {
               className="w-full p-2 border rounded"
             />
           </div>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 items-center">
             <CustomButton text="保存" onClick={handleSubmit} />
           </div>
         </div>

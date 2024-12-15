@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from 'react';
+import CustomButton from "../components/CustomButton";
 
 interface PhotoSelectorProps {
   onPhotoSelect: (imageData: string) => void;
@@ -61,34 +62,30 @@ export default function PhotoSelector({
           />
         </div>
         <p className="text-center mb-4">この写真を登録しますか？</p>
-        <div className="flex flex-col gap-2">
-          <button
+        <div className="flex flex-col items-center justify-center gap-4">
+          <CustomButton
+            text="登録"
             onClick={() => onPhotoSelect(selectedImage)}
-            className="w-full py-2 bg-blue-200 rounded"
-          >
-            登録
-          </button>
-          <button
+         />
+          <CustomButton
+            text="キャンセル"
             onClick={() => {
               setSelectedImage(null);
               setIsConfirming(false);
               onCancel?.();
             }}
-            className="w-full py-2 bg-gray-200 rounded"
-          >
-            キャンセル
-          </button>
+          />
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow">
-      <div className="aspect-square bg-gray-200 mb-4 flex items-center justify-center">
-        <span className="text-gray-500">pic</span>
+    <div className="flex flex-col items-center justify-center w-full h-auto">
+      <div className="aspect-square w-48 h-48 sm:w-64 sm:h-64 lg:w-80 lg:h-80 bg-gray-200 mb-4 flex items-center justify-center">
+        <span className="text-gray-500 text-lg md:text-xl">pic</span>
       </div>
-      <div className="flex justify-around mt-4">
+      <div className="flex justify-around gap-4 w-full">
         <button
           onClick={() => handlePhotoSelect('folder')}
           className="p-3 rounded-full bg-gray-200 hover:bg-gray-300 transition-colors"

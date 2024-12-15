@@ -1,21 +1,13 @@
-# scores/views.py
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Score
 from .serializers import ScoreSerializer
+from .services.image_processing import process_images
+import time
 
 # リスト取得と新規作成のビュー
 class ScoreListCreate(generics.ListCreateAPIView):
-    queryset = Score.objects.all()
-    serializer_class = ScoreSerializer
-
-# スコア詳細取得のためのビュー
-class ScoreDetail(generics.RetrieveAPIView):
-	queryset = Score.objects.all()
-	serializer_class = ScoreSerializer
-	lookup_field = 'id'  # URLのパラメータをidとして扱う
-
 	def post(self, request, *args, **kwargs):
 		# # リクエストデータから比較画像のIDを取得
 		# comparison_image_id = request.data.get("comparison_image_id")
@@ -42,7 +34,15 @@ class ScoreDetail(generics.RetrieveAPIView):
 		# serializer = ScoreSerializer(score_instance)
 		# return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+		time.sleep(5)
+
 		# 一旦仮のレスポンス↓↓↓
 		score = Score.objects.all()
 		serializer = ScoreSerializer(score, many=True)
 		return Response(serializer.data)
+
+# スコア詳細取得のためのビュー
+class ScoreDetail(generics.RetrieveAPIView):
+	queryset = Score.objects.all()
+	serializer_class = ScoreSerializer
+	lookup_field = 'id'  # URLのパラメータをidとして扱う

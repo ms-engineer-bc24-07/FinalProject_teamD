@@ -1,6 +1,7 @@
 from django.urls import path
-from .views import ScoreView
+from .views import ScoreListCreate, ScoreDetail
 
 urlpatterns = [
-  path('score/', ScoreView.as_view(), name='score'),
+  path('', ScoreListCreate.as_view(), name='extract-score'),
+  path('<int:id>/', ScoreDetail.as_view(), name='score-detail'),  # スコア詳細の取得
 ]

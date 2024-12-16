@@ -1,1 +1,12 @@
 .history/
+
+.env
+
+*.db
+*.sqlite3
+*.jpg
+*.jpeg
+*.png
+*.zip
+
+venv/

@@ -12,9 +12,9 @@ def process_images():
   ## （scoreをDBに登録 →　これはviewで処理する？）
   ## scoreをreturn
 
-  # 画像を読み込む（後でS３からの取得に変える）
-  image_path1 = os.path.join(os.getcwd(), "backend/static/images/current.jpg")  # 絶対パスに変換
-  image_path2 = os.path.join(os.getcwd(), "backend/static/images/reference.jpg")  # 絶対パスに変換
+  # ディレクトリの画像読み込み（S３からの取得に変える）
+  image_path1 = "/app/compressed_comparison_image.jpg"
+  image_path2 = "/app/output_image.jpeg"
   
   image1 = cv2.imread(image_path1)
   image2 = cv2.imread(image_path2)

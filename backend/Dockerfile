@@ -1,6 +1,9 @@
 # 使用するベースイメージ（Python 3.9）
 FROM python:3.9-slim
 
+# Docker環境でのOpenCVのインストールエラーの解消　(https://qiita.com/narista/items/a3d7d26ae50d54c2553a)
+RUN apt-get update && apt-get install -y libopencv-dev 
+
 # 作業ディレクトリを設定
 WORKDIR /app
 

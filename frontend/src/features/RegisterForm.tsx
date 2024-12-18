@@ -8,6 +8,7 @@ const RegisterForm = () => {
     username: "",
     email: "",
     password: "",
+    groupName: "", // グループ名を追加
   });
 
   const [error, setError] = useState("");
@@ -23,7 +24,7 @@ const RegisterForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const { username, email, password } = formData;
+    const { username, email, password, groupName } = formData;
 
     try {
       // Firebase でユーザーを登録
@@ -36,19 +37,28 @@ const RegisterForm = () => {
       // Firebaseからトークンを取得
       const idToken = await getIdToken(user);
 
-      // バックエンドにユーザー情報を保存
-      const response = await fetch("http://localhost:8000/api/users/register/", {
+      // Firebase UIDを取得
+      const firebase_uid = user.uid;  // Firebase UIDを取得  
+
+      // バックエンドにユーザー情報を保存とグループ作成リクエストを送信
+      const response = await fetch("http://localhost:8000/users/register/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${idToken}`, // トークンをヘッダーに追加
         },
-        body: JSON.stringify({ user_name: username, email, password }),
+        body: JSON.stringify({ 
+          user_name: username, 
+          email, 
+          password, 
+          group_name: groupName, // group_nameに変更
+          firebase_uid,
+        }),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to save user in backend.");
+        throw new Error(errorData.error || "Failed to save user and create group.");
       }
 
       alert("Registration successful!");
@@ -106,6 +116,20 @@ const RegisterForm = () => {
             onChange={handleChange}
             className="mt-1 p-2 border border-gray-300 rounded w-full text-black"
             placeholder="パスワードを入力してください"
+          />
+        </div>
+
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">
+            グループ名
+          </label>
+          <input
+            type="text"
+            name="groupName"
+            value={formData.groupName}
+            onChange={handleChange}
+            className="mt-1 p-2 border border-gray-300 rounded w-full text-black"
+            placeholder="グループ名を入力してください"
           />
         </div>
 

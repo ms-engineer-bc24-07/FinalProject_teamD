@@ -1,7 +1,8 @@
 from django.urls import path
-from .views import generate_invite_link, validate_invite
-
+from .views import validate_invite, get_group_info
 urlpatterns = [
-    path('avalidate_invite/', validate_invite, name='validate_invite'),
-    path('generate_invite_link/', generate_invite_link, name='generate_invite_link'),  # 新しいエンドポイント
+    path('validate_invite/', validate_invite, name='validate_invite'),
+    path('get_group_info/', get_group_info, name='get_group_info'),  
 ]
+
+

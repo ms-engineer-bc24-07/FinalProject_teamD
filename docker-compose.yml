@@ -5,11 +5,13 @@ services:
     container_name: backend
     volumes:
       - ./backend:/app
-      - ./path/to/.env:/app/.env # ここで .env ファイルをマウント
+      - ./path/to/.env:/app/.env
+      - ./backend/firebase-adminsdk.json:/app/firebase-adminsdk.json
     ports:
       - "8000:8000"
     environment:
       - DATABASE_URL=${DATABASE_URL}
+      - FIREBASE_SERVICE_ACCOUNT_KEY=/app/firebase-adminsdk.json
     depends_on:
       - db
     command: >

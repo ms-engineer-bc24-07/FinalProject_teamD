@@ -16,7 +16,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Reference',
             fields=[
-                ('id', models.AutoField(primary_key=True, serialize=False)),
+                # ('id', models.AutoField(primary_key=True, serialize=False)),
+                ('reference_id', models.AutoField(primary_key=True, serialize=False)),
                 ('reference_name', models.CharField(max_length=100, unique=True)),
                 ('image_url', models.TextField()),
                 ('created_at', models.DateTimeField(auto_now_add=True)),

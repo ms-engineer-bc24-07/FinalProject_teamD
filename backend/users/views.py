@@ -6,7 +6,12 @@ from django.utils.timezone import now, timedelta
 from django.utils.decorators import method_decorator
 from django.contrib.auth.hashers import make_password  # パスワードハッシュ化のため
 import json
+from rest_framework.views import APIView
+from rest_framework.response import Response
+#from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 from .models import User
+from rest_framework import status
 from family.models import FamilyGroup, FamilyMember, Invitation
 from firebase_admin import auth
 import os 
@@ -24,6 +29,7 @@ service_account_key_path = '/app/firebase-adminsdk.json'
 if not firebase_admin._apps:
     cred = credentials.Certificate(service_account_key_path)
     firebase_admin.initialize_app(cred)
+
 
 @method_decorator(csrf_exempt, name='dispatch')  # CSRFを無効化（必要ならToken認証を追加）
 def register_user(request):
@@ -188,3 +194,94 @@ def accept_invite(request):
     else:
         logger.error("Invalid HTTP method")
         return JsonResponse({"error": "Invalid HTTP method."}, status=405)
+
+logger = logging.getLogger(__name__)
+
+
+@csrf_exempt
+def accept_invite(request):
+    """
+    招待リンクを使って新規ユーザー登録し、グループに追加する
+    既存ユーザーの場合、そのユーザーをグループに追加
+    """
+    if request.method == 'POST':
+        logger.info("Accept invite process が開始しました")
+        try:
+            # リクエストデータを取得
+            data = json.loads(request.body)
+            token = data.get('token')  # 招待リンクからのトークン
+            user_name = data.get('user_name')
+            email = data.get('email')
+            password = data.get('password')
+            firebase_uid = data.get('firebase_uid')  # Firebase UIDを受け取る
+
+            # ログにリクエストデータを出力
+            logger.debug(f"Received data: {data}")
+
+            # トークン、ユーザー名、メールアドレス、パスワード、Firebase UIDが必要
+            if not token or not user_name or not email or not password or not firebase_uid:
+                logger.error("Missing required fields: token, user_name, email, password, or firebase_uid")
+                return JsonResponse({"error": "トークン、ユーザー名、メールアドレス、パスワード、Firebase UIDが必要です。"}, status=400)
+
+            # トークンを検証
+            invitation = Invitation.objects.filter(token=token).first()
+            if not invitation:
+                logger.error(f"Invalid token: {token}")
+                return JsonResponse({"error": "無効なトークンです。"}, status=400)
+
+            if invitation.expires_at < now():
+                logger.warning(f"Expired token: {token}")
+                return JsonResponse({"error": "トークンが期限切れです。"}, status=400)
+
+            # emailで既存ユーザーを検索
+            user = User.objects.filter(email=email).first()
+
+        
+
+            # Django DBで新規ユーザーを作成
+            user = User.objects.create(
+                user_name=user_name,
+                email=email,
+                password=make_password(password),  # パスワードをハッシュ化して保存
+                firebase_uid=firebase_uid  # Firebase UIDをDjangoユーザーに保存
+            )
+            user.save()
+            logger.info(f"User created: {user.user_name}")
+
+            # グループにユーザーを追加
+            FamilyMember.objects.create(group=invitation.group, user=user)
+            logger.info(f"User added to group: {invitation.group.name}")
+
+            # 招待のステータスを更新
+            invitation.status = "accepted"
+            invitation.invited_user = user
+            invitation.save()
+            logger.info(f"Invitation accepted for user: {user.user_name}")
+
+            return JsonResponse({"message": f"新しいユーザー「{user_name}」が「{invitation.group.name}」グループに参加しました。"}, status=200)
+
+        except IntegrityError as e:
+            logger.error(f"Integrity error: {str(e)}")
+            return JsonResponse({"error": "ユーザーの重複登録が発生しました。別のユーザー名を試してください。"}, status=400)
+        except Exception as e:
+            logger.error(f"Error: {str(e)}")
+            return JsonResponse({"error": str(e)}, status=500)
+    else:
+        logger.error("Invalid HTTP method")
+        return JsonResponse({"error": "Invalid HTTP method."}, status=405)
+
+
+class UpdateIconAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    # authentication_classes = [TokenAuthentication]
+
+    def post(self, request):
+        user = request.user  # 現在ログインしているユーザーを取得
+        icon_url = request.data.get("icon")  # リクエストボディからアイコンURLを取得
+
+        if icon_url:
+            user.icon_url = icon_url  # アイコンURLを更新
+            user.save()
+            return Response({"message": "アイコンが更新されました"}, status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "アイコンURLが提供されていません"}, status=status.HTTP_400_BAD_REQUEST)

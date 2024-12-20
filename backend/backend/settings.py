@@ -33,22 +33,23 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'corsheaders', 
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
     'users',
     'scores',
     'references',
     'comparison_images',
-    'corsheaders',  # corsheadersを追加
-    'family', # 新しいアプリを登録
+    'family', 
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',  # 先頭に追加
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -57,22 +58,14 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # フロントエンドURLを許可
+    "http://localhost:3000",  # フロントエンドのURL（Reactなど）
 ]
 
 # 認証情報（Cookie）を含める場合
 CORS_ALLOW_CREDENTIALS = True
 
-CORS_ALLOW_METHODS = [
-    "GET",
-    "POST",
-    "PUT",
-    "DELETE",
-    "OPTIONS",
-]
-
+CORS_ALLOW_CREDENTIALS = True 
 ROOT_URLCONF = 'backend.urls'
 
 TEMPLATES = [
@@ -192,3 +185,4 @@ LOGGING = {
         },
     },
 }
+

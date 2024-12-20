@@ -12,6 +12,11 @@ services:
     environment:
       - DATABASE_URL=${DATABASE_URL}
       - FIREBASE_SERVICE_ACCOUNT_KEY=/app/firebase-adminsdk.json
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_STORAGE_BUCKET_NAME=${AWS_STORAGE_BUCKET_NAME}
+      - AWS_S3_REGION_NAME=${AWS_S3_REGION_NAME}
+      - AWS_S3_SIGNATURE_VERSION=${AWS_S3_SIGNATURE_VERSION}
     depends_on:
       - db
     command: >

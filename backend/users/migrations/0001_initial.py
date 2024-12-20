@@ -14,10 +14,12 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='User',
             fields=[
-                ('id', models.AutoField(primary_key=True, serialize=False)),
+                # ('id', models.AutoField(primary_key=True, serialize=False)),
+                ('user_id', models.AutoField(primary_key=True, serialize=False)),
                 ('user_name', models.CharField(max_length=50, unique=True)),
                 ('email', models.EmailField(max_length=255, unique=True)),
                 ('password', models.CharField(max_length=255)),
+                ('icon_url', models.TextField(blank=True, null=True)), #追加
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
             ],

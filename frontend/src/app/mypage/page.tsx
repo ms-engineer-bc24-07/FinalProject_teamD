@@ -12,7 +12,8 @@ const Mypage = () => {
   const [email, setEmail] = useState<string>("example@example.com");
   const [icon, setIcon] = useState<string>("/icons/icon-1.png");
   const [isEditing, setIsEditing] = useState<boolean>(false); // 編集モード
-  const [members, setMembers] = useState<string[]>([]);
+  const [members, setMembers] = useState<string[]>([]); // メンバーリスト
+  const [groupName, setGroupName] = useState<string>(""); // グループ名
 
   useEffect(() => {
     const fetchUserData = async (user: any) => {
@@ -34,6 +35,20 @@ const Mypage = () => {
         const data = response.data;
         setUserName(data.user_name);
         setEmail(data.email);
+
+        // グループ情報を取得
+        const groupResponse = await axios.get(
+          "http://localhost:8000/family/get_group_info/",
+          {
+            headers: {
+              Authorization: `Bearer ${idToken}`,
+            },
+          }
+        );
+
+        // グループ名とメンバーを設定
+        setGroupName(groupResponse.data.groupName);
+        setMembers(groupResponse.data.members);
       } catch (error) {
         console.error("ユーザー情報の取得中にエラーが発生しました:", error);
       }
@@ -82,12 +97,14 @@ const Mypage = () => {
         </div>
         {isEditing && (
           <div className="grid grid-cols-4 gap-2 mt-2">
-            {[1, 2, 3, 4,].map((num) => (
+            {[1, 2, 3, 4].map((num) => (
               <button
                 key={num}
                 onClick={() => handleIconSelect(`/icons/icon-${num}.png`)}
                 className={`border-2 rounded ${
-                  icon === `/icons/icon-${num}.png` ? "border-blue-500" : "border-gray-300"
+                  icon === `/icons/icon-${num}.png`
+                    ? "border-blue-500"
+                    : "border-gray-300"
                 }`}
               >
                 <Image
@@ -118,6 +135,15 @@ const Mypage = () => {
         <div className="flex justify-between items-center">
           <label className="text-base font-medium text-gray-900">メールアドレス</label>
           <span className="text-base text-gray-800">{email}</span>
+        </div>
+        <hr className="mt-2 border-gray-300" />
+      </div>
+
+      {/* グループ名 */}
+      <div className="mb-4 w-full max-w-md">
+        <div className="flex justify-between items-center">
+          <label className="text-base font-medium text-gray-900">グループ名</label>
+          <span className="text-base text-gray-800">{groupName}</span>
         </div>
         <hr className="mt-2 border-gray-300" />
       </div>

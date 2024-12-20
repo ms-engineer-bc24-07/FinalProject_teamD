@@ -10,11 +10,11 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RenameField(
-            model_name='reference',
-            old_name='reference_id',
-            new_name='id',
-        ),
+        # migrations.RenameField(
+        #     model_name='reference',
+        #     old_name='reference_id',
+        #     new_name='id',
+        # ),
         migrations.AlterField(
             model_name='reference',
             name='updated_at',

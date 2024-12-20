@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import axios from 'axios';
+import axios from "../../lib/axios";
 import PhotoSelector from '@/components/PhotoSelector';
 import CustomButton from "../../components/CustomButton";
 

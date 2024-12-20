@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react';
-import axios from 'axios';
+import axios from "../../../lib/axios";
 import PhotoSelector from '@/components/PhotoSelector';
 import { useParams, useRouter } from 'next/navigation';
 import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slider';

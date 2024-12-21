@@ -102,6 +102,7 @@ const Mypage = () => {
       console.error("ログアウト中にエラーが発生しました:", error);
     }
   };
+
   return (
     <div className="flex flex-col items-center p-6">
       <h1 className="text-2xl font-bold mb-4">マイページ</h1>
@@ -170,11 +171,37 @@ const Mypage = () => {
         <hr className="mt-2 border-gray-300" />
       </div>
 
+      {/* グループ名 */}
+      <div className="mb-4 w-full max-w-md">
+        <div className="flex justify-between items-center">
+          <label className="text-base font-medium text-gray-900">グループ名</label>
+          <span className="text-base text-gray-800">{groupName}</span>
+        </div>
+        <hr className="mt-2 border-gray-300" />
+      </div>
+
+      {/* メンバー */}
+      <div className="mb-4 w-full max-w-md">
+        <label className="block text-base font-medium text-gray-900">グループメンバー</label>
+        <div className="mt-2">
+          {members.length === 0 ? (
+            <p className="text-gray-500">メンバーがいません</p>
+          ) : (
+            <ul className="list-disc pl-5">
+              {members.map((member, index) => (
+                <li key={index} className="text-gray-900">
+                  {member}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+
       {/* 招待するボタン */}
       <Link href="/invite">
         <CustomButton
           text="招待する"
-          //className="bg-customPink text-customBlue"
         />
       </Link>
 
@@ -182,7 +209,6 @@ const Mypage = () => {
       <CustomButton
         text="ログアウト"
         onClick={handleLogout}
-        //className="mt-4 bg-red-500 text-white"
       />
     </div>
   );

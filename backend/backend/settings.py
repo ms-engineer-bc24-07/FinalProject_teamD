@@ -183,6 +183,11 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
+         'django.template': {  # テンプレート関連ログを制御
+            'handlers': ['console'],
+            'level': 'WARNING',  # DEBUG を WARNING に変更
+            'propagate': False,
+        },
     },
 }
 

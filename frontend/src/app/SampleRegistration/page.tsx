@@ -6,6 +6,9 @@ import axios from "../../lib/axios";
 import PhotoSelector from '@/components/PhotoSelector';
 import CustomButton from "../../components/CustomButton";
 import { auth } from "../../lib/firebase";
+import dayjs from 'dayjs';
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
 
 interface FormError {
   message:string;
@@ -29,13 +32,6 @@ export default function PhotoRegistration() {
     }
   
     try {
-      const base64Data = selectedImage.split(',')[1];
-      const blob = await fetch(`data:image/jpeg;base64,${base64Data}`).then(res => res.blob());
-      
-      const formData = new FormData();
-      formData.append('image', blob, 'image.jpg');
-      formData.append('name', photoName);
-  
       const user = auth.currentUser;
       if (!user) {
         setError({ message: 'ログインしていません。' });
@@ -44,10 +40,22 @@ export default function PhotoRegistration() {
   
       const idToken = await user.getIdToken();
       const firebaseUid = user.uid;  // Firebase UIDを取得
+
+      const base64Data = selectedImage.split(',')[1];
+      const blob = await fetch(`data:image/jpeg;base64,${base64Data}`).then(res => res.blob());
+      
+      // firebase_uidと現在の日時をファイル名に利用
+      dayjs.extend(timezone);
+      dayjs.extend(utc);
+      const fileName = `image_${firebaseUid}_${dayjs().tz("Asia/Tokyo").format("YYYYMMDD-HHmmss")}.jpg`
+
+      const formData = new FormData();
+      formData.append('image', blob, fileName);
+      formData.append('name', photoName);
   
       // firebase_uidをformDataに追加
       formData.append('firebase_uid', firebaseUid);  // user_id ではなく firebase_uid として送信
-  
+
       const response = await axios.post('http://localhost:8000/api/references/upload/', formData, {
         headers: { 
           'Content-Type': 'multipart/form-data',

@@ -2,10 +2,10 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import axios from 'axios';
+import axios from "../../lib/axios";
 import PhotoSelector from '@/components/PhotoSelector';
 import CustomButton from "../../components/CustomButton";
-
+import { auth } from "../../lib/firebase";
 
 interface FormError {
   message:string;
@@ -27,7 +27,7 @@ export default function PhotoRegistration() {
       setError({ message: '画像と名前を入力してください' });
       return;
     }
-
+  
     try {
       const base64Data = selectedImage.split(',')[1];
       const blob = await fetch(`data:image/jpeg;base64,${base64Data}`).then(res => res.blob());
@@ -35,25 +35,44 @@ export default function PhotoRegistration() {
       const formData = new FormData();
       formData.append('image', blob, 'image.jpg');
       formData.append('name', photoName);
-
-      const response = await axios.post('http://localhost:8000/api/references/upload/', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      console.log('Success:', response.data);
-    } catch (error) {
-        if (axios.isAxiosError(error)) {
-            console.error('Axios Error:', {
-                message: error.message,
-                response: error.response?.data,
-                status: error.response?.status
-            });
-        } else {
-            console.error('Unknown Error:', error);
-        }
-    }
-  }
   
+      const user = auth.currentUser;
+      if (!user) {
+        setError({ message: 'ログインしていません。' });
+        return;
+      }
+  
+      const idToken = await user.getIdToken();
+      const firebaseUid = user.uid;  // Firebase UIDを取得
+  
+      // firebase_uidをformDataに追加
+      formData.append('firebase_uid', firebaseUid);  // user_id ではなく firebase_uid として送信
+  
+      const response = await axios.post('http://localhost:8000/api/references/upload/', formData, {
+        headers: { 
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${idToken}`  // トークンをヘッダーに追加
+        },
+      });
+  
+      console.log('Success:', response.data);
 
+      // アップロードが成功したら、currentStepを4に変更して完了画面に遷移
+      setCurrentStep(4);
+
+      
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error('Axios Error:', {
+          message: error.message,
+          response: error.response?.data,
+          status: error.response?.status
+        });
+      } else {
+        console.error('Unknown Error:', error);
+      }
+    }
+};
 
   return (
     <div className="flex flex-col px-5 py-6">

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation"; 
-import axios from "axios";
+import axios from "../../lib/axios";
 import { auth } from "../../lib/firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import Image from "next/image"; // Next.js の Image コンポーネント
@@ -15,6 +15,7 @@ const Mypage = () => {
   const [icon, setIcon] = useState<string>("/icons/icon-1.png");
   const [isEditing, setIsEditing] = useState<boolean>(false); // 編集モード
   const [members, setMembers] = useState<string[]>([]);
+  const [groupName, setGroupName] = useState<string>(""); // グループ名
   const router = useRouter();
 
   useEffect(() => {
@@ -35,6 +36,20 @@ const Mypage = () => {
         setUserName(data.user_name);
         setEmail(data.email);
         setIcon(data.icon_url || "/icons/icon-1.png");
+        // グループ情報を取得
+        const groupResponse = await axios.get(
+          "http://localhost:8000/family/get_group_info/",
+          {
+            headers: {
+              Authorization: `Bearer ${idToken}`,
+            },
+          }
+        );
+
+        // グループ名とメンバーを設定
+        setGroupName(groupResponse.data.groupName);
+        setMembers(groupResponse.data.members);     
+      
       } catch (error) {
         console.error("ユーザー情報の取得中にエラーが発生しました:", error);
       }
@@ -87,6 +102,7 @@ const Mypage = () => {
       console.error("ログアウト中にエラーが発生しました:", error);
     }
   };
+
   return (
     <div className="flex flex-col items-center p-6">
       <h1 className="text-2xl font-bold mb-4">マイページ</h1>
@@ -155,11 +171,37 @@ const Mypage = () => {
         <hr className="mt-2 border-gray-300" />
       </div>
 
+      {/* グループ名 */}
+      <div className="mb-4 w-full max-w-md">
+        <div className="flex justify-between items-center">
+          <label className="text-base font-medium text-gray-900">グループ名</label>
+          <span className="text-base text-gray-800">{groupName}</span>
+        </div>
+        <hr className="mt-2 border-gray-300" />
+      </div>
+
+      {/* メンバー */}
+      <div className="mb-4 w-full max-w-md">
+        <label className="block text-base font-medium text-gray-900">グループメンバー</label>
+        <div className="mt-2">
+          {members.length === 0 ? (
+            <p className="text-gray-500">メンバーがいません</p>
+          ) : (
+            <ul className="list-disc pl-5">
+              {members.map((member, index) => (
+                <li key={index} className="text-gray-900">
+                  {member}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+
       {/* 招待するボタン */}
       <Link href="/invite">
         <CustomButton
           text="招待する"
-          //className="bg-customPink text-customBlue"
         />
       </Link>
 
@@ -167,7 +209,6 @@ const Mypage = () => {
       <CustomButton
         text="ログアウト"
         onClick={handleLogout}
-        //className="mt-4 bg-red-500 text-white"
       />
     </div>
   );

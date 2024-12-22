@@ -7,7 +7,7 @@ import Image from "next/image"; // Next.jsのImageコンポーネントをイン
 import { auth } from "../lib/firebase"; // Firebaseの初期化設定をインポート
 import { onAuthStateChanged } from "firebase/auth"; // Firebaseの認証状態を確認する
 import ToppageButton from "../components/ToppageButton";
-import axios from "axios"; // axiosをインポート
+import axios from "../lib/axios"; // axiosをインポート
 
 const Page = () => {
   const [userName, setUserName] = useState<string>("ゲスト");

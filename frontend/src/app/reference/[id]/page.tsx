@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";  // next/navigationのuseRouterを使用
 import { useParams } from "next/navigation";  // next/navigationからuseParamsをインポート
-import axios from "axios";
+import axios from "../../../lib/axios";
 import Image from "next/image"; // Next.jsのImageコンポーネントをインポート
 import CustomButton from "../../../components/CustomButton";
 

@@ -1,17 +1,19 @@
+
 "use client";
 
 import React, { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useRouter } from "next/navigation"; // Next.js のルーター
 import { auth } from "../lib/firebase"; // Firebase の設定と初期化をインポート
+import axios from "axios"; // axiosインポート
 
 const LoginForm = () => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
-
   const [error, setError] = useState("");
+  const [groupInfo, setGroupInfo] = useState<any>(null); // グループ情報を保持するステート
   const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -30,6 +32,21 @@ const LoginForm = () => {
       // Firebase Authenticationでログイン
       await signInWithEmailAndPassword(auth, email, password);
       alert("ログイン成功しました！");
+
+      // ログイン後にグループ情報を取得
+      const idToken = await auth.currentUser?.getIdToken();
+      if (idToken) {
+        const response = await axios.get(
+          "http://localhost:8000/api/family/get_group_info/", // グループ情報を取得するエンドポイント
+          {
+            headers: {
+              Authorization: `Bearer ${idToken}`, // Firebase トークンを設定
+            },
+          }
+        );
+        setGroupInfo(response.data); // グループ情報をステートに保存
+      }
+
       router.push("/"); // ホームページにリダイレクト
     } catch (err: unknown) {
       if (err instanceof Error) {
@@ -94,6 +111,14 @@ const LoginForm = () => {
           </a>
         </p>
       </form>
+
+      {groupInfo && (
+        <div className="mt-6">
+          <h2 className="text-xl font-semibold">グループ情報</h2>
+          <p>グループ名: {groupInfo.groupName}</p>
+          <p>メンバー: {groupInfo.members.join(", ")}</p>
+        </div>
+      )}
     </div>
   );
 };

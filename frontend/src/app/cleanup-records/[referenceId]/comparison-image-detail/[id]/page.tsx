@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";  // Next.js 13 app router
-import axios from "axios";
+import axios from "../../../../../lib/axios";
 import Image from "next/image";  // Next.jsのImageコンポーネント
 
 // 日付をYYYY-MM-DDの形式に変換するヘルパー関数

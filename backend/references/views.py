@@ -4,6 +4,7 @@ from rest_framework import status
 from django.conf import settings
 from references.models import Reference
 from references.serializers import ReferenceSerializer
+from users.models import User  # Userモデルをインポート
 import boto3
 
 
@@ -29,11 +30,21 @@ class ReferenceView(APIView):
         # 必要なデータをリクエストから取得
         image_file = request.FILES.get('image')
         reference_name = request.data.get('name')
-
-        if not image_file or not reference_name:
+        # user_id = request.data.get('user_id')  # user_id を受け取る
+        firebase_uid = request.data.get('firebase_uid')
+        
+        if not image_file or not reference_name or not firebase_uid:
             return Response(
-                {"error": "画像と名前は必須です"},
+                {"error": "画像、名前、firebase_uidは必須です"},
                 status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Firebase UIDを使ってユーザーを検索
+        user = User.objects.filter(firebase_uid=firebase_uid).first()
+        if not user:
+            return Response(
+                {"error": "指定されたFirebase UIDのユーザーが存在しません"},
+                status=status.HTTP_404_NOT_FOUND,
             )
 
         # S3にアップロードするための設定
@@ -59,10 +70,12 @@ class ReferenceView(APIView):
         # アップロードされた画像のURLを生成
         image_url = f"https://{bucket_name}.s3.{settings.AWS_S3_REGION_NAME}.amazonaws.com/{object_name}"
 
-        # Referenceモデルに保存
+        # Referenceモデルに保存（user_id を設定）
         reference = Reference.objects.create(
             reference_name=reference_name,
-            image_url=image_url
+            image_url=image_url,
+            # user_id=user_id,  # user_id を追加して保存
+            user=user       
         )
 
         serializer = ReferenceSerializer(reference)

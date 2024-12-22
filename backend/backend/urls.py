@@ -8,5 +8,8 @@ urlpatterns = [
     path('api/scores/', include('scores.urls')),  # scores APIの設定
     path('api/comparison-images/', include('comparison_images.urls')),  # comparison-images APIの設定
     path('api/users/', include('users.urls')),  # users アプリのAPIエンドポイント
+    path('users/', include('users.urls')), 
+    path('family/', include('family.urls')),  # family アプリのルーティングを追加
+    path('api/family/', include('family.urls')), 
 ]
 

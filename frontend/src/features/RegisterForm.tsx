@@ -56,7 +56,7 @@ const RegisterForm = () => {
         }
       });
 
-      if (response.status === 200) {
+      if (response.status === 201) {
         alert("新規登録が完了しました!");
         router.push("/auth/login"); // ログインページにリダイレクト
       } else {

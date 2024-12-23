@@ -1,10 +1,12 @@
 'use client'
 
 import { useState } from 'react';
-import axios from "../../../lib/axios";
+import axios from "@/lib/axios";
 import PhotoSelector from '@/components/PhotoSelector';
 import { useParams, useRouter } from 'next/navigation';
 import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slider';
+import { createImageFormData } from '@/utils/createImageData';
+import { auth } from '@/lib/firebase';
 
 interface FormError {
   message:string;
@@ -19,6 +21,7 @@ export default function PhotoRegistration() {
   const router = useRouter();
 
   const handlePhotoSelect = async (imageData: string) => {
+
     setSelectedImage(imageData);
     setError(null);
 
@@ -26,23 +29,43 @@ export default function PhotoRegistration() {
     const referenceModel = await axios.get(`http://localhost:8000/api/references/${referenceId}/`)
     setReferenceImageURL(referenceModel.data.image_url);
 
+    // 見本画像と片付け実施画像をスライダーで比較できるコンポーネントを表示する
     setCurrentStep(3);
 
+    const user = auth.currentUser;
+    if (!user) {
+      setError({ message: 'ログインしていません。' });
+      return;
+    }
+    const idToken = await user.getIdToken();
+    const firebaseUid = user.uid;  // Firebase UIDを取得
+    
+    const formData = await createImageFormData(imageData, firebaseUid, undefined, referenceModel.data.id)
+
+    // 比較画像をS3にアップ
+    const response = await axios.post('http://localhost:8000/api/comparison-images/upload/', formData, {
+      headers: { 
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${idToken}`  // トークンをヘッダーに追加
+      },
+    });
+
+
     // スコアの計算
-    await axios.post('http://localhost:8000/api/scores/')
-      .then(response => {
-        console.log("OK", response.data);
-        router.push("/result");
+    // await axios.post('http://localhost:8000/api/scores/')
+    //   .then(response => {
+    //     console.log("OK", response.data);
+    //     router.push("/result");
 
         // const urlObject = {
         //   pathname: "/result",
         //   query: { result: String(response.data.result) } // 数値を文字列に変換
         // };
         // router.push(urlObject as any);
-      })
-      .catch(error => {
-        console.error("エラー発生", error);
-      });
+      // })
+      // .catch(error => {
+      //   console.error("エラー発生", error);
+      // });
   };
 
   return (

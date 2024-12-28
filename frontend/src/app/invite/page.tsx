@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { getAuth } from "firebase/auth";
 import axios from "../../lib/axios";
+import CustomButton from "../../components/CustomButton"; // CustomButtonコンポーネントのインポート
 
 const InvitePage = () => {
   const [inviteLink, setInviteLink] = useState(""); // 招待リンクを保存
@@ -28,7 +29,7 @@ const InvitePage = () => {
 
         // バックエンドにグループ情報取得のリクエストを送信
         const response = await axios.get(
-          "http://localhost:8000/api/family/get_group_info/",  // グループ情報を取得するエンドポイント
+          "http://localhost:8000/api/family/get_group_info/", // グループ情報を取得するエンドポイント
           {
             headers: {
               Authorization: `Bearer ${idToken}`, // トークンをヘッダーに追加
@@ -77,6 +78,11 @@ const InvitePage = () => {
               />
             </div>
           )}
+
+          {/* トップページに戻るボタン */}
+          <div className="mt-6">
+            <CustomButton text="トップページに戻る" onClick={() => (window.location.href = "/")} />
+          </div>
         </>
       )}
     </div>
@@ -84,4 +90,3 @@ const InvitePage = () => {
 };
 
 export default InvitePage;
-

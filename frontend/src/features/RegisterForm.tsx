@@ -74,11 +74,11 @@ const RegisterForm = () => {
         onSubmit={handleSubmit}
         className="bg-white p-8 rounded shadow-md w-96"
       >
-        <h1 className="text-2xl font-bold mb-4">新規登録</h1>
+        <h1 className="text-3xl font-bold mb-6 text-customBlue">新規登録</h1>
         {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
 
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-base text-customBlue font-bold">
             ユーザー名
           </label>
           <input
@@ -86,13 +86,13 @@ const RegisterForm = () => {
             name="username"
             value={formData.username}
             onChange={handleChange}
-            className="mt-1 p-2 border border-gray-300 rounded w-full text-black"
+            className="mt-1 p-3 border border-customBlue rounded w-full text-customBlue font-bold bg-customPink focus:ring-2 focus:ring-customBlue focus:outline-none"
             placeholder="ユーザー名を入力してください"
           />
         </div>
 
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-base text-customBlue font-bold">
             メールアドレス
           </label>
           <input
@@ -100,13 +100,13 @@ const RegisterForm = () => {
             name="email"
             value={formData.email}
             onChange={handleChange}
-            className="mt-1 p-2 border border-gray-300 rounded w-full text-black"
+            className="mt-1 p-3 border border-customBlue rounded w-full text-customBlue font-bold bg-customPink focus:ring-2 focus:ring-customBlue focus:outline-none"
             placeholder="メールアドレスを入力してください"
           />
         </div>
 
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-base text-customBlue font-bold">
             パスワード
           </label>
           <input
@@ -114,13 +114,13 @@ const RegisterForm = () => {
             name="password"
             value={formData.password}
             onChange={handleChange}
-            className="mt-1 p-2 border border-gray-300 rounded w-full text-black"
+            className="mt-1 p-3 border border-customBlue rounded w-full text-customBlue font-bold bg-customPink focus:ring-2 focus:ring-customBlue focus:outline-none"
             placeholder="パスワードを入力してください"
           />
         </div>
 
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-base text-customBlue font-bold">
             グループ名
           </label>
           <input
@@ -128,14 +128,14 @@ const RegisterForm = () => {
             name="groupName"
             value={formData.groupName}
             onChange={handleChange}
-            className="mt-1 p-2 border border-gray-300 rounded w-full text-black"
+            className="mt-1 p-3 border border-customBlue rounded w-full text-customBlue font-bold bg-customPink focus:ring-2 focus:ring-customBlue focus:outline-none"
             placeholder="グループ名を入力してください"
           />
         </div>
 
         <button
           type="submit"
-          className="bg-customBlue text-customYellow px-4 py-2 rounded w-full"
+          className="bg-customBlue text-customYellow px-4 py-2 rounded w-full text-xl font-bold"
         >
           登録
         </button>
@@ -143,7 +143,7 @@ const RegisterForm = () => {
           すでにアカウントをお持ちですか？{" "}
           <a
             href="/auth/login"
-            className="text-blue-600 font-semibold hover:underline"
+            className="text-customBlue font-semibold hover:underline"
           >
             ログイン
           </a>

@@ -74,7 +74,8 @@ export default function PhotoRegistration() {
         console.error('Axios Error:', {
           message: error.message,
           response: error.response?.data,
-          status: error.response?.status
+          status: error.response?.status,
+          headers: error.response?.headers,//追加
         });
       } else {
         console.error('Unknown Error:', error);

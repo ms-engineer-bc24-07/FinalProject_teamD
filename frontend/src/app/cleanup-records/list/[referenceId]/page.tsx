@@ -31,9 +31,21 @@ const ComparisonImageListPage = () => {
   }, [referenceId]);
 
   return (
-    <div className="flex-grow p-5">
-      {/* タイトルを上部に配置 */}
-      <h1 className="text-2xl font-bold text-customBlue mb-6">片付け記録</h1>
+    <div className="flex-grow p-5 bg-red-200 w-full max-w-screen-lg mx-auto">
+     {/* タイトルと戻るボタンを配置 */}
+      <div className="relative mb-6">
+        {/* 戻るボタン */}
+        <button
+          onClick={() => window.history.back()}
+          className="absolute left-0 text-customBlue"
+        >
+          ← 戻る
+        </button>
+        {/* タイトル */}
+        <h1 className="text-2xl font-bold text-customBlue text-center">
+          片付け記録
+        </h1>
+      </div>
 
       {/* 記録がない場合 */}
       {comparisonImages.length === 0 ? (

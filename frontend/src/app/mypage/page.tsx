@@ -13,92 +13,103 @@ const Mypage = () => {
   const [userName, setUserName] = useState<string>("ゲスト");
   const [email, setEmail] = useState<string>("example@example.com");
   const [icon, setIcon] = useState<string>("/icons/icon-1.png");
+  const [newIcon, setNewIcon] = useState<string>(""); // 新しいアイコン
   const [isEditing, setIsEditing] = useState<boolean>(false); // 編集モード
   const [members, setMembers] = useState<string[]>([]);
   const [groupName, setGroupName] = useState<string>(""); // グループ名
   const [isLoggingOut, setIsLoggingOut] = useState<boolean>(false); // ログアウト処理中かを追跡
   const router = useRouter();
 
-  useEffect(() => {
-    const fetchUserData = async (user: any) => {
-      try {
-        const idToken = await user.getIdToken();
-        const response = await axios.post(
-          "http://localhost:8000/api/users/get_user/",
-          { email: user.email },
-          {
-            headers: {
-              Authorization: `Bearer ${idToken}`,
-            },
-          }
-        );
+  // ユーザーデータ取得
+  const fetchUserData = async (user: any) => {
+    try {
+      const idToken = await user.getIdToken(true); // 最新のトークンを取得
+      console.log("トークン:", idToken); // トークンをログに出力
+      const response = await axios.post(
+        "http://localhost:8000/api/users/get_user/",
+        { email: user.email },
+        {
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+          },
+        }
+      );
 
-        const data = response.data;
-        setUserName(data.user_name);
-        setEmail(data.email);
-        setIcon(data.icon_url || "/icons/icon-1.png");
+      const data = response.data;
+      setUserName(data.user_name);
+      setEmail(data.email);
+      setIcon(data.icon_url || "/icons/icon-1.png");
         
         // グループ情報を取得
-        const groupResponse = await axios.get(
-          "http://localhost:8000/api/family/get_group_info/",
-          {
-            headers: {
-              Authorization: `Bearer ${idToken}`,
-            },
-          }
-        );
+      const groupResponse = await axios.get(
+        "http://localhost:8000/api/family/get_group_info/",
+        {
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+          },
+        }
+      );
 
         // グループ名とメンバーを設定
         setGroupName(groupResponse.data.groupName);
-        setMembers(groupResponse.data.members);     
+        setMembers(groupResponse.data.members);
       } catch (error) {
         console.error("ユーザー情報の取得中にエラーが発生しました:", error);
       }
     };
 
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        if (!isLoggingOut) {
-          fetchUserData(user);
-        }
-      } else {
-        if (!isLoggingOut) {
-          console.error("ログインしていません");
-          router.push("/auth/login"); // ログインしていない場合はログインページにリダイレクト
-        }
+// 初期ロード時にユーザーデータを取得
+useEffect(() => {
+  const unsubscribe = onAuthStateChanged(auth, (user) => {
+    if (user) {
+      if (!isLoggingOut) {
+        fetchUserData(user);
       }
-    });
+    } else {
+      if (!isLoggingOut) {
+        console.error("ログインしていません");
+        router.push("/auth/login"); // ログインしていない場合はログインページにリダイレクト
+      }
+    }
+  });
 
     return () => unsubscribe();
   }, [router, isLoggingOut]);
 
-  const handleIconSelect = async (newIcon: string) => {
-    setIcon(newIcon);
-    setIsEditing(false);
-
-    const user = auth.currentUser;
-    if (user) {
-      const idToken = await user.getIdToken();
-      try {
-        const response = await axios.post(
-          "http://localhost:8000/api/users/update_icon/",
-          { icon: newIcon },
-          {
-            headers: {
-              Authorization: `Bearer ${idToken}`,
-            },
-          }
-        );
-
-        if (response.status === 200) {
-          console.log("アイコンが更新されました");
-        }
-      } catch (error) {
-        console.error("アイコン更新エラー:", error);
-      }
-    }
+  // アイコン選択
+  const handleIconSelect = (newIcon: string) => {
+    setNewIcon(newIcon);
   };
 
+// アイコン保存
+const handleSaveIcon = async () => {
+  const user = auth.currentUser;
+  if (user && newIcon) {
+    const idToken = await user.getIdToken(true);
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/api/users/update_icon/",
+        { icon: newIcon },
+        {
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        console.log("アイコンが更新されました");
+        setIcon(newIcon); 
+        setIsEditing(false); 
+        fetchUserData(user); 
+      }
+    } catch (error) {
+      console.error("アイコン更新エラー:", error);
+    }
+  }
+};
+
+// ログアウト処理
   const handleLogout = async () => {
     try {
       setIsLoggingOut(true); // ログアウト処理中に切り替え
@@ -112,7 +123,15 @@ const Mypage = () => {
 
   return (
     <div className="flex flex-col items-center p-6">
-      <h1 className="text-2xl font-bold mb-4">マイページ</h1>
+      <div className="flex items-center w-full max-w-md mb-4">
+        <button
+          onClick={() => router.back()}
+          className="mr-4 text-customBlue"
+        >
+          ← 戻る
+        </button>
+        <h1 className="text-2xl font-bold text-customBlue">マイページ</h1>
+      </div>
 
       {/* アイコン表示 */}
       <div className="mb-4 w-full max-w-md">
@@ -141,7 +160,7 @@ const Mypage = () => {
                 key={num}
                 onClick={() => handleIconSelect(`/icons/icon-${num}.png`)}
                 className={`border-2 rounded ${
-                  icon === `/icons/icon-${num}.png`
+                  newIcon === `/icons/icon-${num}.png`
                     ? "border-blue-500"
                     : "border-gray-300"
                 }`}
@@ -155,6 +174,16 @@ const Mypage = () => {
                 />
               </button>
             ))}
+          </div>
+        )}
+        {isEditing && newIcon && (
+          <div className="flex justify-center mt-4">
+            <button
+              onClick={handleSaveIcon}
+              className="px-4 py-2 bg-blue-500 text-white rounded"
+            >
+              保存
+            </button>
           </div>
         )}
         <hr className="mt-2 border-gray-300" />

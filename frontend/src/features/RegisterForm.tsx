@@ -135,7 +135,7 @@ const RegisterForm = () => {
 
         <button
           type="submit"
-          className="bg-customBlue text-customYellow px-4 py-2 rounded w-full text-xl font-bold"
+          className="bg-customBlue text-customYellow px-4 py-2 rounded w-full text-xl font-bold transform transition-transform duration-150 active:scale-95 active:bg-customBlue-dark"
         >
           登録
         </button>

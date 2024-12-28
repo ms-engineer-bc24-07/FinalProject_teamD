@@ -125,7 +125,7 @@ const Page = () => {
 
       {/* メインコンテンツ */}
       <div className="flex-grow p-5 text-center">
-        <div className="grid grid-cols-2 gap-10 mt-4">
+        <div className="grid grid-cols-2 gap-10 mt-4 ">
           {/* 動的にボタンを表示 */}
           {buttons}
         </div>

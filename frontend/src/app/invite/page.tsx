@@ -28,7 +28,7 @@ const InvitePage = () => {
 
         // バックエンドにグループ情報取得のリクエストを送信
         const response = await axios.get(
-          "http://localhost:8000/family/get_group_info/",  // グループ情報を取得するエンドポイント
+          "http://localhost:8000/api/family/get_group_info/",  // グループ情報を取得するエンドポイント
           {
             headers: {
               Authorization: `Bearer ${idToken}`, // トークンをヘッダーに追加

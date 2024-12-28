@@ -1,8 +1,8 @@
 
 "use client";
 
-import React, { useState } from "react";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import React, { useState, useEffect } from "react";
+import { signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 import { useRouter } from "next/navigation"; // Next.js のルーター
 import { auth } from "../lib/firebase"; // Firebase の設定と初期化をインポート
 import axios from "axios"; // axiosインポート
@@ -14,7 +14,37 @@ const LoginForm = () => {
   });
   const [error, setError] = useState("");
   const [groupInfo, setGroupInfo] = useState<any>(null); // グループ情報を保持するステート
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // ログイン状態を追跡
   const router = useRouter();
+
+// Firebase認証状態の監視
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        setIsLoggedIn(true);
+        try {
+          // Firebaseトークンを取得
+          const idToken = await user.getIdToken();
+          const response = await axios.get(
+            "http://localhost:8000/api/family/get_group_info/", // グループ情報を取得するエンドポイント
+            {
+              headers: {
+                Authorization: `Bearer ${idToken}`, // Firebase トークンを設定
+              },
+            }
+          );
+          setGroupInfo(response.data); // グループ情報をステートに保存
+        } catch (err) {
+          console.error("グループ情報の取得に失敗しました:", err);
+        }
+      } else {
+        setIsLoggedIn(false);
+      }
+    });
+
+  // クリーンアップ関数を返す
+   return () => unsubscribe();
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -33,19 +63,19 @@ const LoginForm = () => {
       await signInWithEmailAndPassword(auth, email, password);
       alert("ログイン成功しました！");
 
-      // ログイン後にグループ情報を取得
-      const idToken = await auth.currentUser?.getIdToken();
-      if (idToken) {
-        const response = await axios.get(
-          "http://localhost:8000/api/family/get_group_info/", // グループ情報を取得するエンドポイント
-          {
-            headers: {
-              Authorization: `Bearer ${idToken}`, // Firebase トークンを設定
-            },
-          }
-        );
-        setGroupInfo(response.data); // グループ情報をステートに保存
-      }
+      // // ログイン後にグループ情報を取得
+      // const idToken = await auth.currentUser?.getIdToken();
+      // if (idToken) {
+      //   const response = await axios.get(
+      //     "http://localhost:8000/api/family/get_group_info/", // グループ情報を取得するエンドポイント
+      //     {
+      //       headers: {
+      //         Authorization: `Bearer ${idToken}`, // Firebase トークンを設定
+      //       },
+      //     }
+      //   );
+      //   setGroupInfo(response.data); // グループ情報をステートに保存
+      // }
 
       router.push("/"); // ホームページにリダイレクト
     } catch (err: unknown) {

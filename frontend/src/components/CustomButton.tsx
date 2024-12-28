@@ -11,7 +11,7 @@ const CustomButton: React.FC<ButtonProps> = ({ text, icon, onClick, className = 
   return (
     <div
       onClick={onClick}
-      className={`flex items-center justify-center bg-customBlue rounded-xl shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer ${className}`}
+      className={`flex items-center justify-center bg-customBlue rounded-xl shadow-md hover:shadow-lg active:scale-95 active:shadow-inner transition-all duration-150 cursor-pointer ${className}`}
       style={{
         width: '20vw', // 画面幅に応じて調整
         height: '8vw',

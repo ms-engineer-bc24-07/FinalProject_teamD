@@ -16,6 +16,7 @@ const Mypage = () => {
   const [isEditing, setIsEditing] = useState<boolean>(false); // 編集モード
   const [members, setMembers] = useState<string[]>([]);
   const [groupName, setGroupName] = useState<string>(""); // グループ名
+  const [isLoggingOut, setIsLoggingOut] = useState<boolean>(false); // ログアウト処理中かを追跡
   const router = useRouter();
 
   useEffect(() => {
@@ -36,6 +37,7 @@ const Mypage = () => {
         setUserName(data.user_name);
         setEmail(data.email);
         setIcon(data.icon_url || "/icons/icon-1.png");
+        
         // グループ情報を取得
         const groupResponse = await axios.get(
           "http://localhost:8000/api/family/get_group_info/",
@@ -49,7 +51,6 @@ const Mypage = () => {
         // グループ名とメンバーを設定
         setGroupName(groupResponse.data.groupName);
         setMembers(groupResponse.data.members);     
-      
       } catch (error) {
         console.error("ユーザー情報の取得中にエラーが発生しました:", error);
       }
@@ -57,15 +58,19 @@ const Mypage = () => {
 
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        fetchUserData(user);
+        if (!isLoggingOut) {
+          fetchUserData(user);
+        }
       } else {
-        console.error("ログインしていません");
-        router.push("/auth/login"); // ログインしていない場合はログインページにリダイレクト
+        if (!isLoggingOut) {
+          console.error("ログインしていません");
+          router.push("/auth/login"); // ログインしていない場合はログインページにリダイレクト
+        }
       }
     });
 
     return () => unsubscribe();
-  }, [router]);
+  }, [router, isLoggingOut]);
 
   const handleIconSelect = async (newIcon: string) => {
     setIcon(newIcon);
@@ -96,10 +101,12 @@ const Mypage = () => {
 
   const handleLogout = async () => {
     try {
+      setIsLoggingOut(true); // ログアウト処理中に切り替え
       await signOut(auth); // ログアウト処理
       router.push("/auth/login"); // ログインページに遷移
     } catch (error) {
       console.error("ログアウト中にエラーが発生しました:", error);
+      setIsLoggingOut(false); // エラーが発生した場合はリセット
     }
   };
 

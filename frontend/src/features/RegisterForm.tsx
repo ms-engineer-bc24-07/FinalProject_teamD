@@ -43,7 +43,7 @@ const RegisterForm = () => {
       const firebase_uid = user.uid;  // Firebase UIDを取得  
 
       // バックエンドにユーザー情報を保存とグループ作成リクエストを送信
-      const response = await axios.post("/api/users/register/", {  // axios を使用して POST リクエストを送信
+      const response = await axios.post("http://localhost:8000/api/users/register/", {  // axios を使用して POST リクエストを送信
         user_name: username, 
         email, 
         password, 

@@ -38,7 +38,7 @@ const Mypage = () => {
         setIcon(data.icon_url || "/icons/icon-1.png");
         // グループ情報を取得
         const groupResponse = await axios.get(
-          "http://localhost:8000/family/get_group_info/",
+          "http://localhost:8000/api/family/get_group_info/",
           {
             headers: {
               Authorization: `Bearer ${idToken}`,

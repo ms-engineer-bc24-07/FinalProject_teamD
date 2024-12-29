@@ -7,7 +7,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slider';
 
 interface FormError {
-  message:string;
+  message: string;
 }
 
 export default function PhotoRegistration() {
@@ -23,7 +23,7 @@ export default function PhotoRegistration() {
     setError(null);
 
     // 見本画像を取得
-    const referenceModel = await axios.get(`http://localhost:8000/api/references/${referenceId}/`)
+    const referenceModel = await axios.get(`http://localhost:8000/api/references/${referenceId}/`);
     setReferenceImageURL(referenceModel.data.image_url);
 
     setCurrentStep(3);
@@ -33,12 +33,6 @@ export default function PhotoRegistration() {
       .then(response => {
         console.log("OK", response.data);
         router.push("/result");
-
-        // const urlObject = {
-        //   pathname: "/result",
-        //   query: { result: String(response.data.result) } // 数値を文字列に変換
-        // };
-        // router.push(urlObject as any);
       })
       .catch(error => {
         console.error("エラー発生", error);
@@ -46,7 +40,20 @@ export default function PhotoRegistration() {
   };
 
   return (
-    <div className="flex-grow w-full">
+    <div className="flex flex-col items-center p-6">
+      {/* ヘッダー部分 */}
+      <div className="flex items-center mb-6">
+        <button
+          onClick={() => router.back()}
+          className="text-customBlue mr-12 transform transition-transform duration-150 active:scale-95 active:bg-customBlue-dark hover:text-customDarkblue"
+        >
+          ← 戻る
+        </button>
+        <h1 className="text-l font-bold text-customBlue text-center flex-grow">
+          写真をアップロード
+        </h1>
+      </div>
+
       {/* エラーメッセージ表示を追加 */}
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
@@ -56,7 +63,7 @@ export default function PhotoRegistration() {
 
       {/* Step 1.2: 写真選択画面 */}
       {currentStep === 1 && (
-        <PhotoSelector 
+        <PhotoSelector
           onPhotoSelect={handlePhotoSelect}
           onCancel={() => {
             setSelectedImage(null);
@@ -65,8 +72,8 @@ export default function PhotoRegistration() {
         />
       )}
 
-      {/* Step 3: 名前入力画面 */}
-      {currentStep === 3 && selectedImage && referenceImageURL &&(
+      {/* Step 3: 写真比較画面 */}
+      {currentStep === 3 && selectedImage && referenceImageURL && (
         <div className="flex-grow p-5">
           <p className="text-center">バックエンド処理中ここにインジケーター出したい</p>
           <ReactCompareSlider

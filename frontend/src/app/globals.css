@@ -23,7 +23,7 @@ html, body {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* 軽い影で立体感を演出 */
   border-radius: 16px; /* 角丸でデザインを整える */
   margin: auto; /* ブラウザ中央に配置 */
-  overflow: hidden; /* はみ出す部分を非表示 */
+  overflow-y: auto; /* コンテンツが高さを超えた場合は縦スクロールを表示 */
 }
 
 /* header, main, footerが収まるようにflexを使用 */

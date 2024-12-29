@@ -15,7 +15,7 @@ const Header = () => {
       {/* 右側: マイページアイコン */}
       <a
         href="/mypage"
-        className="flex items-center text-white hover:text-gray-200 transition duration-200"
+        className="flex items-center text-white hover:text-customYellow transition duration-200"
         aria-label="Go to My Page"
       >
         <FaUser className="h-5 w-5 sm:h-6 sm:w-6" />

@@ -29,8 +29,19 @@ const ReferencePage = () => {
   return (
       <div className="flex-grow p-5 text-center">
         {/* ヘッダー部分 */}
-      <div className="flex flex-col items-start justify-center mt-6"> 
+        <div className="flex items-center  justify-start gap-4">
+        {/* 戻るボタン */}
+        <button
+          onClick={() => router.back()}
+          className="mr-4 text-customBlue transform transition-transform duration-150 active:scale-95 active:bg-customBlue-dark hover:text-customDarkblue"
+        >
+          ← 戻る
+        </button>
+        {/* タイトル */}
         <h1 className="text-2xl font-bold text-customBlue">{reference.reference_name}</h1>
+      </div>
+        
+        {/* 画像表示 */}
         <Image
           src={reference.image_url}  // S3のURLをそのまま渡します
           alt="Reference Image"
@@ -38,7 +49,7 @@ const ReferencePage = () => {
           height={300} // 必要なサイズに設定
           className="mt-4 w-full h-64 object-cover rounded-md"
         />
-      </div>
+      
     
       <div className="flex flex-col items-center gap-4 w-full max-w-md mx-auto">
       

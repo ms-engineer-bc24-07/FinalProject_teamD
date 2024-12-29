@@ -45,7 +45,7 @@ export default function PhotoRegistration() {
       <div className="flex items-center mb-6">
         <button
           onClick={() => router.back()}
-          className="text-customBlue mr-12"
+          className="text-customBlue mr-12 transform transition-transform duration-150 active:scale-95 active:bg-customBlue-dark hover:text-customDarkblue"
         >
           ← 戻る
         </button>

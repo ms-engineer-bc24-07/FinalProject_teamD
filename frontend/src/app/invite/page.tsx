@@ -57,20 +57,20 @@ const InvitePage = () => {
 
   return (
     <div className="flex flex-col items-center p-6">
-      <h1 className="text-2xl font-bold mb-4">家族を招待</h1>
+      <h1 className="text-2xl font-bold text-customBlue mb-4">家族を招待</h1>
       {loading ? (
         <p className="text-gray-700">読み込み中...</p>
       ) : (
         <>
           {message && <p className="mt-4 text-gray-700">{message}</p>}
           {inviteLink && (
-            <div className="mt-4 p-4 bg-gray-100 rounded shadow">
-              <p className="text-gray-800">以下のリンクをコピーして共有してください:</p>
+            <div className="mt-4 p-4 bg-customPink rounded shadow">
+              <p className="font-bold text-customBlue">以下のリンクをコピーして共有してください:</p>
               <input
                 type="text"
                 value={inviteLink}
                 readOnly
-                className="w-full mt-2 p-2 border"
+                className="w-full mt-2 p-2 bg-white text-customBlue"
                 onClick={(e) => {
                   navigator.clipboard.writeText(inviteLink);
                   alert("リンクをコピーしました！");

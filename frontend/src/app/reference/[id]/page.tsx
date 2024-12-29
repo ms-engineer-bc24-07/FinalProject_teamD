@@ -33,7 +33,7 @@ const ReferencePage = () => {
         {/* 戻るボタン */}
         <button
           onClick={() => router.back()}
-          className="mr-4 text-customBlue"
+          className="mr-4 text-customBlue transform transition-transform duration-150 active:scale-95 active:bg-customBlue-dark hover:text-customDarkblue"
         >
           ← 戻る
         </button>

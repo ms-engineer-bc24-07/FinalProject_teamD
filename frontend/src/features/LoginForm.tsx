@@ -88,10 +88,10 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex flex-col items-center justify-center">
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-8 rounded shadow-lg w-96"
+        className="bg-white p-8 rounded w-96"
       >
         <h1 className="text-3xl font-bold mb-6 text-customBlue">ログイン</h1>
         {error && <p className="text-red-600 text-sm mb-4">{error}</p>}
@@ -105,7 +105,7 @@ const LoginForm = () => {
             name="email"
             value={formData.email}
             onChange={handleChange}
-            className="mt-1 p-3 border border-customBlue rounded w-full text-customBlue font-bold bg-customPink focus:ring-2 focus:ring-customBlue focus:outline-none"
+            className="mt-1 p-2 border border-customBlue rounded-full w-full text-customBlue font-bold bg-customPink focus:ring-2 focus:ring-customBlue focus:outline-none"
             placeholder="メールアドレスを入力してください"
           />
         </div>
@@ -119,14 +119,14 @@ const LoginForm = () => {
             name="password"
             value={formData.password}
             onChange={handleChange}
-            className="mt-1 p-3 border border-customBlue rounded w-full text-customBlue font-bold bg-customPink focus:ring-2 focus:ring-customBlue focus:outline-none"
+            className="mt-1 p-2 border border-customBlue rounded-full w-full text-customBlue font-bold bg-customPink focus:ring-2 focus:ring-customBlue focus:outline-none"
             placeholder="パスワードを入力してください"
           />
         </div>
 
         <button
           type="submit"
-          className="bg-customBlue text-customYellow px-4 py-2 rounded w-full text-xl font-bold transform transition-transform duration-150 active:scale-95 active:bg-customBlue-dark"
+          className="bg-customBlue text-customYellow px-4 py-2 rounded-full w-full text-xl font-bold transform transition-transform duration-150 active:scale-95 active:bg-customBlue-dark hover:bg-customLightblue"
         >
           ログイン
         </button>
@@ -136,7 +136,7 @@ const LoginForm = () => {
           アカウントお持ちではない方はこちらへ{" "}
           <a
             href="/auth/register"
-            className="text-customBlue font-semibold hover:underline"
+            className="text-customBlue font-semibold hover:text-customDarkblue"
           >
             新規登録
           </a>

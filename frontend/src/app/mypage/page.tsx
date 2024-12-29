@@ -126,7 +126,7 @@ const handleSaveIcon = async () => {
       <div className="flex items-center w-full max-w-md mb-4">
         <button
           onClick={() => router.back()}
-          className="mr-4 text-customBlue"
+          className="mr-4 text-customBlue transform transition-transform duration-150 active:scale-95 active:bg-customBlue-dark  hover:text-customDarkblue"
         >
           ← 戻る
         </button>
@@ -147,7 +147,7 @@ const handleSaveIcon = async () => {
             />
             <button
               onClick={() => setIsEditing(!isEditing)}
-              className="ml-4 text-blue-500 underline"
+              className="ml-4 text-customBlue transform transition-transform duration-150 active:scale-95 active:bg-customBlue-dark  hover:text-customDarkblue"
             >
               編集
             </button>
@@ -161,7 +161,7 @@ const handleSaveIcon = async () => {
                 onClick={() => handleIconSelect(`/icons/icon-${num}.png`)}
                 className={`border-2 rounded ${
                   newIcon === `/icons/icon-${num}.png`
-                    ? "border-blue-500"
+                    ? "border-customBlue"
                     : "border-gray-300"
                 }`}
               >
@@ -180,7 +180,7 @@ const handleSaveIcon = async () => {
           <div className="flex justify-center mt-4">
             <button
               onClick={handleSaveIcon}
-              className="px-4 py-2 bg-blue-500 text-white rounded"
+              className="px-4 py-2 bg-customBlue text-customYellow font-bold rounded transform transition-transform duration-150 active:scale-95 active:bg-customBlue-dark hover:bg-customLightblue"
             >
               保存
             </button>

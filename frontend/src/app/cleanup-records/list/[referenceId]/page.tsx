@@ -37,7 +37,7 @@ const ComparisonImageListPage = () => {
         {/* 戻るボタン */}
         <button
           onClick={() => window.history.back()}
-          className="absolute left-0 text-customBlue"
+          className="absolute left-0 text-customBlue transform transition-transform duration-150 active:scale-95 active:bg-customBlue-dark hover:text-customDarkblue"
         >
           ← 戻る
         </button>

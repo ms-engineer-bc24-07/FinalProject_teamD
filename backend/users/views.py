@@ -113,7 +113,8 @@ def get_user(request):
             # ユーザー情報を返す
             return JsonResponse({
                 "user_name": user.user_name,
-                "email": user.email
+                "email": user.email,
+                "icon_url": user.icon_url  # 修正ポイント: icon_url を含める
             }, status=200)
 
         except Exception as e:

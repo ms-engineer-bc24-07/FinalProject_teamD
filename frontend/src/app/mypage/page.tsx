@@ -180,7 +180,7 @@ const handleSaveIcon = async () => {
           <div className="flex justify-center mt-4">
             <button
               onClick={handleSaveIcon}
-              className="px-4 py-2 bg-customBlue text-customYellow font-bold rounded transform transition-transform duration-150 active:scale-95 active:bg-customBlue-dark hover:bg-customLightblue"
+              className="px-4 py-2 bg-customBlue text-customYellow font-bold rounded transform transition-transform duration-150 active:scale-95 active:bg-customBlue-dark "
             >
               保存
             </button>

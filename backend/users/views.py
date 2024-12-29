@@ -22,10 +22,10 @@ from django.db.utils import IntegrityError
 import logging
 
 
-# 環境変数からサービスアカウントキーのパスを取得
+# 環境変数からサービスアカウントキーのパスを取得  (消しても良いかも　りな)
 service_account_key_path = '/app/firebase-adminsdk.json'
 
-# サービスアカウントキーを使って初期化
+# サービスアカウントキーを使って初期化  (消しても良いかも　りな)
 if not firebase_admin._apps:
     cred = credentials.Certificate(service_account_key_path)
     firebase_admin.initialize_app(cred)

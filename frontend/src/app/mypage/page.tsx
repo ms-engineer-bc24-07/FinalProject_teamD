@@ -145,9 +145,9 @@ const handleSaveIcon = async () => {
             <Image
               src={icon}
               alt="ユーザーアイコン"
-              width={64}
-              height={64}
-              className="rounded-full border"
+              width={55}
+              height={55}
+              className="rounded-full border-4 border-customBlue"
             />
           ) : (
             // アイコンが未設定の場合、"No Icon" を表示
@@ -169,7 +169,7 @@ const handleSaveIcon = async () => {
             <button
               key={num}
               onClick={() => handleIconSelect(`/icons/icon-${num}.png`)}
-              className={`border-2 rounded ${
+              className={`border-2 rounded-full ${
                 newIcon === `/icons/icon-${num}.png`
                   ? "border-customBlue"
                   : "border-gray-300"

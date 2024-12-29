@@ -120,7 +120,7 @@ const Page = () => {
             alt={`${userName}のアイコン`}
             width={100}
             height={100}
-            className="rounded-full border border-customBlue"
+            className="rounded-full border-4 border-customBlue"
           />
         ) : (
           <div

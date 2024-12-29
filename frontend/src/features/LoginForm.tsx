@@ -142,14 +142,6 @@ const LoginForm = () => {
           </a>
         </p>
       </form>
-
-      {groupInfo && (
-        <div className="mt-6">
-          <h2 className="text-xl font-semibold">グループ情報</h2>
-          <p>グループ名: {groupInfo.groupName}</p>
-          <p>メンバー: {groupInfo.members.join(", ")}</p>
-        </div>
-      )}
     </div>
   );
 };

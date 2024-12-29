@@ -77,12 +77,12 @@ const LoginForm = () => {
     <div className="flex flex-col items-center justify-center">
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-8 rounded w-96"
+        className="bg-white p-8 rounded w-80"
       >
         <h1 className="text-3xl font-bold mb-6 text-customBlue">ログイン</h1>
         {error && <p className="text-red-600 text-sm mb-4">{error}</p>}
-
-        <div className="mb-4">
+  
+        <div className="mb-6">
           <label className="block text-base text-customBlue font-bold">
             メールアドレス
           </label>
@@ -95,8 +95,8 @@ const LoginForm = () => {
             placeholder="メールアドレスを入力してください"
           />
         </div>
-
-        <div className="mb-4">
+  
+        <div className="mb-6">
           <label className="block text-base text-customBlue font-bold">
             パスワード
           </label>
@@ -105,21 +105,20 @@ const LoginForm = () => {
             name="password"
             value={formData.password}
             onChange={handleChange}
-            className="mt-1 p-2 border border-customBlue rounded-full w-full text-customBlue font-bold bg-customPink focus:ring-2 focus:ring-customBlue focus:outline-none"
+            className="mb-3 p-2 border border-customBlue rounded-full w-full text-customBlue font-bold bg-customPink focus:ring-2 focus:ring-customBlue focus:outline-none"
             placeholder="パスワードを入力してください"
           />
         </div>
-
+  
         <button
           type="submit"
           className="bg-customBlue text-customYellow px-4 py-2 rounded-full w-full text-xl font-bold transform transition-transform duration-150 active:scale-95 active:bg-customBlue-dark hover:bg-customLightblue"
         >
           ログイン
         </button>
-
-
-        <p className="text-sm mt-4 text-gray-700">
-          アカウントお持ちではない方はこちらへ{" "}
+  
+        <p className="text-sm mt-3 text-gray-700">
+          アカウントを持っていない方は{" "}
           <a
             href="/auth/register"
             className="text-customBlue font-semibold hover:text-customDarkblue"
@@ -130,6 +129,7 @@ const LoginForm = () => {
       </form>
     </div>
   );
+  
 };
 
 export default LoginForm;

@@ -112,7 +112,7 @@ const Page = () => {
     <div className="flex-grow p-5 text-center">
       {/* 上部のユーザー情報 */}
       <div className="flex justify-between items-center p-6">
-        <div className="text-lg font-bold text-customBlue">{userName}さん</div>
+        <div className="ml-8 text-3xl font-extrabold text-customBlue">{userName}</div>
         <div className="w-25 h-25">
         {userIcon ? (
           <Image

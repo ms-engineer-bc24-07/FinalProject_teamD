@@ -11,7 +11,7 @@ import axios from "../lib/axios"; // axiosをインポート
 
 const Page = () => {
   const [userName, setUserName] = useState<string>("ゲスト");
-  const [userIcon, setUserIcon] = useState<string>("/icons/icon-1.png");
+  const [userIcon, setUserIcon] = useState<string | null>(null); //初期値をnull に
   const [references, setReferences] = useState<any[]>([]); // references を保存するためのステート
 
   const router = useRouter();
@@ -50,6 +50,7 @@ const Page = () => {
         if (response.status === 200) {
           const data = response.data;
           setUserName(data.user_name); // ユーザー名を更新
+          setUserIcon(data.icon_url || null); // ユーザーアイコンを更新
         } else {
           console.error("ユーザー情報の取得に失敗しました。");
         }
@@ -113,13 +114,22 @@ const Page = () => {
       <div className="flex justify-between items-center p-6">
         <div className="text-lg font-bold text-customBlue">{userName}さん</div>
         <div className="w-25 h-25">
+        {userIcon ? (
           <Image
-            src={userIcon || "/icons/icon-1.png"}
+            src={userIcon}
             alt={`${userName}のアイコン`}
             width={100}
             height={100}
-            className="rounded-full"
+            className="rounded-full border border-customBlue"
           />
+        ) : (
+          <div
+            className="w-24 h-24 rounded-full border border-customBlue flex items-center justify-center bg-gray-100"
+            title="アイコン未設定"
+          >
+            <span className="text-customBlue text-sm">No Icon</span>
+          </div>
+        )}
         </div>
       </div>
 

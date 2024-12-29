@@ -12,7 +12,7 @@ import CustomButton from "../../components/CustomButton"; // ボタンコンポ�
 const Mypage = () => {
   const [userName, setUserName] = useState<string>("ゲスト");
   const [email, setEmail] = useState<string>("example@example.com");
-  const [icon, setIcon] = useState<string>("/icons/icon-1.png");
+  const [icon, setIcon] = useState<string | null>(null); // 初期値を null に設定
   const [newIcon, setNewIcon] = useState<string>(""); // 新しいアイコン
   const [isEditing, setIsEditing] = useState<boolean>(false); // 編集モード
   const [members, setMembers] = useState<string[]>([]);
@@ -36,9 +36,10 @@ const Mypage = () => {
       );
 
       const data = response.data;
+      console.log("取得したユーザーデータ:", data); // ここでレスポンスを確認
       setUserName(data.user_name);
       setEmail(data.email);
-      setIcon(data.icon_url || "/icons/icon-1.png");
+      setIcon(data.icon_url || null);// アイコン URL をステートに設定
         
         // グループ情報を取得
       const groupResponse = await axios.get(
@@ -99,9 +100,10 @@ const handleSaveIcon = async () => {
 
       if (response.status === 200) {
         console.log("アイコンが更新されました");
-        setIcon(newIcon); 
+        // setIcon(newIcon); 削除
         setIsEditing(false); 
-        fetchUserData(user); 
+        // 保存成功後に最新データを取得
+        await fetchUserData(user);
       }
     } catch (error) {
       console.error("アイコン更新エラー:", error);
@@ -133,11 +135,13 @@ const handleSaveIcon = async () => {
         <h1 className="text-2xl font-bold text-customBlue">マイページ</h1>
       </div>
 
-      {/* アイコン表示 */}
-      <div className="mb-4 w-full max-w-md">
-        <div className="flex justify-between items-center">
-          <label className="text-base font-medium text-gray-900">アイコン</label>
-          <div className="flex items-center">
+    {/* アイコン表示 */}
+    <div className="mb-4 w-full max-w-md">
+      <div className="flex justify-between items-center">
+        <label className="text-base font-medium text-gray-900">アイコン</label>
+        <div className="flex items-center">
+          {icon ? (
+            // アイコンが設定されている場合、画像を表示
             <Image
               src={icon}
               alt="ユーザーアイコン"
@@ -145,49 +149,56 @@ const handleSaveIcon = async () => {
               height={64}
               className="rounded-full border"
             />
-            <button
-              onClick={() => setIsEditing(!isEditing)}
-              className="ml-4 text-customBlue transform transition-transform duration-150 active:scale-95 active:bg-customBlue-dark  hover:text-customDarkblue"
-            >
-              編集
-            </button>
-          </div>
+          ) : (
+            // アイコンが未設定の場合、"No Icon" を表示
+          <div className="w-16 h-16 rounded-full border flex items-center justify-center text-gray-500">
+          No Icon
         </div>
-        {isEditing && (
-          <div className="grid grid-cols-4 gap-2 mt-2">
-            {[1, 2, 3, 4].map((num) => (
-              <button
-                key={num}
-                onClick={() => handleIconSelect(`/icons/icon-${num}.png`)}
-                className={`border-2 rounded ${
-                  newIcon === `/icons/icon-${num}.png`
-                    ? "border-customBlue"
-                    : "border-gray-300"
-                }`}
-              >
-                <Image
-                  src={`/icons/icon-${num}.png`}
-                  alt={`アイコン ${num}`}
-                  width={50}
-                  height={50}
-                  className="rounded-full"
-                />
-              </button>
-            ))}
-          </div>
-        )}
-        {isEditing && newIcon && (
-          <div className="flex justify-center mt-4">
-            <button
-              onClick={handleSaveIcon}
-              className="px-4 py-2 bg-customBlue text-customYellow font-bold rounded transform transition-transform duration-150 active:scale-95 active:bg-customBlue-dark "
-            >
-              保存
-            </button>
-          </div>
-        )}
-        <hr className="mt-2 border-gray-300" />
+          )}
+          <button
+            onClick={() => setIsEditing(!isEditing)}
+            className="ml-4 text-customBlue transform transition-transform duration-150 active:scale-95 active:bg-customBlue-dark  hover:text-customDarkblue"
+          >
+            編集
+          </button>
+        </div>
       </div>
+      {isEditing && (
+        <div className="grid grid-cols-4 gap-2 mt-2">
+          {[1, 2, 3, 4].map((num) => (
+            <button
+              key={num}
+              onClick={() => handleIconSelect(`/icons/icon-${num}.png`)}
+              className={`border-2 rounded ${
+                newIcon === `/icons/icon-${num}.png`
+                  ? "border-customBlue"
+                  : "border-gray-300"
+              }`}
+            >
+              <Image
+                src={`/icons/icon-${num}.png`}
+                alt={`アイコン ${num}`}
+                width={50}
+                height={50}
+                className="rounded-full"
+              />
+            </button>
+          ))}
+        </div>
+      )}
+      {isEditing && newIcon && (
+        <div className="flex justify-center mt-4">
+          <button
+            onClick={handleSaveIcon}
+            className="px-4 py-2 bg-customBlue text-customYellow font-bold rounded transform transition-transform duration-150 active:scale-95 active:bg-customBlue-dark "
+          >
+            保存
+          </button>
+        </div>
+      )}
+      <hr className="mt-2 border-gray-300" />
+    </div>
+
 
       {/* ユーザー名 */}
       <div className="mb-4 w-full max-w-md">

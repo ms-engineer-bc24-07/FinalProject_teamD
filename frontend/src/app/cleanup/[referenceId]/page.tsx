@@ -7,6 +7,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slider';
 import { createImageFormData } from '@/utils/createImageData';
 import { auth } from '@/lib/firebase';
+import LinearColor from '@/features/LinearColor';
 
 interface FormError {
   message: string;
@@ -21,7 +22,6 @@ export default function PhotoRegistration() {
   const router = useRouter();
 
   const handlePhotoSelect = async (imageData: string) => {
-
     setSelectedImage(imageData);
     setError(null);
 
@@ -105,10 +105,11 @@ export default function PhotoRegistration() {
       {/* Step 3: 写真比較画面 */}
       {currentStep === 3 && selectedImage && referenceImageURL && (
         <div className="flex-grow p-5">
-          <p className="text-center">バックエンド処理中ここにインジケーター出したい</p>
+          <LinearColor />
           <ReactCompareSlider
             itemOne={<ReactCompareSliderImage src={referenceImageURL} srcSet="" alt="Image one" />}
             itemTwo={<ReactCompareSliderImage src={selectedImage} srcSet="" alt="Image two" />}
+            className="mt-4"
           />
         </div>
       )}

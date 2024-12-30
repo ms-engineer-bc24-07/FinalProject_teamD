@@ -8,6 +8,7 @@ from comparison_images.models import ComparisonImage
 from comparison_images.serializers import ComparisonImageSerializer
 import boto3
 from django.conf import settings
+from references.models import Reference
 
 # 比較画像のリストを取得するためのビュー
 class ComparisonImageListView(generics.ListAPIView):
@@ -28,6 +29,7 @@ class ComparisonImageDetailView(generics.RetrieveAPIView):
     queryset = ComparisonImage.objects.all()
     serializer_class = ComparisonImageSerializer
 
+# 比較画像をS3にアップしてDBに登録
 class ComparisonImageCreateView(APIView):
     def post(self, request, *args, **kwargs):
         image_file = request.FILES.get('image')
@@ -71,11 +73,15 @@ class ComparisonImageCreateView(APIView):
         # アップロードされた画像のURLを生成
         image_url = f"https://{bucket_name}.s3.{settings.AWS_S3_REGION_NAME}.amazonaws.com/{object_name}"
 
-        reference = ComparisonImage.objects.create(
+        # reference_idでDBの見本画像を検索
+        reference_instance = Reference.objects.get(id=reference_id)
+
+        # DBに比較画像を登録
+        comparison_img_instance = ComparisonImage.objects.create(
             image_url=image_url,
-            reference_id=reference_id,
+            reference=reference_instance,
             user=user       
         )
 
-        serializer = ComparisonImageSerializer(reference)
+        serializer = ComparisonImageSerializer(comparison_img_instance)
         return Response(serializer.data, status=status.HTTP_201_CREATED)

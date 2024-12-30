@@ -25,47 +25,48 @@ export default function PhotoRegistration() {
     setSelectedImage(imageData);
     setError(null);
 
-    // 見本画像を取得
-    const referenceModel = await axios.get(`http://localhost:8000/api/references/${referenceId}/`)
-    setReferenceImageURL(referenceModel.data.image_url);
+    try {
+      // 見本画像を取得
+      const referenceModel = await axios.get(`http://localhost:8000/api/references/${referenceId}/`);
+      const referenceImgUrl = referenceModel.data.image_url;
+      setReferenceImageURL(referenceImgUrl);
 
-    // 見本画像と片付け実施画像をスライダーで比較できるコンポーネントを表示する
-    setCurrentStep(3);
+      // 見本画像と片付け実施画像をスライダーで比較できるコンポーネントを表示する
+      setCurrentStep(3);
 
-    const user = auth.currentUser;
-    if (!user) {
-      setError({ message: 'ログインしていません。' });
-      return;
+      const user = auth.currentUser;
+      if (!user) {
+        setError({ message: 'ログインしていません。' });
+        return;
+      }
+      const idToken = await user.getIdToken();
+      const firebaseUid = user.uid;
+      
+      const formData = await createImageFormData(imageData, firebaseUid, undefined, referenceModel.data.id)
+
+      // 比較画像をS3にアップしてDBに登録
+      const uploadResponse = await axios.post('http://localhost:8000/api/comparison-images/upload/', formData, {
+        headers: { 
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${idToken}`  // トークンをヘッダーに追加
+        },
+      });
+      console.log('Success ComparisonImg:', uploadResponse.data);
+
+      // スコアの計算とDB登録
+      const scoreResponse = await axios.post('http://localhost:8000/api/scores/',
+        {
+          reference_image_url: referenceImgUrl,
+          comparison_img_id: uploadResponse.data.id,
+        }
+      )
+      console.log('Success Score:', scoreResponse.data.score);
+      router.push("/result");
+      
+    } catch (error) {
+      console.error("エラーが発生しました", error);
+      setError({ message: 'スコア取得に失敗しました。もう一度試してください。' });
     }
-    const idToken = await user.getIdToken();
-    const firebaseUid = user.uid;  // Firebase UIDを取得
-    
-    const formData = await createImageFormData(imageData, firebaseUid, undefined, referenceModel.data.id)
-
-    // 比較画像をS3にアップ
-    const response = await axios.post('http://localhost:8000/api/comparison-images/upload/', formData, {
-      headers: { 
-        'Content-Type': 'multipart/form-data',
-        Authorization: `Bearer ${idToken}`  // トークンをヘッダーに追加
-      },
-    });
-
-
-    // スコアの計算
-    // await axios.post('http://localhost:8000/api/scores/')
-    //   .then(response => {
-    //     console.log("OK", response.data);
-    //     router.push("/result");
-
-        // const urlObject = {
-        //   pathname: "/result",
-        //   query: { result: String(response.data.result) } // 数値を文字列に変換
-        // };
-        // router.push(urlObject as any);
-      // })
-      // .catch(error => {
-      //   console.error("エラー発生", error);
-      // });
   };
 
   return (

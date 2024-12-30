@@ -32,6 +32,6 @@ export const createImageFormData = async (
 
     return formData;
   } catch (error) {
-    throw new Error('Failed to create FormData.');
+    throw new Error(`Failed to create FormData.${error}`);
   }
 };

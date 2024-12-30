@@ -10,7 +10,7 @@ const ToppageButton: React.FC<ToppageButtonProps> = ({ text, icon, onClick }) =>
   return (
     <div
       onClick={onClick}
-      className="relative bg-customBlue p-2 sm:p-4 shadow-lg rounded-3xl cursor-pointer hover:shadow-2xl transition"
+      className="relative bg-customBlue p-2 sm:p-4 shadow-lg rounded-3xl cursor-pointer hover:shadow-2xl active:scale-95 active:shadow-inner transition-all duration-150"
       style={{ width: '120px', height: '120px', maxWidth: '150px', maxHeight: '150px' }}
     >
       {/* ピンクの小さい四角 */}

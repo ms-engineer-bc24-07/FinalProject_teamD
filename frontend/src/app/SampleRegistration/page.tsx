@@ -1,21 +1,23 @@
-"use client"
+"use client";
 
-import { useState } from 'react';
-import Image from 'next/image';
+import { useState } from "react";
+import Image from "next/image";
 import axios from "@/lib/axios";
 import PhotoSelector from '@/components/PhotoSelector';
 import CustomButton from "@/components/CustomButton";
 import { auth } from "@/lib/firebase";
 import { createImageFormData } from '@/utils/createImageData';
+import { useRouter } from "next/navigation";
 
 interface FormError {
-  message:string;
+  message: string;
 }
 export default function PhotoRegistration() {
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [referenceName, setReferenceName] = useState('');
   const [error, setError] = useState<FormError | null>(null);
+  const router = useRouter(); // 修正：router を定義
 
   const handlePhotoSelect = (imageData: string) => {
     setSelectedImage(imageData);
@@ -25,14 +27,14 @@ export default function PhotoRegistration() {
 
   const handleSubmit = async () => {
     if (!selectedImage || !referenceName.trim()) {
-      setError({ message: '画像と名前を入力してください' });
+      setError({ message: "画像と名前を入力してください" });
       return;
     }
-  
+
     try {
       const user = auth.currentUser;
       if (!user) {
-        setError({ message: 'ログインしていません。' });
+        setError({ message: "ログインしていません。" });
         return;
       }
       const idToken = await user.getIdToken();
@@ -40,30 +42,34 @@ export default function PhotoRegistration() {
       
       const formData = await createImageFormData(selectedImage, firebaseUid, referenceName, undefined)
 
-      const response = await axios.post('http://localhost:8000/api/references/upload/', formData, {
-        headers: { 
-          'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${idToken}`  // トークンをヘッダーに追加
+      // firebase_uidをformDataに追加
+      formData.append("firebase_uid", firebaseUid); // user_id ではなく firebase_uid として送信
+
+      const response = await axios.post("http://localhost:8000/api/references/upload/", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${idToken}`, // トークンをヘッダーに追加
         },
       });
-  
-      console.log('Success:', response.data);
+
+      console.log("Success:", response.data);
 
       // アップロードが成功したら、currentStepを4に変更して完了画面に遷移
       setCurrentStep(4);
       
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        console.error('Axios Error:', {
+        console.error("Axios Error:", {
           message: error.message,
           response: error.response?.data,
-          status: error.response?.status
+          status: error.response?.status,
+          headers: error.response?.headers, // 追加
         });
       } else {
-        console.error('Unknown Error:', error);
+        console.error("Unknown Error:", error);
       }
     }
-};
+  };
 
   return (
     <div className="flex flex-col px-5 py-6">
@@ -105,7 +111,7 @@ export default function PhotoRegistration() {
               value={referenceName}
               onChange={(e) => setReferenceName(e.target.value)}
               placeholder="名前を付けて保存"
-              className="w-full p-2 border rounded"
+              className="mt-1 p-2 border border-customBlue rounded-full w-full text-customBlue font-bold bg-customPink focus:ring-2 focus:ring-customBlue focus:outline-none"
             />
           </div>
           <div className="flex flex-col gap-2 items-center">
@@ -116,12 +122,14 @@ export default function PhotoRegistration() {
 
       {/* 完了画面 */}
       {currentStep === 4 && (
-        <div className="bg-white p-4 rounded-lg shadow w-full max-w-md mx-auto">
-          <p className="text-center text-xl">登録できました！</p>
+        <div className="bg-customPink from-pink-500 via-yellow-500 to-blue-500 animate-gradient p-4 rounded-lg shadow w-full max-w-md mx-auto transform transition-transform duration-500 ease-out scale-110">
+          <div className="text-center text-xl font-bold text-customBlue animate-bounce">
+            🎉 登録できました！ 🎉
+          </div>
+          <p className="text-center text-customBlue mt-2 animate-pulse">よくできました！✨</p>
+
         </div>
       )}
     </div>
   );
-};
-
-
+}

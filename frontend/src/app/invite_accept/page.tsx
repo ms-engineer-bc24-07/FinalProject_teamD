@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation"; // useRouterを追加
 import { auth } from "../../lib/firebase";
 import { createUserWithEmailAndPassword, updateProfile, getIdToken } from "firebase/auth";
 import axios from "../../lib/axios";
@@ -14,12 +14,13 @@ const InviteAcceptPage = () => {
   const [message, setMessage] = useState("");
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
+  const router = useRouter(); // useRouterを使用
 
   useEffect(() => {
     // トークンの検証
     const validateToken = async () => {
       try {
-        const response = await axios.post("http://localhost:8000/family/validate_invite/", { token });
+        const response = await axios.post("http://localhost:8000/api/family/validate_invite/", { token });
         if (response.status === 200) {
           setGroupName(response.data.groupName); // グループ名を取得
           setMessage("トークンが有効です。登録を進めてください。");
@@ -57,41 +58,46 @@ const InviteAcceptPage = () => {
       });
 
       setMessage(`登録が完了しました！「${groupName}」グループに参加しました。`);
+
+      // 2秒後にログインページにリダイレクト
+      setTimeout(() => {
+        router.push("/auth/login");
+      }, 2000);
     } catch (error) {
       setMessage("登録に失敗しました。もう一度お試しください。");
       console.error(error);
     }
   };
-   
+
   return (
     <div className="flex flex-col items-center p-6">
-      <h1 className="text-2xl font-bold mb-4">招待を受け入れる</h1>
-      {message && <p className="mb-4 text-gray-700">{message}</p>}
-      {groupName && <p className="mb-4 text-gray-700">グループ名: {groupName}</p>}
+      <h1 className="text-2xl font-bold mb-4 text-customBlue">グループに参加する</h1>
+      {/* {message && <p className="mb-4 text-gray-700">{message}</p>} */}
+      {groupName && <p className="mb-4 font-bold text-customBlue">グループ名: {groupName}</p>}
       <input
         type="text"
         value={userName}
         onChange={(e) => setUserName(e.target.value)}
         placeholder="ユーザー名"
-        className="mb-4 border p-2 w-full max-w-md"
+        className="mb-4 p-2 border border-customBlue rounded-full w-full text-customBlue font-bold bg-customPink focus:ring-2 focus:ring-customBlue focus:outline-none"
       />
       <input
         type="email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         placeholder="E-mail"
-        className="mb-4 border p-2 w-full max-w-md"
+        className="mb-4 p-2 border border-customBlue rounded-full w-full text-customBlue font-bold bg-customPink focus:ring-2 focus:ring-customBlue focus:outline-none"
       />
       <input
         type="password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         placeholder="パスワード"
-        className="mb-4 border p-2 w-full max-w-md"
+        className="mb-4 p-2 border border-customBlue rounded-full w-full text-customBlue font-bold bg-customPink focus:ring-2 focus:ring-customBlue focus:outline-none"
       />
       <button
         onClick={handleRegister}
-        className="bg-blue-500 text-white px-4 py-2 rounded w-full max-w-md"
+        className="bg-customBlue text-customYellow px-4 py-2 rounded-full w-full text-xl font-bold transform transition-transform duration-150 active:scale-95 active:bg-customBlue-dark hover:bg-customLightblue"
       >
         登録
       </button>

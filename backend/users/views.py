@@ -13,7 +13,7 @@ from rest_framework.permissions import IsAuthenticated
 from .models import User
 from rest_framework import status
 from family.models import FamilyGroup, FamilyMember, Invitation
-from firebase_admin import auth
+from firebase_admin import auth as firebase_auth
 import os 
 import firebase_admin
 from firebase_admin import credentials
@@ -22,10 +22,10 @@ from django.db.utils import IntegrityError
 import logging
 
 
-# 環境変数からサービスアカウントキーのパスを取得
+# 環境変数からサービスアカウントキーのパスを取得  (消しても良いかも　りな)
 service_account_key_path = '/app/firebase-adminsdk.json'
 
-# サービスアカウントキーを使って初期化
+# サービスアカウントキーを使って初期化  (消しても良いかも　りな)
 if not firebase_admin._apps:
     cred = credentials.Certificate(service_account_key_path)
     firebase_admin.initialize_app(cred)
@@ -113,7 +113,8 @@ def get_user(request):
             # ユーザー情報を返す
             return JsonResponse({
                 "user_name": user.user_name,
-                "email": user.email
+                "email": user.email,
+                "icon_url": user.icon_url  # 修正ポイント: icon_url を含める
             }, status=200)
 
         except Exception as e:
@@ -272,16 +273,41 @@ def accept_invite(request):
 
 
 class UpdateIconAPIView(APIView):
-    permission_classes = [IsAuthenticated]
-    # authentication_classes = [TokenAuthentication]
+    # permission_classes = [IsAuthenticated]  # 一旦コメントアウト
 
     def post(self, request):
-        user = request.user  # 現在ログインしているユーザーを取得
-        icon_url = request.data.get("icon")  # リクエストボディからアイコンURLを取得
+        print("POST リクエスト受信:", request.data)
+        try:
+            # Firebaseトークンからユーザーを取得
+            token = request.headers.get("Authorization", "").split(" ")[1]
+            print("受信したトークン:", token)
 
-        if icon_url:
-            user.icon_url = icon_url  # アイコンURLを更新
+            decoded_token = firebase_auth.verify_id_token(token)
+            firebase_uid = decoded_token.get("uid")
+            print("Firebase UID:", firebase_uid)
+
+            # Firebase UIDからユーザーを取得
+            user = User.objects.filter(firebase_uid=firebase_uid).first()
+            if not user:
+                print("ユーザーが見つかりません")
+                return Response({"error": "ユーザーが見つかりません。"}, status=status.HTTP_404_NOT_FOUND)
+
+            # リクエストデータからアイコンURLを取得
+            icon_url = request.data.get("icon")
+            if not icon_url:
+                print("アイコンURLが提供されていません")
+                return Response({"error": "アイコンURLが提供されていません。"}, status=status.HTTP_400_BAD_REQUEST)
+
+            # ユーザーのアイコンを更新
+            user.icon_url = icon_url
             user.save()
-            return Response({"message": "アイコンが更新されました"}, status=status.HTTP_200_OK)
-        else:
-            return Response({"error": "アイコンURLが提供されていません"}, status=status.HTTP_400_BAD_REQUEST)
+            print(f"ユーザー {user.user_name} のアイコンを {icon_url} に更新しました")
+
+            return Response({"message": "アイコンが更新されました。"}, status=status.HTTP_200_OK)
+
+        except firebase_auth.AuthError as e:
+            print("認証エラー:", e)
+            return Response({"error": f"認証エラー: {str(e)}"}, status=status.HTTP_403_FORBIDDEN)
+        except Exception as e:
+            print("エラーが発生しました:", e)
+            return Response({"error": f"エラーが発生しました: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

@@ -61,6 +61,7 @@ export default function PhotoRegistration() {
         }
       )
       console.log('Success Score:', scoreResponse.data.score);
+      localStorage.setItem("score", scoreResponse.data.score);
       router.push("/result");
       
     } catch (error) {

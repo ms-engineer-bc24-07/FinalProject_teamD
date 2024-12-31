@@ -15,20 +15,19 @@ from rest_framework import status
 from family.models import FamilyGroup, FamilyMember, Invitation
 from firebase_admin import auth as firebase_auth
 import os 
-import firebase_admin
-from firebase_admin import credentials
+
 from django.db import transaction
 from django.db.utils import IntegrityError
 import logging
 
 
-# 環境変数からサービスアカウントキーのパスを取得  (消しても良いかも　りな)
-service_account_key_path = '/app/firebase-adminsdk.json'
+# # 環境変数からサービスアカウントキーのパスを取得  (消しても良いかも　りな)
+# service_account_key_path = '/app/firebase-adminsdk.json'
 
-# サービスアカウントキーを使って初期化  (消しても良いかも　りな)
-if not firebase_admin._apps:
-    cred = credentials.Certificate(service_account_key_path)
-    firebase_admin.initialize_app(cred)
+# # サービスアカウントキーを使って初期化  (消しても良いかも　りな)
+# if not firebase_admin._apps:
+#     cred = credentials.Certificate(service_account_key_path)
+#     firebase_admin.initialize_app(cred)
 
 
 @method_decorator(csrf_exempt, name='dispatch')  # CSRFを無効化（必要ならToken認証を追加）
@@ -311,3 +310,26 @@ class UpdateIconAPIView(APIView):
         except Exception as e:
             print("エラーが発生しました:", e)
             return Response({"error": f"エラーが発生しました: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class GetUserGroup(APIView):
+    # permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        try:
+            # 現在認証されたユーザーを取得
+            user = request.user
+
+            # ユーザーの所属グループを取得
+            family_member = user.familymember_set.first()  # 最初の関連するFamilyMemberを取得
+            if not family_member:
+                return Response({"error": "グループに所属していません。"}, status=status.HTTP_400_BAD_REQUEST)
+
+            group = family_member.group  # ユーザーが所属しているグループ
+            references = group.references.all()  # グループに関連する参考画像（見本写真）を取得
+
+            # 見本写真の情報を返す
+            reference_data = [{"id": ref.id, "name": ref.reference_name, "image_url": ref.image_url} for ref in references]
+            return Response(reference_data, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

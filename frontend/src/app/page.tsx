@@ -16,6 +16,20 @@ const Page = () => {
 
   const router = useRouter();
 
+  const fetchReferences = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:8000/api/references/fetch_references/"
+      );
+      if (response.status === 200) {
+        console.log("Fetched References:", response.data); // デバッグ用
+        setReferences(response.data); // 取得したreferencesをstateに保存
+      }
+    } catch (error) {
+      console.error("Error fetching references:", error);
+    }
+  };
+
   useEffect(() => {
     const checkAuth = () => {
       // Firebaseの認証状態を監視
@@ -59,53 +73,48 @@ const Page = () => {
       }
     };
 
-    const fetchReferences = async () => {
-      try {
-        const response = await axios.get(
-          "http://localhost:8000/api/references/"
-        );
-        if (response.status === 200) {
-          setReferences(response.data); // 取得したreferencesをstateに保存
-        }
-      } catch (error) {
-        console.error("Error fetching references:", error);
-      }
-    };
-
     const unsubscribe = checkAuth();
     fetchReferences();
 
     return () => unsubscribe(); // コンポーネントがアンマウントされたら監視を停止
   }, [router]);
 
-  // `references` のidに基づいて、ページボタンを作成
-  const getReferenceButton = (id: number) => {
-    const reference = references.find((ref) => ref.id === id);
+  // **デバッグ用: referencesのステート監視**
+  useEffect(() => {
+    console.log("Current References State:", references); // referencesの内容をコンソールに出力
+  }, [references]); // referencesが更新されるたびに実行
 
+
+  //ここで問題が発生した（getReferenceButtonのロジックが意図した動作をしていない）
+  // `references` のidに基づいて、ページボタンを作成
+  const getReferenceButton = (reference: any | null, id: number) => {
     if (reference) {
+      // 見本写真が登録済みの場合
       return (
         <ToppageButton
           key={reference.id}
           text={reference.reference_name}
-          onClick={() => router.push(`/reference/${reference.id}`)} // 動的に遷移
+          onClick={() => router.push(`/reference/${reference.id}`)}
         />
       );
     } else {
+      // 見本写真が未登録の場合
       return (
         <ToppageButton
           key={`no-reference-${id}`}
           icon={<FaCamera className="text-customBlue text-4xl" />}
-          onClick={() => router.push(`/SampleRegistration`)} // 参考写真がない場合、カメラアイコンを表示
+          onClick={() => router.push(`/SampleRegistration`)}
         />
       );
     }
   };
 
   // ボタンが常に4つ表示されるように、足りない分は見本写真登録ボタンを追加
-  const buttonCount = 4;
   const buttons = [];
-  for (let i = 1; i <= buttonCount; i++) {
-    buttons.push(getReferenceButton(i));
+  for (let i = 0; i < 4; i++) {
+    // referencesの中からi番目の見本写真を取得
+    const reference = references[i] || null;
+    buttons.push(getReferenceButton(reference, i + 1)); // IDは1から始まると仮定
   }
 
   return (

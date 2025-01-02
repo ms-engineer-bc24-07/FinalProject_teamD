@@ -2,9 +2,11 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.conf import settings
+from firebase_admin import auth as firebase_auth
 from references.models import Reference
 from references.serializers import ReferenceSerializer
 from users.models import User  # Userモデルをインポート
+from family.models import FamilyMember, FamilyGroup
 import boto3
 
 
@@ -80,3 +82,41 @@ class ReferenceView(APIView):
 
         serializer = ReferenceSerializer(reference)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+class GroupReferencesView(APIView):
+    def get(self, request):
+        try:
+            # Firebaseトークンの検証
+            auth_header = request.headers.get('Authorization')
+            if not auth_header or not auth_header.startswith('Bearer '):
+                return Response({"error": "認証トークンが必要です"}, status=status.HTTP_401_UNAUTHORIZED)
+            
+            token = auth_header.split(' ')[1]
+            decoded_token = firebase_auth.verify_id_token(token)
+            firebase_uid = decoded_token.get('uid')
+
+            # ユーザーの取得
+            user = User.objects.filter(firebase_uid=firebase_uid).first()
+            if not user:
+                return Response({"error": "ユーザーが見つかりません"}, status=status.HTTP_404_NOT_FOUND)
+
+            # ユーザーが所属するグループを取得
+            memberships = FamilyMember.objects.filter(user=user).values_list('group', flat=True)
+            owned_groups = FamilyGroup.objects.filter(owner=user).values_list('id', flat=True)
+            
+            # 所属グループとオーナーグループのIDを結合
+            all_group_ids = list(set(list(memberships) + list(owned_groups)))
+            print(f"All Group IDs: {all_group_ids}")  # デバッグ用
+
+            
+            # グループに関連付けられた参照画像を取得
+            groups = FamilyGroup.objects.filter(id__in=all_group_ids)
+            references = Reference.objects.filter(groups__in=groups).distinct()
+            print(f"All Group IDs: {all_group_ids}")  # デバッグ用
+
+            
+            serializer = ReferenceSerializer(references, many=True)
+            return Response(serializer.data)
+
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

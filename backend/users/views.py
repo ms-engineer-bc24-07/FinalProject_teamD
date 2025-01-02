@@ -18,17 +18,10 @@ import os
 
 from django.db import transaction
 from django.db.utils import IntegrityError
+from firebase_admin.exceptions import FirebaseError 
+
 import logging
-
-
-# # 環境変数からサービスアカウントキーのパスを取得  (消しても良いかも　りな)
-# service_account_key_path = '/app/firebase-adminsdk.json'
-
-# # サービスアカウントキーを使って初期化  (消しても良いかも　りな)
-# if not firebase_admin._apps:
-#     cred = credentials.Certificate(service_account_key_path)
-#     firebase_admin.initialize_app(cred)
-
+logger = logging.getLogger(__name__)
 
 @method_decorator(csrf_exempt, name='dispatch')  # CSRFを無効化（必要ならToken認証を追加）
 def register_user(request):
@@ -90,6 +83,7 @@ def register_user(request):
             return JsonResponse({"error": str(e)}, status=500)
     else:
         return JsonResponse({"error": "Invalid HTTP method."}, status=405) 
+
 @csrf_exempt
 def get_user(request):
     """
@@ -97,31 +91,39 @@ def get_user(request):
     """
     if request.method == 'POST':
         try:
-            data = json.loads(request.body)
-            email = data.get('email')
+            # Authorizationヘッダーからトークンを取得
+            token = request.headers.get("Authorization")
+            print("受信したトークン:", token)  # ここでトークンを出力して確認
 
-            # メールアドレスが提供されていない場合
-            if not email:
-                return JsonResponse({"error": "Email is required."}, status=400)
+            if token is None:
+                return JsonResponse({"error": "認証トークンが提供されていません。"}, status=401)
 
-            # データベースからユーザーを検索
-            user = User.objects.filter(email=email).first()
+            # "Bearer " プレフィックスを削除してトークンを取り出す
+            token = token.split(" ")[1] if token.startswith("Bearer ") else token
+
+            # トークンを検証してFirebase UIDを取得
+            decoded_token = firebase_auth.verify_id_token(token)
+            firebase_uid = decoded_token.get("uid")  # Firebase UIDを取得
+            print(f"Firebase UID: {firebase_uid}")  # firebase_uidを出力して確認
+
+            # Firebase UIDからユーザーを取得
+            user = User.objects.filter(firebase_uid=firebase_uid).first()
             if not user:
-                return JsonResponse({"error": "User not found."}, status=404)
+                return JsonResponse({"error": "ユーザーが見つかりません。"}, status=404)
 
             # ユーザー情報を返す
             return JsonResponse({
                 "user_name": user.user_name,
                 "email": user.email,
-                "icon_url": user.icon_url  # 修正ポイント: icon_url を含める
+                "icon_url": user.icon_url
             }, status=200)
 
+        except FirebaseError as e:  # Firebaseのエラーハンドリングを修正
+            return JsonResponse({"error": f"Firebase error: {str(e)}"}, status=500)
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
     else:
         return JsonResponse({"error": "Invalid HTTP method."}, status=405)
-
-logger = logging.getLogger(__name__)
 
 @csrf_exempt
 def accept_invite(request):
@@ -195,7 +197,7 @@ def accept_invite(request):
         logger.error("Invalid HTTP method")
         return JsonResponse({"error": "Invalid HTTP method."}, status=405)
 
-logger = logging.getLogger(__name__)
+
 
 
 @csrf_exempt
@@ -311,25 +313,3 @@ class UpdateIconAPIView(APIView):
             print("エラーが発生しました:", e)
             return Response({"error": f"エラーが発生しました: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-class GetUserGroup(APIView):
-    # permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        try:
-            # 現在認証されたユーザーを取得
-            user = request.user
-
-            # ユーザーの所属グループを取得
-            family_member = user.familymember_set.first()  # 最初の関連するFamilyMemberを取得
-            if not family_member:
-                return Response({"error": "グループに所属していません。"}, status=status.HTTP_400_BAD_REQUEST)
-
-            group = family_member.group  # ユーザーが所属しているグループ
-            references = group.references.all()  # グループに関連する参考画像（見本写真）を取得
-
-            # 見本写真の情報を返す
-            reference_data = [{"id": ref.id, "name": ref.reference_name, "image_url": ref.image_url} for ref in references]
-            return Response(reference_data, status=status.HTTP_200_OK)
-
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

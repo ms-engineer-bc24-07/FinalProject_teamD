@@ -4,7 +4,7 @@ from firebase_admin import auth as firebase_auth
 from django.contrib.auth.models import User
 from django.contrib.auth.backends import BaseBackend
 from django.core.exceptions import ObjectDoesNotExist
-import firebase  # 初期化コードをインポート
+
 
 class FirebaseAuthenticationBackend(BaseBackend):
     def authenticate(self, request, token=None):

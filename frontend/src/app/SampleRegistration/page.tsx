@@ -134,12 +134,13 @@ export default function PhotoRegistration() {
 
       {/* 完了画面 */}
       {currentStep === 4 && (
-        <div className="bg-customPink from-pink-500 via-yellow-500 to-blue-500 animate-gradient p-4 rounded-lg shadow w-full max-w-md mx-auto transform transition-transform duration-500 ease-out scale-110">
-          <div className="text-center text-xl font-bold text-customBlue animate-bounce">
-            🎉 登録できました！ 🎉
+        <div className="bg-white from-pink-500 via-yellow-500 to-blue-500 animate-gradient p-4 rounded-lg w-full max-w-md mx-auto transform transition-transform duration-500 ease-out scale-110">
+          <div className="text-center text-xl font-bold text-customBlue">
+            登録できました！ 
           </div>
-          <p className="text-center text-customBlue mt-2 animate-pulse">よくできました！✨</p>
-
+          <div className="mt-4 flex justify-center">
+            <CustomButton text="トップページに戻る" onClick={() => router.push("/")} />
+          </div>
         </div>
       )}
     </div>

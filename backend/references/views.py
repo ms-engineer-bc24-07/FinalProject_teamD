@@ -43,11 +43,31 @@ class ReferenceView(APIView):
 
         # Firebase UIDを使ってユーザーを検索
         user = User.objects.filter(firebase_uid=firebase_uid).first()
+        # デバッグ：ユーザーの確認
+        if user:
+            print(f"User found: {user.user_name}")
+        else:
+            print(f"User with firebase_uid {firebase_uid} not found.")
+        
         if not user:
             return Response(
                 {"error": "指定されたFirebase UIDのユーザーが存在しません"},
                 status=status.HTTP_404_NOT_FOUND,
             )
+        
+        # ユーザーが所属するFamilyGroupを取得
+        family_group = FamilyMember.objects.filter(user=user).first().group  # 所属グループを取得
+        # デバッグ：グループ情報
+        if family_group:
+            print(f"User's family group: {family_group.name}")
+        else:
+            print(f"User's family group not found.")    
+        if not family_group:
+            return Response(
+                {"error": "ユーザーが所属しているグループが見つかりません"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
 
         # S3にアップロードするための設定
         s3 = boto3.client(
@@ -62,8 +82,11 @@ class ReferenceView(APIView):
 
         try:
             # S3にファイルをアップロード
+            print(f"Uploading image to S3: {object_name}")
             s3.upload_fileobj(image_file, bucket_name, object_name)
+            print(f"Image uploaded successfully to S3: {object_name}")
         except Exception as e:
+            print(f"Error while uploading to S3: {str(e)}")
             return Response(
                 {"error": "S3アップロードに失敗しました", "details": str(e)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -71,14 +94,18 @@ class ReferenceView(APIView):
 
         # アップロードされた画像のURLを生成
         image_url = f"https://{bucket_name}.s3.{settings.AWS_S3_REGION_NAME}.amazonaws.com/{object_name}"
+        print(f"Image URL: {image_url}")
 
         # Referenceモデルに保存（user_id を設定）
         reference = Reference.objects.create(
             reference_name=reference_name,
             image_url=image_url,
             # user_id=user_id,  # user_id を追加して保存
-            user=user       
+            user=user,
+            familygroup=family_group  # 所属グループを関連付け       
         )
+        print(f"Reference created successfully: {reference.id}")
+    
 
         serializer = ReferenceSerializer(reference)
         return Response(serializer.data, status=status.HTTP_201_CREATED)

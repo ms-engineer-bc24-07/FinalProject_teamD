@@ -5,41 +5,29 @@ from .models import Score
 from .serializers import ScoreSerializer
 from .services.image_processing import process_images
 import time
+from comparison_images.models import ComparisonImage
 
 # リスト取得と新規作成のビュー
 class ScoreListCreate(generics.ListCreateAPIView):
 	def post(self, request, *args, **kwargs):
-		# # リクエストデータから比較画像のIDを取得
-		# comparison_image_id = request.data.get("comparison_image_id")
-		# if not comparison_image_id:
-		#   return Response({"error": "comparison_image_id is required."}, status=status.HTTP_400_BAD_REQUEST)
-
-		# try:
-		#   # ComparisonImage を取得
-		#   comparison_image = ComparisonImage.objects.get(id=comparison_image_id)
-		# except ComparisonImage.DoesNotExist:
-		#   return Response({"error": "ComparisonImage not found."}, status=status.HTTP_404_NOT_FOUND)
+		reference_image_url = request.data.get("reference_image_url")
+		comparison_img_id = request.data.get("comparison_img_id")
+		
+		# comparison_img_idでDBの比較画像を検索して比較画像URLを取得
+		comparison_image_instance = ComparisonImage.objects.get(id=comparison_img_id)
+		comparison_image_url = comparison_image_instance.image_url
 
 		# スコア計算
-		result = process_images()
-		print(result, flush=True)
+		result = process_images(reference_image_url, comparison_image_url)
 
-		# # データベースにスコアを登録
-		# score_instance = Score.objects.create(
-		#   comparison_image=comparison_image,
-		#   score=score_value
-		# )
+		# データベースにスコアを登録
+		score_instance = Score.objects.create(
+		  comparison_image=comparison_image_instance,
+		  score=result
+		)
 
-		# # 登録したデータをシリアライズしてレスポンスとして返す
-		# serializer = ScoreSerializer(score_instance)
-		# return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-		time.sleep(5)
-
-		# 一旦仮のレスポンス↓↓↓
-		score = Score.objects.all()
-		serializer = ScoreSerializer(score, many=True)
-		return Response(serializer.data)
+		serializer = ScoreSerializer(score_instance)
+		return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 # スコア詳細取得のためのビュー
 class ScoreDetail(generics.RetrieveAPIView):

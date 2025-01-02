@@ -9,6 +9,31 @@ from users.models import User  # Userモデルをインポート
 from family.models import FamilyMember, FamilyGroup
 import boto3
 
+@csrf_exempt
+def fetch_references(request):
+    """
+    すべての見本写真（Reference）を取得するエンドポイント
+    """
+    if request.method == 'GET':
+        try:
+            # データベースからすべてのReferenceを取得
+            references = Reference.objects.all()
+            
+            # 必要なフィールドを選択してJSON形式で返す
+            data = [
+                {
+                    "id": reference.id,
+                    "reference_name": reference.reference_name,
+                    "image_url": reference.image_url,
+                    "user": reference.user.id,
+                }
+                for reference in references
+            ]
+            return JsonResponse(data, safe=False, status=200)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+    else:
+        return JsonResponse({"error": "Invalid HTTP method"}, status=405)
 
 class ReferenceDetail(APIView):
     def get(self, request, reference_id):
@@ -31,10 +56,10 @@ class ReferenceView(APIView):
     def post(self, request, *args, **kwargs):
         # 必要なデータをリクエストから取得
         image_file = request.FILES.get('image')
-        reference_name = request.data.get('name')
+        reference_name = request.data.get('referenceName')
         # user_id = request.data.get('user_id')  # user_id を受け取る
-        firebase_uid = request.data.get('firebase_uid')
-        
+        firebase_uid = request.data.get('firebaseUid')
+
         if not image_file or not reference_name or not firebase_uid:
             return Response(
                 {"error": "画像、名前、firebase_uidは必須です"},

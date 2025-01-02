@@ -2,14 +2,12 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import axios from "../../lib/axios";
-import PhotoSelector from "@/components/PhotoSelector";
-import CustomButton from "../../components/CustomButton";
-import { auth } from "../../lib/firebase";
-import dayjs from "dayjs";
-import timezone from "dayjs/plugin/timezone";
-import utc from "dayjs/plugin/utc";
-import { useRouter } from "next/navigation"; // 修正：useRouter をインポート
+import axios from "@/lib/axios";
+import PhotoSelector from '@/components/PhotoSelector';
+import CustomButton from "@/components/CustomButton";
+import { auth } from "@/lib/firebase";
+import { createImageFormData } from '@/utils/createImageData';
+import { useRouter } from "next/navigation";
 
 interface FormError {
   message: string;
@@ -17,7 +15,7 @@ interface FormError {
 export default function PhotoRegistration() {
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [photoName, setPhotoName] = useState("");
+  const [referenceName, setReferenceName] = useState('');
   const [error, setError] = useState<FormError | null>(null);
   const router = useRouter(); // 修正：router を定義
 
@@ -28,7 +26,7 @@ export default function PhotoRegistration() {
   };
 
   const handleSubmit = async () => {
-    if (!selectedImage || !photoName.trim()) {
+    if (!selectedImage || !referenceName.trim()) {
       setError({ message: "画像と名前を入力してください" });
       return;
     }
@@ -39,21 +37,10 @@ export default function PhotoRegistration() {
         setError({ message: "ログインしていません。" });
         return;
       }
-
       const idToken = await user.getIdToken();
-      const firebaseUid = user.uid; // Firebase UIDを取得
-
-      const base64Data = selectedImage.split(",")[1];
-      const blob = await fetch(`data:image/jpeg;base64,${base64Data}`).then((res) => res.blob());
-
-      // firebase_uidと現在の日時をファイル名に利用
-      dayjs.extend(timezone);
-      dayjs.extend(utc);
-      const fileName = `image_${firebaseUid}_${dayjs().tz("Asia/Tokyo").format("YYYYMMDD-HHmmss")}.jpg`;
-
-      const formData = new FormData();
-      formData.append("image", blob, fileName);
-      formData.append("name", photoName);
+      const firebaseUid = user.uid;  // Firebase UIDを取得
+      
+      const formData = await createImageFormData(selectedImage, firebaseUid, referenceName, undefined)
 
       // firebase_uidをformDataに追加
       formData.append("firebase_uid", firebaseUid); // user_id ではなく firebase_uid として送信
@@ -69,6 +56,7 @@ export default function PhotoRegistration() {
 
       // アップロードが成功したら、currentStepを4に変更して完了画面に遷移
       setCurrentStep(4);
+      
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error("Axios Error:", {
@@ -120,8 +108,8 @@ export default function PhotoRegistration() {
           <div className="mb-4">
             <input
               type="text"
-              value={photoName}
-              onChange={(e) => setPhotoName(e.target.value)}
+              value={referenceName}
+              onChange={(e) => setReferenceName(e.target.value)}
               placeholder="名前を付けて保存"
               className="mt-1 p-2 border border-customBlue rounded-full w-full text-customBlue font-bold bg-customPink focus:ring-2 focus:ring-customBlue focus:outline-none"
             />
@@ -134,12 +122,13 @@ export default function PhotoRegistration() {
 
       {/* 完了画面 */}
       {currentStep === 4 && (
-        <div className="bg-customPink from-pink-500 via-yellow-500 to-blue-500 animate-gradient p-4 rounded-lg shadow w-full max-w-md mx-auto transform transition-transform duration-500 ease-out scale-110">
-          <div className="text-center text-xl font-bold text-customBlue animate-bounce">
-            🎉 登録できました！ 🎉
+        <div className="bg-white from-pink-500 via-yellow-500 to-blue-500 animate-gradient p-4 rounded-lg w-full max-w-md mx-auto transform transition-transform duration-500 ease-out scale-110">
+          <div className="text-center text-xl font-bold text-customBlue">
+            登録できました！ 
           </div>
-          <p className="text-center text-customBlue mt-2 animate-pulse">よくできました！✨</p>
-
+          <div className="mt-4 flex justify-center">
+            <CustomButton text="トップページに戻る" onClick={() => router.push("/")} />
+          </div>
         </div>
       )}
     </div>

@@ -2,11 +2,38 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.conf import settings
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 from references.models import Reference
 from references.serializers import ReferenceSerializer
 from users.models import User  # Userモデルをインポート
 import boto3
 
+@csrf_exempt
+def fetch_references(request):
+    """
+    すべての見本写真（Reference）を取得するエンドポイント
+    """
+    if request.method == 'GET':
+        try:
+            # データベースからすべてのReferenceを取得
+            references = Reference.objects.all()
+            
+            # 必要なフィールドを選択してJSON形式で返す
+            data = [
+                {
+                    "id": reference.id,
+                    "reference_name": reference.reference_name,
+                    "image_url": reference.image_url,
+                    "user": reference.user.id,
+                }
+                for reference in references
+            ]
+            return JsonResponse(data, safe=False, status=200)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+    else:
+        return JsonResponse({"error": "Invalid HTTP method"}, status=405)
 
 class ReferenceDetail(APIView):
     def get(self, request, reference_id):

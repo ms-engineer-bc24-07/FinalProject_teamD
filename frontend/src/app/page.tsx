@@ -100,14 +100,14 @@ const Page = () => {
     return () => unsubscribe();
   }, [router]);
 
-  const getReferenceButton = (reference: any) => {
-    // const reference = references.find((ref) => ref.id === id);
+  const getReferenceButton = (reference: any | null, id: number) => {
     console.log('Processing reference:', reference);
-
+  
+    // reference が null の場合の処理
     if (reference && reference.reference_name) {
       return (
         <ToppageButton
-          key={reference.id}
+          key={reference.id} // reference.id を使用
           text={reference.reference_name}
           onClick={() => {
             console.log(`Navigating to reference ${reference.id}`); // デバッグ用
@@ -118,23 +118,21 @@ const Page = () => {
     } else {
       return (
         <ToppageButton
-          key={`no-reference-${reference.id}`}
+          key={`no-reference-${id}`} // null の場合、ユニークな key を使用
           icon={<FaCamera className="text-customBlue text-4xl" />}
           onClick={() => router.push(`/SampleRegistration`)} // 参考写真がない場合、カメラアイコンを表示
         />
       );
     }
-    
   };
-
-  // ボタンが常に4つ表示されるように、足りない分は見本写真登録ボタンを追加
-  const buttonCount = 4;
+  
   const buttons = [];
-  for (let i = 1; i <= buttonCount; i++) {
-    buttons.push(getReferenceButton(i));
+  for (let i = 0; i < 4; i++) {
+    // referencesの中からi番目の見本写真を取得
+    const reference = references[i] || null;
+    buttons.push(getReferenceButton(reference, i + 1)); // IDは1から始まると仮定
   }
-
-
+  
   return (
     <div className="flex-grow p-5 text-center">
       <div className="flex justify-between items-center p-6">
@@ -160,21 +158,10 @@ const Page = () => {
           )}
         </div>
       </div>
-
+  
       <div className="flex-grow p-5 text-center">
         <div className="grid grid-cols-2 gap-10 mt-4">
-          {references.map((reference) => {
-            console.log(reference);
-            return getReferenceButton(reference);
-          })}
-          {/* 新規登録用のカメラボタンを追加 */}
-          {
-            <ToppageButton
-              key="new-reference"
-              icon={<FaCamera className="text-customBlue text-4xl" />}
-              onClick={() => router.push(`/SampleRegistration`)}
-            />
-          }
+          {buttons} {/* buttons 配列をここでレンダリング */}
         </div>
       </div>
     </div>

@@ -103,20 +103,18 @@ class GroupReferencesView(APIView):
             # ユーザーが所属するグループを取得
             memberships = FamilyMember.objects.filter(user=user).values_list('group', flat=True)
             owned_groups = FamilyGroup.objects.filter(owner=user).values_list('id', flat=True)
-            
+
             # 所属グループとオーナーグループのIDを結合
             all_group_ids = list(set(list(memberships) + list(owned_groups)))
             print(f"All Group IDs: {all_group_ids}")  # デバッグ用
 
-            
             # グループに関連付けられた参照画像を取得
             groups = FamilyGroup.objects.filter(id__in=all_group_ids)
-            references = Reference.objects.filter(groups__in=groups).distinct()
-            print(f"All Group IDs: {all_group_ids}")  # デバッグ用
+            references = Reference.objects.filter(familygroup__in=groups).distinct()
+            print(f"References related to groups: {references}")  # デバッグ用
 
-            
             serializer = ReferenceSerializer(references, many=True)
             return Response(serializer.data)
-
+        
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

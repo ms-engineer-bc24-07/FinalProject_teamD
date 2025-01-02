@@ -1,6 +1,6 @@
 from django.db import models
 from users.models import User
-from references.models import Reference
+
 
 class FamilyGroup(models.Model):
     id = models.AutoField(primary_key=True)
@@ -8,7 +8,7 @@ class FamilyGroup(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="owned_groups")  # 作成者
-    references = models.ManyToManyField(Reference, related_name='groups')  # ManyToMany関係を追加
+    #references = models.ManyToManyField(Reference, related_name='groups')  # ManyToMany関係を追加
 
     def __str__(self):
         return self.name

@@ -56,10 +56,10 @@ class ReferenceView(APIView):
     def post(self, request, *args, **kwargs):
         # 必要なデータをリクエストから取得
         image_file = request.FILES.get('image')
-        reference_name = request.data.get('name')
+        reference_name = request.data.get('referenceName')
         # user_id = request.data.get('user_id')  # user_id を受け取る
-        firebase_uid = request.data.get('firebase_uid')
-        
+        firebase_uid = request.data.get('firebaseUid')
+
         if not image_file or not reference_name or not firebase_uid:
             return Response(
                 {"error": "画像、名前、firebase_uidは必須です"},

@@ -24,22 +24,32 @@ const ReferencePage = () => {
     }
   }, [id]);
 
-  if (!reference) return <div>Loading...</div>;
+  if (!reference) 
+    return (
+      <div id="progressbar">
+        <span id="loading"></span>
+        <div id="load">loading</div>
+      </div>
+    );
+
 
   return (
-      <div className="flex-grow p-5 text-center">
-        {/* ヘッダー部分 */}
-        <div className="flex items-center  justify-start gap-4">
-        {/* 戻るボタン */}
-        <button
-          onClick={() => router.back()}
-          className="mr-4 text-customBlue transform transition-transform duration-150 active:scale-95 active:bg-customBlue-dark hover:text-customDarkblue"
-        >
-          ← 戻る
-        </button>
-        {/* タイトル */}
-        <h1 className="text-2xl font-bold text-customBlue">{reference.reference_name}</h1>
-      </div>
+    
+      <div className="bg-yellow-200 flex-grow p-5 text-center">
+        {/* タイトルと戻るボタンを配置 */}
+      <div className="bg-purple-200 relative mb-6">
+          {/* 戻るボタン */}
+          <button
+            onClick={() => window.history.back()}
+            className="absolute left-0 text-customBlue transform transition-transform duration-150 active:scale-95 active:bg-customBlue-dark hover:text-customDarkblue"
+          >
+            ← 戻る
+          </button>
+          {/* タイトル */}
+          <h1 className="text-2xl font-bold text-customBlue text-center">
+            {reference.reference_name}
+          </h1>
+        </div>
         
         {/* 画像表示 */}
         <Image
@@ -51,7 +61,7 @@ const ReferencePage = () => {
         />
       
     
-      <div className="flex flex-col items-center gap-4 w-full max-w-md mx-auto">
+      <div className="flex flex-col items-center gap-5 w-full max-w-md mx-auto mt-8">
       
         {/* 記録を見るボタン */}
         <CustomButton

@@ -75,7 +75,7 @@ const RegisterForm = () => {
         onSubmit={handleSubmit}
         className="bg-white p-8 rounded w-80"
       >
-        <h1 className="text-3xl font-bold mb-4 text-customBlue">新規登録</h1>
+        <h1 className="text-3xl font-bold mb-4 text-customBlue text-center">新規登録</h1>
         {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
   
         <div className="mb-2">
@@ -88,7 +88,7 @@ const RegisterForm = () => {
             value={formData.username}
             onChange={handleChange}
             className="mt-1 p-2 border border-customBlue rounded-full w-full text-customBlue font-bold bg-customPink focus:ring-2 focus:ring-customBlue focus:outline-none"
-            placeholder="ユーザー名を入力してください"
+            placeholder="お名前を入力してください"
           />
         </div>
   
@@ -136,7 +136,7 @@ const RegisterForm = () => {
   
         <button
           type="submit"
-          className="bg-customBlue text-customYellow px-4 py-2 rounded-full w-full text-xl font-bold transform transition-transform duration-150 active:scale-95 active:bg-customBlue-dark hover:bg-customLightblue"
+          className="button_solid012"
         >
           登録
         </button>

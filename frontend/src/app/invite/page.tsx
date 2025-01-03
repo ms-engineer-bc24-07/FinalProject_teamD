@@ -81,7 +81,7 @@ const InvitePage = () => {
 
           {/* トップページに戻るボタン */}
           <div className="mt-6">
-            <CustomButton text="トップページに戻る" onClick={() => (window.location.href = "/")} />
+            <CustomButton text="ホームに戻る" onClick={() => (window.location.href = "/")} />
           </div>
         </>
       )}

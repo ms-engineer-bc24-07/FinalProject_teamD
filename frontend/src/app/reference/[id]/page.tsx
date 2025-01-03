@@ -6,6 +6,7 @@ import { useParams } from "next/navigation";  // next/navigationからuseParams�
 import axios from "../../../lib/axios";
 import Image from "next/image"; // Next.jsのImageコンポーネントをインポート
 import CustomButton from "../../../components/CustomButton";
+import Link from "next/link";
 
 const ReferencePage = () => {
   const { id } = useParams();  // useParamsでURLパラメータを取得
@@ -32,19 +33,10 @@ const ReferencePage = () => {
       </div>
     );
 
-
   return (
-    
-      <div className="bg-yellow-200 flex-grow p-5 text-center">
+      <div className="flex-grow p-5 text-center">
         {/* タイトルと戻るボタンを配置 */}
-      <div className="bg-purple-200 relative mb-6">
-          {/* 戻るボタン */}
-          <button
-            onClick={() => window.history.back()}
-            className="absolute left-0 text-customBlue transform transition-transform duration-150 active:scale-95 active:bg-customBlue-dark hover:text-customDarkblue"
-          >
-            ← 戻る
-          </button>
+      <div className="relative mb-6">
           {/* タイトル */}
           <h1 className="text-2xl font-bold text-customBlue text-center">
             {reference.reference_name}
@@ -74,6 +66,13 @@ const ReferencePage = () => {
           text="片付け"
           onClick={() => router.push(`/cleanup/${id}`)}
         />
+
+        {/* ホームページに戻るボタン */}
+        <Link href="/">
+          <CustomButton
+            text="ホームに戻る"
+          />
+        </Link>
       </div>
     </div>
   );

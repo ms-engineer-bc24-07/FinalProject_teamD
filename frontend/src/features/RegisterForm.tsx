@@ -80,7 +80,7 @@ const RegisterForm = () => {
   
         <div className="mb-2">
           <label className="block text-base text-customBlue font-bold">
-            ユーザー名
+            お名前
           </label>
           <input
             type="text"

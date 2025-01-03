@@ -258,6 +258,13 @@ const handleSaveIcon = async () => {
         />
       </Link>
 
+      {/* ホームページに戻るボタン */}
+      <Link href="/">
+        <CustomButton
+          text="ホームに戻る"
+        />
+      </Link>
+
       {/* ログアウトボタン */}
       <CustomButton
         text="ログアウト"

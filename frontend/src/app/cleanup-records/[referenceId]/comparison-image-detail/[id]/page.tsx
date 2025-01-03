@@ -33,16 +33,9 @@ const ComparisonImageDetailPage = () => {
   if (!image) return <div>Loading...</div>;
 
   return (
-    <div className="bg-yellow-200 flex-grow p-5 text-center">
+    <div className="flex-grow p-5 text-center">
       {/* タイトルと戻るボタンを配置 */}
-      <div className="bg-purple-200 relative mb-6">
-        {/* 戻るボタン */}
-        <button
-          onClick={() => window.history.back()}
-          className="absolute left-0 text-customBlue transform transition-transform duration-150 active:scale-95 active:bg-customBlue-dark hover:text-customDarkblue"
-        >
-          ← 戻る
-        </button>
+      <div className="relative mb-6">
         {/* タイトル */}
         <h1 className="text-2xl font-bold text-customBlue text-center">
           片付け記録の詳細
@@ -70,6 +63,11 @@ const ComparisonImageDetailPage = () => {
           <p className="text-gray-600">{image.record_description}</p>
         </div>
       )}
+
+        {/* ホームに戻るボタン */}
+      <div className="mt-6 flex justify-center">
+        <CustomButton text="記録一覧に戻る" onClick={() => window.history.back()} />
+      </div>
 
         {/* ホームに戻るボタン */}
       <div className="mt-6 flex justify-center">

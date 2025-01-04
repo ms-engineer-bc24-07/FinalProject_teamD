@@ -271,6 +271,8 @@ const handleSaveIcon = async () => {
   </div>
       </div>
     </div>
+
+      {/* 色々ボタン */}
       <div className="mt-4 flex flex-col items-center gap-5">
       {/* 招待するボタン */}
       <Link href="/invite">

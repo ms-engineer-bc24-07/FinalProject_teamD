@@ -63,7 +63,7 @@ const ReferencePage = () => {
 
         {/* 片付けボタン */}
         <CustomButton
-          text="片付け"
+          text="片付ける"
           onClick={() => router.push(`/cleanup/${id}`)}
         />
 

@@ -8,6 +8,7 @@ import CustomButton from "@/components/CustomButton";
 import { auth } from "@/lib/firebase";
 import { createImageFormData } from '@/utils/createImageData';
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface FormError {
   message: string;
@@ -72,11 +73,13 @@ export default function PhotoRegistration() {
   };
 
   return (
-    <div className="flex flex-col px-5 py-6">
-      {/* 見出しを追加
-      <h1 className="text-center text-xl md:text-2xl font-bold text-customBlue mb-6 mt-4">
-        見本写真を登録しよう
-      </h1> */}
+    <div className="flex flex-col items-center p-6">
+      {/* ヘッダー部分 */}
+      <div className="flex items-center mt-6 mb-6">
+        <h1 className="text-2xl font-bold text-customBlue text-center">
+          見本写真の登録
+        </h1>
+      </div>
 
       {/* エラーメッセージ表示 */}
       {error && (
@@ -137,6 +140,17 @@ export default function PhotoRegistration() {
           </div>
         </div>
       )}
+
+      {/* 色々ボタン */}
+      <div className="mt-5 mb-4 flex flex-col items-center gap-5">
+
+        {/* ホームページに戻るボタン */}
+        <Link href="/">
+          <CustomButton
+            text="ホームに戻る"
+          />
+        </Link>
+      </div>
 
     </div>
   );

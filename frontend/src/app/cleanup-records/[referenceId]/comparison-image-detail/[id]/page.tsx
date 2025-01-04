@@ -34,15 +34,7 @@ const ComparisonImageDetailPage = () => {
 
   return (
     <div className="flex-grow p-5 text-center">
-      {/* タイトルと戻るボタンを配置 */}
-      <div className="relative mb-6">
-        {/* タイトル */}
-        <h1 className="text-2xl font-bold text-customBlue text-center">
-          片付け記録の詳細
-        </h1>
-      </div>
-
-      <div className="mb-4">
+      <div className="mt-8 mb-4">
         <h2 className="text-xl text-customBlue">{image.user_name}</h2> {/* ユーザー名 */}
         <p className="text-sm text-gray-500">{formatDate(image.uploaded_at)}</p> {/* 日付表示 */}
         <div className="mt-4">
@@ -65,7 +57,7 @@ const ComparisonImageDetailPage = () => {
       )}
 
         {/* 前のページに戻るボタン */}
-      <div className="mt-6 flex justify-center">
+      <div className="mt-8 flex justify-center">
         <CustomButton text="記録一覧に戻る" onClick={() => window.history.back()} />
       </div>
 

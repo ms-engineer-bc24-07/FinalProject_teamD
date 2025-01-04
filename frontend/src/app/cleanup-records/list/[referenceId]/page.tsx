@@ -35,7 +35,7 @@ const ComparisonImageListPage = () => {
   return (
     <div className="flex-grow p-5 text-center">
     {/* タイトルと戻るボタンを配置 */}
-    <div className="relative mb-6">
+    <div className="relative mt-6 mb-6">
       {/* タイトル */}
       <h1 className="text-2xl font-bold text-customBlue text-center">
         片付け記録

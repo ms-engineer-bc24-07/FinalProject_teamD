@@ -99,7 +99,7 @@ export default function PhotoRegistration() {
       {/* 名前入力画面 */}
       {currentStep === 3 && (
         <div className="bg-white p-4 rounded-lg w-full max-w-md mx-auto">
-          <div className="aspect-square bg-gray-200 mb-4 flex items-center justify-center">
+          <div className="aspect-square bg-white mb-4 flex items-center justify-center">
             {selectedImage && (
               <Image
                 src={selectedImage}

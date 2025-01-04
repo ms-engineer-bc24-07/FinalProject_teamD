@@ -64,7 +64,7 @@ const ComparisonImageDetailPage = () => {
         </div>
       )}
 
-        {/* ホームに戻るボタン */}
+        {/* 前のページに戻るボタン */}
       <div className="mt-6 flex justify-center">
         <CustomButton text="記録一覧に戻る" onClick={() => window.history.back()} />
       </div>

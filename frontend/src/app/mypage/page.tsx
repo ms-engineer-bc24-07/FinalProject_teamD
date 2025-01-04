@@ -247,7 +247,7 @@ const handleSaveIcon = async () => {
   <label id="stitch">グループメンバー</label>
   <div className="mt-4 grid grid-cols-3 gap-4">
     {members.length === 0 ? (
-      <p className="text-customPink">メンバーがいません</p>
+      <p className="text-customBlue">メンバーがいません</p>
     ) : (
       members.map((member, index) => (
         <div key={index} className="flex flex-col items-center">
@@ -257,7 +257,7 @@ const handleSaveIcon = async () => {
               alt={member.name}
               width={50}
               height={50}
-              className="rounded-full"
+              className="rounded-full border-4 border-customBlue"
             />
           ) : (
             <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center text-gray-500">

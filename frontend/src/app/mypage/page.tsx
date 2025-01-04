@@ -124,131 +124,144 @@ const handleSaveIcon = async () => {
   };
 
   return (
-    <div className="flex flex-col items-center p-6">
-      <div className="flex items-center w-full max-w-md mb-4">
-        <button
-          onClick={() => router.back()}
-          className="mr-4 text-customBlue transform transition-transform duration-150 active:scale-95 active:bg-customBlue-dark  hover:text-customDarkblue"
-        >
-          ← 戻る
-        </button>
-        <h1 className="text-2xl font-bold text-customBlue">マイページ</h1>
+    <div className="flex flex-col rounded items-center p-9">
+      <div className="flex justify-center w-full max-w-md mb-4">
+        <h1 className="text-2xl font-bold text-customBlue text-center">マイページ</h1>
       </div>
 
-    {/* アイコン表示 */}
-    <div className="mb-4 w-full max-w-md">
-      <div className="flex justify-between items-center">
-        <label className="text-base font-medium text-gray-900">アイコン</label>
-        <div className="flex items-center">
-          {icon ? (
-            // アイコンが設定されている場合、画像を表示
-            <Image
-              src={icon}
-              alt="ユーザーアイコン"
-              width={55}
-              height={55}
-              className="rounded-full border-4 border-customBlue"
-            />
-          ) : (
-            // アイコンが未設定の場合、"No Icon" を表示
-          <div className="w-16 h-16 rounded-full border flex items-center justify-center text-gray-500">
-          No Icon
-        </div>
-          )}
-          <button
-            onClick={() => setIsEditing(!isEditing)}
-            className="ml-4 text-customBlue transform transition-transform duration-150 active:scale-95 active:bg-customBlue-dark  hover:text-customDarkblue"
-          >
-            編集
-          </button>
-        </div>
-      </div>
-      {isEditing && (
-        <div className="grid grid-cols-4 gap-2 mt-2">
-          {[1, 2, 3, 4].map((num) => (
-            <button
-              key={num}
-              onClick={() => handleIconSelect(`/icons/icon-${num}.png`)}
-              className={`border-2 rounded-full ${
-                newIcon === `/icons/icon-${num}.png`
-                  ? "border-customBlue"
-                  : "border-gray-300"
-              }`}
-            >
+    {/* ユーザー情報セクション */}
+    <div className="mypage-background w-full max-w-md p-5 rounded mb-4">
+      {/* アイコン表示 */}
+      <div className="mb-4 w-full max-w-md">
+        <div className="flex justify-between items-center">
+          <label id="stitch">アイコン</label>
+          <div className="flex items-center">
+            {icon ? (
+              // アイコンが設定されている場合、画像を表示
               <Image
-                src={`/icons/icon-${num}.png`}
-                alt={`アイコン ${num}`}
-                width={50}
-                height={50}
-                className="rounded-full"
+                src={icon}
+                alt="ユーザーアイコン"
+                width={55}
+                height={55}
+                className="rounded-full border-4 border-customBlue"
               />
+            ) : (
+              // アイコンが未設定の場合、"No Icon" を表示
+            <div className="w-16 h-16 rounded-full border flex items-center justify-center text-gray-500">
+            No Icon
+          </div>
+            )}
+            <button
+              onClick={() => setIsEditing(!isEditing)}
+              className="button_solid012 button_solid012--small"
+            >
+              編集
             </button>
-          ))}
+          </div>
         </div>
-      )}
-      {isEditing && newIcon && (
-        <div className="flex justify-center mt-4">
-          <button
-            onClick={handleSaveIcon}
-            className="px-4 py-2 bg-customBlue text-customYellow font-bold rounded transform transition-transform duration-150 active:scale-95 active:bg-customBlue-dark "
-          >
-            保存
-          </button>
-        </div>
-      )}
-      <hr className="mt-2 border-gray-300" />
-    </div>
-
-
-      {/* ユーザー名 */}
-      <div className="mb-4 w-full max-w-md">
-        <div className="flex justify-between items-center">
-          <label className="text-base font-medium text-gray-900">ユーザー名</label>
-          <span className="text-base text-gray-800">{userName}</span>
-        </div>
-        <hr className="mt-2 border-gray-300" />
+        {isEditing && (
+          <div className="grid grid-cols-4 gap-2 mt-2">
+            {[1, 2, 3, 4].map((num) => (
+              <button
+                key={num}
+                onClick={() => handleIconSelect(`/icons/icon-${num}.png`)}
+                className={`border-2 rounded-full ${
+                  newIcon === `/icons/icon-${num}.png`
+                    ? "border-customBlue"
+                    : "border-gray-300"
+                }`}
+              >
+                <Image
+                  src={`/icons/icon-${num}.png`}
+                  alt={`アイコン ${num}`}
+                  width={50}
+                  height={50}
+                  className="rounded-full"
+                />
+              </button>
+            ))}
+          </div>
+        )}
+        {isEditing && newIcon && (
+          <div className="flex justify-center mt-4">
+            <button
+              onClick={handleSaveIcon}
+              className="button_solid012 button_solid012--small"
+            >
+              保存
+            </button>
+          </div>
+        )}
       </div>
 
-      {/* メールアドレス */}
-      <div className="mb-4 w-full max-w-md">
-        <div className="flex justify-between items-center">
-          <label className="text-base font-medium text-gray-900">メールアドレス</label>
-          <span className="text-base text-gray-800">{email}</span>
+      <hr className="hr-cute" />
+    
+
+
+        {/* ユーザー名 */}
+        <div className="mb-4 w-full max-w-md">
+          <div className="flex justify-between items-center">
+            <label id="stitch">お名前</label>
+            <span className="text-base text-gray-800">{userName}</span>
+          </div>
+          
         </div>
-        <hr className="mt-2 border-gray-300" />
+
+        <hr className="hr-cute" />
+
+        {/* メールアドレス */}
+        <div className="mb-4 w-full max-w-md">
+          <div className="flex justify-between items-center">
+            <label id="stitch" className="mr-5">Eメール</label>
+            <span className="text-base text-gray-800">{email}</span>
+          </div>
+
+        </div>
+
+        <hr className="hr-cute" />
+
+        {/* グループ名 */}
+        <div className="mb-4 w-full max-w-md">
+          <div className="flex justify-between items-center">
+            <label id="stitch">グループ名</label>
+            <span className="text-base text-gray-800">{groupName}</span>
+          </div>
+
+        </div>
+
+        <hr className="hr-cute" />
+
+        {/* メンバー */}
+        <div className="mb-4 w-full max-w-md">
+          <label id="stitch">グループメンバー</label>
+          <div className="mt-2">
+            {members.length === 0 ? (
+              <p className="text-customPink">メンバーがいません</p>
+            ) : (
+              <ul className="list-disc pl-5">
+                {members.map((member, index) => (
+                  <li key={index} className="text-gray-800">
+                    {member}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
       </div>
 
-      {/* グループ名 */}
-      <div className="mb-4 w-full max-w-md">
-        <div className="flex justify-between items-center">
-          <label className="text-base font-medium text-gray-900">グループ名</label>
-          <span className="text-base text-gray-800">{groupName}</span>
-        </div>
-        <hr className="mt-2 border-gray-300" />
-      </div>
-
-      {/* メンバー */}
-      <div className="mb-4 w-full max-w-md">
-        <label className="block text-base font-medium text-gray-900">グループメンバー</label>
-        <div className="mt-2">
-          {members.length === 0 ? (
-            <p className="text-gray-500">メンバーがいません</p>
-          ) : (
-            <ul className="list-disc pl-5">
-              {members.map((member, index) => (
-                <li key={index} className="text-gray-900">
-                  {member}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      </div>
-
+      <div className="mt-4 flex flex-col items-center gap-5">
       {/* 招待するボタン */}
       <Link href="/invite">
         <CustomButton
           text="招待する"
+        />
+      </Link>
+
+      {/* ホームページに戻るボタン */}
+      <Link href="/">
+        <CustomButton
+          text="ホームに戻る"
         />
       </Link>
 
@@ -257,6 +270,7 @@ const handleSaveIcon = async () => {
         text="ログアウト"
         onClick={handleLogout}
       />
+      </div>
     </div>
   );
 };

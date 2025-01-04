@@ -78,26 +78,26 @@ const InviteAcceptPage = () => {
         type="text"
         value={userName}
         onChange={(e) => setUserName(e.target.value)}
-        placeholder="ユーザー名"
+        placeholder="お名前を入力してください"
         className="mb-4 p-2 border border-customBlue rounded-full w-full text-customBlue font-bold bg-customPink focus:ring-2 focus:ring-customBlue focus:outline-none"
       />
       <input
         type="email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        placeholder="E-mail"
+        placeholder="メールアドレスを入力してください"
         className="mb-4 p-2 border border-customBlue rounded-full w-full text-customBlue font-bold bg-customPink focus:ring-2 focus:ring-customBlue focus:outline-none"
       />
       <input
         type="password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
-        placeholder="パスワード"
+        placeholder="パスワードを入力してください"
         className="mb-4 p-2 border border-customBlue rounded-full w-full text-customBlue font-bold bg-customPink focus:ring-2 focus:ring-customBlue focus:outline-none"
       />
       <button
         onClick={handleRegister}
-        className="bg-customBlue text-customYellow px-4 py-2 rounded-full w-full text-xl font-bold transform transition-transform duration-150 active:scale-95 active:bg-customBlue-dark hover:bg-customLightblue"
+        className="button_solid012"
       >
         登録
       </button>

@@ -8,6 +8,7 @@ import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slide
 import { createImageFormData } from '@/utils/createImageData';
 import { auth } from '@/lib/firebase';
 import LinearColor from '@/features/LinearColor';
+import CustomButton from "../../../components/CustomButton";
 
 interface FormError {
   message: string;
@@ -73,15 +74,9 @@ export default function PhotoRegistration() {
   return (
     <div className="flex flex-col items-center p-6">
       {/* ヘッダー部分 */}
-      <div className="flex items-center mb-6">
-        <button
-          onClick={() => router.back()}
-          className="text-customBlue mr-12 transform transition-transform duration-150 active:scale-95 active:bg-customBlue-dark hover:text-customDarkblue"
-        >
-          ← 戻る
-        </button>
-        <h1 className="text-l font-bold text-customBlue text-center flex-grow">
-          写真をアップロード
+      <div className="flex items-center mt-6 mb-6">
+        <h1 className="text-2xl font-bold text-customBlue text-center">
+          片付け後の写真登録
         </h1>
       </div>
 
@@ -114,6 +109,12 @@ export default function PhotoRegistration() {
           />
         </div>
       )}
+
+    {/* 前のページに戻るボタン */}
+    <div className="mt-4 flex justify-center">
+    <CustomButton text="前に戻る" onClick={() => window.history.back()} />
+    </div>
+
     </div>
   );
 }

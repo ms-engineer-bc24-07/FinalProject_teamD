@@ -82,7 +82,7 @@ export default function PhotoSelector({
 
   return (
     <div className="flex flex-col items-center justify-center w-full h-auto">
-      <div className="aspect-square w-48 h-48 sm:w-64 sm:h-64 lg:w-60 lg:h-60 bg-gray-200 mb-4 flex items-center justify-center">
+      <div className="aspect-square w-48 h-48 sm:w-64 sm:h-64 lg:w-60 lg:h-60 bg-gray-200 flex items-center justify-center">
       <span className="text-gray-500 text-sm md:text-base">pic</span>
       </div>
       <div className="flex justify-around gap-4 w-full">

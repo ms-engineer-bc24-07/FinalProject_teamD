@@ -111,7 +111,7 @@ export default function PhotoRegistration() {
       )}
 
     {/* 前のページに戻るボタン */}
-    <div className="mt-4 flex justify-center">
+    <div className="mt-2 flex justify-center">
     <CustomButton text="前に戻る" onClick={() => window.history.back()} />
     </div>
 

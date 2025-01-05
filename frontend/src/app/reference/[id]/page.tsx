@@ -35,8 +35,8 @@ const ReferencePage = () => {
 
   return (
       <div className="flex-grow p-5 text-center">
-        {/* タイトルと戻るボタンを配置 */}
-      <div className="relative mb-6">
+        {/* タイトル */}
+      <div className="relative mt-6 mb-6">
           {/* タイトル */}
           <h1 className="text-2xl font-bold text-customBlue text-center">
             {reference.reference_name}
@@ -63,7 +63,7 @@ const ReferencePage = () => {
 
         {/* 片付けボタン */}
         <CustomButton
-          text="片付け"
+          text="片付ける"
           onClick={() => router.push(`/cleanup/${id}`)}
         />
 

@@ -34,15 +34,15 @@ export default function Analysis() {
         </p>
       </div>
       <div className="flex flex-col mt-6 items-center">
-        <CustomButton
+        {/* <CustomButton
           text="知らせる"
           onClick={() => {}}
           className="mb-2"
-        />
+        /> */}
         <CustomButton
-          text="閉じる"
+          text="ホームに戻る"
           onClick={() => router.push(`/`)}
-          className="mb-2"
+          className="mt-8 mb-2"
         />
       </div>
     </div>

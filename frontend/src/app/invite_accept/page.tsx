@@ -70,10 +70,11 @@ const InviteAcceptPage = () => {
   };
 
   return (
-    <div className="flex flex-col items-center p-6">
+    <div className="flex flex-col items-center justify-center h-screen p-6">
       <h1 className="text-2xl font-bold mb-4 text-customBlue">グループに参加する</h1>
-      {/* {message && <p className="mb-4 text-gray-700">{message}</p>} */}
-      {groupName && <p className="mb-4 font-bold text-customBlue">グループ名: {groupName}</p>}
+      {groupName && (
+        <p className="mb-4 font-bold text-customBlue">グループ名: {groupName}</p>
+      )}
       <input
         type="text"
         value={userName}
@@ -103,6 +104,7 @@ const InviteAcceptPage = () => {
       </button>
     </div>
   );
+  
 };
 
 export default InviteAcceptPage;

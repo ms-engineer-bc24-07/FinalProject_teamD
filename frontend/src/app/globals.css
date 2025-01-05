@@ -9,9 +9,12 @@ html, body {
   margin: 0;
   padding: 0;
   width: 100%;
-  height: 100%;
+  height: 100vh; /* ビューポート全体の高さを確保 */
   font-family: "Hannotate SC", "Hiragino Maru Gothic Pro","ヒラギノ丸ゴ Pro W4","Arial", "Helvetica", sans-serif;
   background-color: #e0f7fa; /* 背景色（余白部分） */
+  display: flex; /* フレックスボックスで中央揃えを設定 */
+  justify-content: center; /* 水平方向に中央揃え */
+  align-items: center; /* 垂直方向に中央揃え */
 }
 
 /* アプリ全体のラッパーを中央に配置 */
@@ -25,25 +28,35 @@ html, body {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* 軽い影で立体感を演出 */
   border-radius: 16px; /* 角丸でデザインを整える */
   margin: auto; /* ブラウザ中央に配置 */
-  overflow-y: auto; /* コンテンツが高さを超えた場合は縦スクロールを表示 */
+  overflow: hidden; /* 全体のスクロールを無効化 */
 }
 
 /* header, main, footerが収まるようにflexを使用 */
 main {
   flex: 1; /* メイン部分をヘッダーとフッターの間に拡張 */
+  overflow-y: auto; /* コンテンツが多い場合、スクロール可能に */
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start; /* スクロール開始位置を調整 */
 }
 
+/* ヘッダーとフッターを固定 */
 header, footer {
+  position: sticky; /* 固定する */
+  z-index: 10; /* 他の要素より前面に表示 */
+  top: 0; /* ヘッダーは常に上 */
+  bottom: 0; /* フッターは常に下 */
   padding: 1rem;
   text-align: center;
+  background-color: #5292ca; /* 背景色 */
+  color: #ffffff;
 }
 
 /* フッターのデザイン */
 footer {
+  top: unset; /* フッターには上位置を解除 */
+  bottom: 0; /* 下に固定 */
   background-color: #5292ca; /* カスタムブルー */
   color: #ffffff;
   font-size: 0.9rem;
@@ -115,28 +128,64 @@ footer {
 
 
 
-/* 見本写真登録完了画面のcss */
-.heart {
-  font-size: 100px;
-  color: #fff168; /* ゴールドの色 */
-  -webkit-animation: heart-beats .3s infinite alternate;
-  animation: heart-beats .3s infinite alternate;
-  transform-origin: center;
+/* 見本写真登録完了画面のプリンアニメーション */
+.pudding-container {
+  width: 150px;
+  height: 150px;
+  position: relative;
+  margin: 0 auto; /* 中央寄せ */
 }
 
-@-webkit-keyframes heart-beats {
-  to { -webkit-transform: scale(1.1); }
-}
-@keyframes heart-beats {
-  to { transform: scale(1.1); }
+.pudding {
+  width: 100%;
+  height: 100%;
+  background-image: url("https://tsukatte.com/wp-content/uploads/2021/03/sofa_blue.png");
+  background-size: cover;
+  animation: purine 1.5s linear infinite;
+  transform-origin: center bottom;
+  transform: translateY(-80px); /* 初期位置 */
 }
 
+@keyframes purine {
+  10% {
+    transform: translateY(0); /* 上から落ちる */
+  }
+  15% {
+    transform: scale(1.1, 0.9); /* 衝撃でつぶれる */
+  }
+  20% {
+    transform: scale(1.1, 0.8); /* 衝撃でさらにつぶれる */
+  }
+  30% {
+    transform: scale(1.15, 0.7); /* 横に少し伸びる */
+  }
+  45% {
+    transform: scale(1.2, 0.5); /* 横に伸びる */
+  }
+  50% {
+    transform: scale(0.85, 1.15); /* 縦に伸びる */
+  }
+  60% {
+    transform: scale(1.1, 0.9); /* 縮む */
+  }
+  70% {
+    transform: scale(0.95, 1.08); /* 縦に伸びる */
+  }
+  90% {
+    transform: scale(0.98, 1.02); /* 縮む */
+  }
+  100% {
+    transform: scale(1, 1); /* 元のサイズ */
+  }
+}
+
+/* 登録完了メッセージ */
 .text-cute {
   font-family: 'Hiragino Maru Gothic Pro', cursive;
   color: #5292ca;
-  font-size: 2rem;
+  font-size: 1.5rem;
   text-align: center;
-  margin-top: 8px;
+  margin-top: 3px;
 }
 
 
@@ -339,8 +388,8 @@ a.back-btn-border-shadow--color:before {
   justify-content: center;
   align-items: center;
   margin: 20px;
-  width: 80px; /* 幅を固定 */
-  height: 80px; /* 高さを固定（幅と同じ） */
+  width: 60px; /* 幅を固定 */
+  height: 60px; /* 高さを固定（幅と同じ） */
   text-decoration: none;
   border-radius: 50%; /* 丸いデザイン */
   padding: 0; /* パディングをリセット */

@@ -35,7 +35,7 @@ const ComparisonImageListPage = () => {
   return (
     <div className="flex-grow p-5 text-center">
     {/* タイトルと戻るボタンを配置 */}
-    <div className="relative mb-6">
+    <div className="relative mt-6 mb-6">
       {/* タイトル */}
       <h1 className="text-2xl font-bold text-customBlue text-center">
         片付け記録
@@ -46,7 +46,7 @@ const ComparisonImageListPage = () => {
     <div className="mypage-background p-5 rounded-md h-80 overflow-y-auto">
       {comparisonImages.length === 0 ? (
         // 記録がない場合
-        <p className="text-center text-gray-500">記録がありません。</p>
+        <p className="text-center text-customBlue font-bold">記録がありません。</p>
       ) : (
         // 記録がある場合はリスト形式で表示
         <div className="space-y-4">
@@ -78,6 +78,11 @@ const ComparisonImageListPage = () => {
           ))}
         </div>
       )}
+    </div>
+
+    {/* 前のページに戻るボタン */}
+    <div className="mt-8 flex justify-center">
+    <CustomButton text="前に戻る" onClick={() => window.history.back()} />
     </div>
 
     {/* ホームに戻るボタンを追加 */}

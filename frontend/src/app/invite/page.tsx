@@ -56,13 +56,13 @@ const InvitePage = () => {
   }, []);
 
   return (
-    <div className="flex flex-col items-center p-6">
+    <div className="flex flex-col items-center justify-center h-screen p-6">
       <h1 className="text-2xl font-bold text-customBlue mb-4">家族を招待</h1>
       {loading ? (
-        <p className="text-gray-700">読み込み中...</p>
+        <p className="font-bold text-customBlue">読み込み中...</p>
       ) : (
         <>
-          {message && <p className="mt-4 text-gray-700">{message}</p>}
+          {message && <p className="mt-4 font-bold text-customBlue">{message}</p>}
           {inviteLink && (
             <div className="mypage-background mt-4 p-4 rounded shadow">
               <p className="font-bold text-customBlue">以下のリンクをコピーして共有してください:</p>

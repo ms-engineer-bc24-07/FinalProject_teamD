@@ -8,6 +8,7 @@ import CustomButton from "@/components/CustomButton";
 import { auth } from "@/lib/firebase";
 import { createImageFormData } from '@/utils/createImageData';
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface FormError {
   message: string;
@@ -72,11 +73,13 @@ export default function PhotoRegistration() {
   };
 
   return (
-    <div className="flex flex-col px-5 py-6">
-      {/* 見出しを追加
-      <h1 className="text-center text-xl md:text-2xl font-bold text-customBlue mb-6 mt-4">
-        見本写真を登録しよう
-      </h1> */}
+    <div className="flex flex-col items-center p-6">
+      {/* ヘッダー部分 */}
+      <div className="flex items-center mt-6 mb-6">
+        <h1 className="text-2xl font-bold text-customBlue text-center">
+          見本写真の登録
+        </h1>
+      </div>
 
       {/* エラーメッセージ表示 */}
       {error && (
@@ -99,7 +102,7 @@ export default function PhotoRegistration() {
       {/* 名前入力画面 */}
       {currentStep === 3 && (
         <div className="bg-white p-4 rounded-lg w-full max-w-md mx-auto">
-          <div className="aspect-square bg-gray-200 mb-4 flex items-center justify-center">
+          <div className="aspect-square bg-white mb-4 flex items-center justify-center">
             {selectedImage && (
               <Image
                 src={selectedImage}
@@ -127,16 +130,26 @@ export default function PhotoRegistration() {
 
       {/* 完了画面 */}
       {currentStep === 4 && (
-        <div className="bg-white from-pink-500 via-yellow-500 to-blue-500 animate-gradient p-4 rounded-lg w-full max-w-md mx-auto transform transition-transform duration-500 ease-out scale-110">
+        <div className="mt-10 mb-5 p-4 rounded-lg w-full max-w-md mx-auto transform transition-transform duration-500 ease-out scale-110">
           <div className="text-center">
-          <div className="heart text-yellow-400">&#9733;</div> {/* 星アイコン */}
+            {/* プリンのアニメーション */}
+            <div className="pudding-container mx-auto">
+              <div className="pudding"></div>
+            </div>
+            {/* メッセージ */}
             <h1 className="text-cute">登録できました！</h1>
-          </div>
-          <div className="mt-10 flex justify-center">
-            <CustomButton text="戻る" onClick={() => router.push("/")} />
           </div>
         </div>
       )}
+
+      {/* ホームページに戻るボタン */}
+      <div className="mt-4 flex justify-center">
+        <Link href="/">
+          <CustomButton
+            text="ホームに戻る"
+          />
+        </Link>
+      </div>
 
     </div>
   );

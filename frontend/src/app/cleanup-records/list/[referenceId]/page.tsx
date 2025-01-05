@@ -46,7 +46,9 @@ const ComparisonImageListPage = () => {
     <div className="mypage-background p-5 rounded-md h-80 overflow-y-auto">
       {comparisonImages.length === 0 ? (
         // 記録がない場合
-        <p className="text-center text-customBlue font-bold">記録がありません。</p>
+        <div className="flex items-center justify-center h-full">
+          <p className="text-center text-customBlue font-bold">記録がありません。</p>
+        </div>
       ) : (
         // 記録がある場合はリスト形式で表示
         <div className="space-y-4">

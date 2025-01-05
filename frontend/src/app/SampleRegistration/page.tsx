@@ -130,21 +130,20 @@ export default function PhotoRegistration() {
 
       {/* 完了画面 */}
       {currentStep === 4 && (
-        <div className="bg-white from-pink-500 via-yellow-500 to-blue-500 animate-gradient p-4 rounded-lg w-full max-w-md mx-auto transform transition-transform duration-500 ease-out scale-110">
+        <div className="mt-10 mb-5 p-4 rounded-lg w-full max-w-md mx-auto transform transition-transform duration-500 ease-out scale-110">
           <div className="text-center">
-          <div className="heart text-yellow-400">&#9733;</div> {/* 星アイコン */}
+            {/* プリンのアニメーション */}
+            <div className="pudding-container mx-auto">
+              <div className="pudding"></div>
+            </div>
+            {/* メッセージ */}
             <h1 className="text-cute">登録できました！</h1>
-          </div>
-          <div className="mt-10 flex justify-center">
-            <CustomButton text="戻る" onClick={() => router.push("/")} />
           </div>
         </div>
       )}
 
-      {/* 色々ボタン */}
-      <div className="mt-5 mb-4 flex flex-col items-center gap-5">
-
-        {/* ホームページに戻るボタン */}
+      {/* ホームページに戻るボタン */}
+      <div className="mt-4 flex justify-center">
         <Link href="/">
           <CustomButton
             text="ホームに戻る"

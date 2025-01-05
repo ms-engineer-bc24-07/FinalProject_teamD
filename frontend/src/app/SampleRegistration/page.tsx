@@ -143,7 +143,7 @@ export default function PhotoRegistration() {
       )}
 
       {/* ホームページに戻るボタン */}
-      <div className="mt-4 flex justify-center">
+      <div className="flex justify-center">
         <Link href="/">
           <CustomButton
             text="ホームに戻る"

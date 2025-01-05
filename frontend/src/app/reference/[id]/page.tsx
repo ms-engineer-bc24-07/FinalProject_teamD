@@ -17,7 +17,7 @@ const ReferencePage = () => {
   useEffect(() => {
     if (id) {
       axios
-        .get(`http://localhost:8000/api/references/${id}`)
+        .get(`/api/references/${id}`)
         .then((response) => setReference(response.data))
         .catch((error) => {
           console.error("Error fetching reference:", error);

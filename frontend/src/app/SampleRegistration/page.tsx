@@ -46,7 +46,7 @@ export default function PhotoRegistration() {
       // firebase_uidをformDataに追加
       formData.append("firebase_uid", firebaseUid); // user_id ではなく firebase_uid として送信
 
-      const response = await axios.post("http://localhost:8000/api/references/upload/", formData, {
+      const response = await axios.post("/api/references/upload/", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${idToken}`, // トークンをヘッダーに追加

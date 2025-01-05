@@ -21,7 +21,7 @@ const ComparisonImageListPage = () => {
     if (referenceId) {
       console.log('Fetching comparison images for referenceId:', referenceId); 
       axios
-        .get(`http://localhost:8000/api/comparison-images/?reference=${referenceId}`)
+        .get(`/api/comparison-images/?reference=${referenceId}`)
         .then((response) => {
           console.log('Comparison images data:', response.data);  // レスポンスの確認
           setComparisonImages(response.data);

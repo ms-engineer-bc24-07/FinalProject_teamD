@@ -28,7 +28,7 @@ export default function PhotoRegistration() {
 
     try {
       // 見本画像を取得
-      const referenceModel = await axios.get(`http://localhost:8000/api/references/${referenceId}/`);
+      const referenceModel = await axios.get(`/api/references/${referenceId}/`);
       const referenceImgUrl = referenceModel.data.image_url;
       setReferenceImageURL(referenceImgUrl);
 
@@ -46,7 +46,7 @@ export default function PhotoRegistration() {
       const formData = await createImageFormData(imageData, firebaseUid, undefined, referenceModel.data.id)
 
       // 比較画像をS3にアップしてDBに登録
-      const uploadResponse = await axios.post('http://localhost:8000/api/comparison-images/upload/', formData, {
+      const uploadResponse = await axios.post('/api/comparison-images/upload/', formData, {
         headers: { 
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${idToken}`  // トークンをヘッダーに追加
@@ -55,7 +55,7 @@ export default function PhotoRegistration() {
       console.log('Success ComparisonImg:', uploadResponse.data);
 
       // スコアの計算とDB登録
-      const scoreResponse = await axios.post('http://localhost:8000/api/scores/',
+      const scoreResponse = await axios.post('/api/scores/',
         {
           reference_image_url: referenceImgUrl,
           comparison_img_id: uploadResponse.data.id,

@@ -26,7 +26,7 @@ const LoginForm = () => {
           // Firebaseトークンを取得
           const idToken = await user.getIdToken();
           const response = await axios.get(
-            "http://localhost:8000/api/family/get_group_info/", // グループ情報を取得するエンドポイント
+            "/api/family/get_group_info/", // グループ情報を取得するエンドポイント
             {
               headers: {
                 Authorization: `Bearer ${idToken}`, // Firebase トークンを設定

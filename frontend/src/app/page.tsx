@@ -40,7 +40,7 @@ const Page = () => {
         }
 
         const response = await axios.post(
-          "http://localhost:8000/api/users/get_user/",
+          "/api/users/get_user/",
           { email },
           {
             headers: {
@@ -74,7 +74,7 @@ const Page = () => {
         }
 
         const response = await axios.get(
-          "http://localhost:8000/api/references/group-references/",
+          "/api/references/group-references/",
           {
             headers: {
               Authorization: `Bearer ${token}`,

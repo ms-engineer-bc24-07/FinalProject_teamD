@@ -22,7 +22,7 @@ const ComparisonImageDetailPage = () => {
   useEffect(() => {
     if (id) {
       axios
-        .get(`http://localhost:8000/api/comparison-images/${id}/`) // imageIdでリクエスト
+        .get(`/api/comparison-images/${id}/`) // imageIdでリクエスト
         .then((response) => setImage(response.data))
         .catch((error) => {
           console.error("Error fetching comparison image details:", error);

@@ -35,7 +35,7 @@ const Mypage = () => {
       const idToken = await user.getIdToken(true); // 最新のトークンを取得
       console.log("トークン:", idToken); // トークンをログに出力
       const response = await axios.post(
-        "http://localhost:8000/api/users/get_user/",
+        "/api/users/get_user/",
         { email: user.email },
         {
           headers: {
@@ -52,7 +52,7 @@ const Mypage = () => {
         
         // グループ情報を取得
       const groupResponse = await axios.get(
-        "http://localhost:8000/api/family/get_group_info/",
+        "/api/family/get_group_info/",
         {
           headers: {
             Authorization: `Bearer ${idToken}`,
@@ -105,7 +105,7 @@ const handleSaveIcon = async () => {
     const idToken = await user.getIdToken(true);
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/users/update_icon/",
+        "/api/users/update_icon/",
         { icon: newIcon },
         {
           headers: {

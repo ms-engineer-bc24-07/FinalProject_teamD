@@ -20,7 +20,7 @@ const InviteAcceptPage = () => {
     // トークンの検証
     const validateToken = async () => {
       try {
-        const response = await axios.post("http://localhost:8000/api/family/validate_invite/", { token });
+        const response = await axios.post("/api/family/validate_invite/", { token });
         if (response.status === 200) {
           setGroupName(response.data.groupName); // グループ名を取得
           setMessage("トークンが有効です。登録を進めてください。");
@@ -49,7 +49,7 @@ const InviteAcceptPage = () => {
       const firebase_uid = user.uid;
 
       // 招待を受け入れ、登録処理を実行
-      await axios.post("http://localhost:8000/api/users/accept_invite/", {
+      await axios.post("/api/users/accept_invite/", {
         user_name: userName,
         email: email,
         password: password,

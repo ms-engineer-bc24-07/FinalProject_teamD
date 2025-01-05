@@ -30,22 +30,32 @@ const ComparisonImageDetailPage = () => {
     }
   }, [id]);
 
-  if (!image) return <div>Loading...</div>;
+  if (!image) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-xl font-bold text-customBlue text-center">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex-grow p-5 text-center">
       <div className="mt-8 mb-4">
-        <h2 className="text-xl text-customBlue">{image.user_name}</h2> {/* ユーザー名 */}
-        <p className="text-sm text-gray-500">{formatDate(image.uploaded_at)}</p> {/* 日付表示 */}
-        <div className="mt-4">
+        {/* ユーザー名と日付を横並びに */}
+        <div className="flex items-center justify-between">
+            <h2 className="text-xl text-customBlue">{image.user_name}</h2> {/* ユーザー名 */}
+            <p className="text-sm text-gray-500 ml-4">{formatDate(image.uploaded_at)}</p> {/* 日付表示 */}
+        </div>
+        
+         {/* 画像表示 */}
           <Image
             src={image.image_url}  // 比較画像
             alt="Comparison Image"
-            width={500}
+            width={300}
             height={300}
-            className="rounded-md"
+            className="mt-4 w-full h-64 object-cover rounded-md"
           />
-        </div>
+       
       </div>
 
       {/* 追加情報として説明があれば表示 */}

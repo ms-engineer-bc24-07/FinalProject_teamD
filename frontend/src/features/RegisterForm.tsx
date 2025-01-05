@@ -69,11 +69,10 @@ const RegisterForm = () => {
   };
 
   return (
-    // h-screenを削除
     <div className="flex flex-col items-center justify-center">
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-8 rounded w-80"
+        className="mt-2 p-8 rounded w-80"
       >
         <h1 className="text-3xl font-bold mb-4 text-customBlue text-center">新規登録</h1>
         {error && <p className="text-red-500 text-sm mb-4">{error}</p>}

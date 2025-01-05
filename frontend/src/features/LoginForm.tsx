@@ -77,7 +77,7 @@ const LoginForm = () => {
     <div className="flex flex-col items-center justify-center">
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-8 rounded w-80"
+        className="mt-16 p-8 rounded w-80"
       >
         <h1 className="text-3xl font-bold mb-6 text-customBlue text-center">ログイン</h1>
         {error && <p className="text-red-600 text-sm mb-4">{error}</p>}

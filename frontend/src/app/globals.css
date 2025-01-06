@@ -1,15 +1,20 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import url(https://fonts.googleapis.com/css?family=Chewy);
+@import 'https://fonts.googleapis.com/css?family=Comfortaa:300,400,700&subset=cyrillic,cyrillic-ext,latin-ext';
 
 /* 全体の設定 */
 html, body {
   margin: 0;
   padding: 0;
   width: 100%;
-  height: 100%;
-  font-family: "Arial", "Helvetica", sans-serif;
+  height: 100vh; /* ビューポート全体の高さを確保 */
+  font-family: "Hannotate SC", "Hiragino Maru Gothic Pro","ヒラギノ丸ゴ Pro W4","Arial", "Helvetica", sans-serif;
   background-color: #e0f7fa; /* 背景色（余白部分） */
+  display: flex; /* フレックスボックスで中央揃えを設定 */
+  justify-content: center; /* 水平方向に中央揃え */
+  align-items: center; /* 垂直方向に中央揃え */
 }
 
 /* アプリ全体のラッパーを中央に配置 */
@@ -23,26 +28,452 @@ html, body {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* 軽い影で立体感を演出 */
   border-radius: 16px; /* 角丸でデザインを整える */
   margin: auto; /* ブラウザ中央に配置 */
-  overflow-y: auto; /* コンテンツが高さを超えた場合は縦スクロールを表示 */
+  overflow: hidden; /* 全体のスクロールを無効化 */
 }
 
 /* header, main, footerが収まるようにflexを使用 */
 main {
   flex: 1; /* メイン部分をヘッダーとフッターの間に拡張 */
+  overflow-y: auto; /* コンテンツが多い場合、スクロール可能に */
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start; /* スクロール開始位置を調整 */
 }
 
+/* ヘッダーとフッターを固定 */
 header, footer {
+  position: sticky; /* 固定する */
+  z-index: 10; /* 他の要素より前面に表示 */
+  top: 0; /* ヘッダーは常に上 */
+  bottom: 0; /* フッターは常に下 */
   padding: 1rem;
   text-align: center;
+  background-color: #5292ca; /* 背景色 */
+  color: #ffffff;
 }
 
 /* フッターのデザイン */
 footer {
+  top: unset; /* フッターには上位置を解除 */
+  bottom: 0; /* 下に固定 */
   background-color: #5292ca; /* カスタムブルー */
   color: #ffffff;
   font-size: 0.9rem;
+}
+
+/* ラベル */
+#stitch {
+  color: #5292ca;
+  padding: 6px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+/* カスタムボタン(CustomButton.tsx)のcss */
+.btn {
+  font-size: 1.2rem;
+  font-weight: 700;
+  line-height: 1.4;
+  position: relative;
+  display: inline-block;
+  padding: 1rem 4rem;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.3s;
+  text-align: center;
+  vertical-align: middle;
+  text-decoration: none;
+  letter-spacing: 0.1em;
+  color: #5292ca;
+  border-radius: 0.5rem;
+}
+
+.btn-border-shadow {
+  padding: calc(1.5rem - 12px) 3rem;
+  background: #fff;
+}
+
+.btn-border-shadow:before {
+  position: absolute;
+  top: -6px;
+  left: -6px;
+  width: 100%;
+  height: 100%;
+  content: "";
+  transition: all 0.3s ease;
+  border: 3px solid #5292ca;
+  border-radius: 0.5rem;
+}
+
+.btn-border-shadow:hover {
+  padding: calc(1.5rem - 6px) 3rem;
+}
+
+.btn-border-shadow:hover:before {
+  top: 0;
+  left: 0;
+}
+
+.btn-border-shadow--color {
+  border-radius: 0;
+  background: #f7c9dd;
+}
+
+.btn-border-shadow--color:before {
+  border-radius: 0;
+}
+
+
+
+
+
+/* 見本写真登録完了画面のプリンアニメーション */
+.pudding-container {
+  width: 150px;
+  height: 150px;
+  position: relative;
+  margin: 0 auto; /* 中央寄せ */
+}
+
+.pudding {
+  width: 100%;
+  height: 100%;
+  background-image: url("https://tsukatte.com/wp-content/uploads/2021/03/sofa_blue.png");
+  background-size: cover;
+  animation: purine 1.5s linear infinite;
+  transform-origin: center bottom;
+  transform: translateY(-80px); /* 初期位置 */
+}
+
+@keyframes purine {
+  10% {
+    transform: translateY(0); /* 上から落ちる */
+  }
+  15% {
+    transform: scale(1.1, 0.9); /* 衝撃でつぶれる */
+  }
+  20% {
+    transform: scale(1.1, 0.8); /* 衝撃でさらにつぶれる */
+  }
+  30% {
+    transform: scale(1.15, 0.7); /* 横に少し伸びる */
+  }
+  45% {
+    transform: scale(1.2, 0.5); /* 横に伸びる */
+  }
+  50% {
+    transform: scale(0.85, 1.15); /* 縦に伸びる */
+  }
+  60% {
+    transform: scale(1.1, 0.9); /* 縮む */
+  }
+  70% {
+    transform: scale(0.95, 1.08); /* 縦に伸びる */
+  }
+  90% {
+    transform: scale(0.98, 1.02); /* 縮む */
+  }
+  100% {
+    transform: scale(1, 1); /* 元のサイズ */
+  }
+}
+
+/* 登録完了メッセージ */
+.text-cute {
+  font-family: 'Hiragino Maru Gothic Pro', cursive;
+  color: #5292ca;
+  font-size: 1.5rem;
+  text-align: center;
+  margin-top: 3px;
+}
+
+
+
+
+/* 可愛いボタンのデザイン（Login Button） */
+.button_solid012 {
+  background: #004A9B;
+  border-radius: 5px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+  max-width: 240px;
+  padding: 10px 25px;
+  color: #fff168;
+  transition: 0.3s ease-in-out;
+  font-weight: 800;
+  border: 2px solid #ffffff;
+  z-index: 1;
+}
+
+/* 小さいボタンのスタイル */
+.button_solid012--small {
+  max-width: 120px; /* ボタンの幅を小さく */
+  padding: 3px 13px; /* パディングを調整 */
+  font-size: 0.7rem; /* フォントサイズを小さく */
+}
+
+.button_solid012:before {
+  content: "";
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  background: #5A9BD5;
+  z-index: -1;
+  border: 2px solid #034b82;
+  border-radius: 5px;
+}
+
+.button_solid012:after {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  content: '';
+  transition: all 0.3s;
+  transform: translate3d(0, 0.40rem, -1rem);
+  border: 2px solid #034b82;
+  border-radius: inherit;
+  background: #2b7fde;
+  box-shadow: 0 0.4rem 0 0 rgb(0 0 0 / 20%);
+  z-index: -2;
+}
+
+.button_solid012:hover {
+  transform: translate3d(0, 0.2rem, -1rem);
+}
+
+.button_solid012:hover:after {
+  transform: translate3d(0, 0.2rem, -1rem);
+  box-shadow: 0 0.2rem 0 0 rgb(0 0 0 / 20%);
+}
+
+
+
+
+
+
+/* 戻るボタンCSS */
+button.back-btn {
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.5;
+  position: relative;
+  display: inline-block;
+  padding: 1rem 2rem;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-transition: all 0.3s;
+  transition: all 0.3s;
+  text-align: center;
+  vertical-align: middle;
+  text-decoration: none;
+  letter-spacing: 0.1em;
+  color: #5292ca;
+  border-radius: 0.5rem;
+}
+
+a.back-btn-border-shadow {
+  padding: calc(1.5rem - 12px) 3rem 1.5rem;
+  background: #fff;
+}
+
+a.back-btn-border-shadow:before {
+  position: absolute;
+  top: -6px;
+  left: -6px;
+  width: 100%;
+  height: 100%;
+  content: "";
+  -webkit-transition: all 0.3s ease;
+  transition: all 0.3s ease;
+  border: 3px solid #5292ca;
+  border-radius: 0.5rem;
+}
+
+a.back-btn-border-shadow:hover {
+  padding: calc(1.5rem - 6px) 3rem;
+}
+
+a.back-btn-border-shadow:hover:before {
+  top: 0;
+  left: 0;
+}
+
+a.back-btn-border-shadow--color {
+  border-radius: 0;
+  background: #f7c9dd;
+}
+
+a.back-btn-border-shadow--color:before {
+  border-radius: 0;
+}
+
+
+
+
+
+/* トップページボタン -  */
+.top-page-button {
+  color: #5292ca;
+  background: transparent;
+  border-width: 2px;
+  border-style: solid;
+  border-color: #5292ca;
+  position: relative;
+  margin: 1em;
+  display: inline-block;
+  padding: 1em 1.5em;
+  transition: all 0.3s ease-in-out;
+  text-align: center;
+  font-family: 'Comfortaa', sans-serif;
+  font-weight: bold;
+}
+
+.top-page-button:before,
+.top-page-button:after {
+  content: '';
+  display: block;
+  position: absolute;
+  border-color: #5292ca;
+  box-sizing: border-box;
+  border-style: solid;
+  width: 1em;
+  height: 1em;
+  transition: all 0.3s ease-in-out;
+}
+
+.top-page-button:before {
+  top: -6px;
+  left: -6px;
+  border-width: 2px 0 0 2px;
+  z-index: 5;
+}
+
+.top-page-button:after {
+  bottom: -6px;
+  right: -6px;
+  border-width: 0 2px 2px 0;
+}
+
+.top-page-button:hover:before,
+.top-page-button:hover:after {
+  width: calc(100% + 12px);
+  height: calc(100% + 12px);
+  border-color: #fff;
+}
+
+.top-page-button:hover {
+  color: #5292ca;
+  background-color: #f7c9dd;
+  border-color: #5292ca;
+}
+
+
+/* 写真選択ボタンのデザイン（丸いデザイン） */
+.photo-selector-button {
+  -webkit-transition: all 200ms cubic-bezier(0.390, 0.500, 0.150, 1.360);
+  -moz-transition: all 200ms cubic-bezier(0.390, 0.500, 0.150, 1.360);
+  -ms-transition: all 200ms cubic-bezier(0.390, 0.500, 0.150, 1.360);
+  -o-transition: all 200ms cubic-bezier(0.390, 0.500, 0.150, 1.360);
+  transition: all 200ms cubic-bezier(0.390, 0.500, 0.150, 1.360);
+  display: inline-flex; /* 中央揃えとアイコンのためにflexboxを使用 */
+  justify-content: center;
+  align-items: center;
+  margin: 20px;
+  width: 60px; /* 幅を固定 */
+  height: 60px; /* 高さを固定（幅と同じ） */
+  text-decoration: none;
+  border-radius: 50%; /* 丸いデザイン */
+  padding: 0; /* パディングをリセット */
+  color: #5292ca;
+  box-shadow: #5292ca 0 0px 0px 2px inset;
+  background-color: transparent;
+}
+
+.photo-selector-button:hover {
+  color: #5292ca;
+  box-shadow: #f7c9dd 0 0px 0px 20px inset;
+  background-color: #f7c9dd; /* ホバー時の背景色を追加 */
+}
+
+
+
+/* ローディング */
+#progressbar {
+  height: 26px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 200px;
+  background: #f7c9dd;
+  border-radius: 10px;
+  margin: -20px 0 0 -100px;
+  padding: 2px;
+}
+
+#loading {
+  transition: all 500ms ease;
+  height: 20px;
+  width: calc(100% - 10px);
+  border-radius: 8px;
+  background: #5292ca;
+  position: absolute;
+  margin: 3px;
+  display: inline-block;
+  animation: load 15s ease infinite;
+}
+
+#load {
+  font-family: Arial, sans-serif;
+  font-weight: bold;
+  text-align: center;
+  margin-top: -30px;
+}
+
+@keyframes load {
+  0% {
+    width: 2%;
+  }
+  10% {
+    width: 10%;
+  }
+}
+
+
+input::placeholder {
+  font-size: 0.875rem; /* フォントサイズを小さく */
+  color: #697683bb; /* 必要に応じて色を変更 */
+}
+
+
+/* マイページ背景用のステッチ風デザイン */
+.mypage-background {
+  background: #f1f8ff;
+  box-shadow: 0px 0px 0px 10px #f1f8ff; /* 線の外側 */
+  border: dashed 2px #5292ca; /* 破線 */
+  border-radius: 9px;
+  padding: 1em; /* 内側の余白 */
+  margin: 1em 0; /* 上下の間隔 */
+}
+
+
+/* 可愛い水平線のデザイン */
+.hr-cute {
+  border: none;
+  border-top: 2px dotted #5292ca; /* 点線のデザイン */
+  margin: 1rem 0;
+}
+
+
+/* Darumadrop One フォントを適用 */
+.label-darumadrop {
+  font-family: "Hannotate SC";
 }

@@ -40,7 +40,7 @@ const InvitePage = () => {
         // レスポンスにグループ情報が含まれている場合、招待リンクを生成
         if (response.data.groupName) {
           setInviteLink(response.data.inviteLink);
-          setMessage(`「${response.data.groupName}」グループの招待リンクを生成しました！`);
+          setMessage(`「${response.data.groupName}」のメンバーを招待しよう！`);
         } else {
           setMessage("まだグループが作成されていません。");
         }
@@ -56,21 +56,21 @@ const InvitePage = () => {
   }, []);
 
   return (
-    <div className="flex flex-col items-center p-6">
+    <div className="flex flex-col items-center justify-center h-screen p-6">
       <h1 className="text-2xl font-bold text-customBlue mb-4">家族を招待</h1>
       {loading ? (
-        <p className="text-gray-700">読み込み中...</p>
+        <p className="font-bold text-customBlue">読み込み中...</p>
       ) : (
         <>
-          {message && <p className="mt-4 text-gray-700">{message}</p>}
+          {message && <p className="mt-4 font-bold text-customBlue">{message}</p>}
           {inviteLink && (
-            <div className="mt-4 p-4 bg-customPink rounded shadow">
+            <div className="mypage-background mt-4 p-4 rounded shadow">
               <p className="font-bold text-customBlue">以下のリンクをコピーして共有してください:</p>
               <input
                 type="text"
                 value={inviteLink}
                 readOnly
-                className="w-full mt-2 p-2 bg-white text-customBlue"
+                className="w-full mt-2 p-2 rounded bg-customBlue text-customYellow"
                 onClick={(e) => {
                   navigator.clipboard.writeText(inviteLink);
                   alert("リンクをコピーしました！");
@@ -81,7 +81,7 @@ const InvitePage = () => {
 
           {/* トップページに戻るボタン */}
           <div className="mt-6">
-            <CustomButton text="トップページに戻る" onClick={() => (window.location.href = "/")} />
+            <CustomButton text="ホームに戻る" onClick={() => (window.location.href = "/")} />
           </div>
         </>
       )}

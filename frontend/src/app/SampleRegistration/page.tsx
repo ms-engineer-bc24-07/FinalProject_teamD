@@ -8,6 +8,7 @@ import CustomButton from "@/components/CustomButton";
 import { auth } from "@/lib/firebase";
 import { createImageFormData } from '@/utils/createImageData';
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface FormError {
   message: string;
@@ -72,7 +73,14 @@ export default function PhotoRegistration() {
   };
 
   return (
-    <div className="flex flex-col px-5 py-6">
+    <div className="flex flex-col items-center p-6">
+      {/* ヘッダー部分 */}
+      <div className="flex items-center mt-6 mb-6">
+        <h1 className="text-2xl font-bold text-customBlue text-center">
+          見本写真の登録
+        </h1>
+      </div>
+
       {/* エラーメッセージ表示 */}
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
@@ -93,8 +101,8 @@ export default function PhotoRegistration() {
 
       {/* 名前入力画面 */}
       {currentStep === 3 && (
-        <div className="bg-white p-4 rounded-lg shadow w-full max-w-md mx-auto">
-          <div className="aspect-square bg-gray-200 mb-4 flex items-center justify-center">
+        <div className="bg-white p-4 rounded-lg w-full max-w-md mx-auto">
+          <div className="aspect-square bg-white mb-4 flex items-center justify-center">
             {selectedImage && (
               <Image
                 src={selectedImage}
@@ -114,7 +122,7 @@ export default function PhotoRegistration() {
               className="mt-1 p-2 border border-customBlue rounded-full w-full text-customBlue font-bold bg-customPink focus:ring-2 focus:ring-customBlue focus:outline-none"
             />
           </div>
-          <div className="flex flex-col gap-2 items-center">
+          <div className="flex flex-col gap-2 items-center mt-7">
             <CustomButton text="保存" onClick={handleSubmit} />
           </div>
         </div>
@@ -122,15 +130,27 @@ export default function PhotoRegistration() {
 
       {/* 完了画面 */}
       {currentStep === 4 && (
-        <div className="bg-white from-pink-500 via-yellow-500 to-blue-500 animate-gradient p-4 rounded-lg w-full max-w-md mx-auto transform transition-transform duration-500 ease-out scale-110">
-          <div className="text-center text-xl font-bold text-customBlue">
-            登録できました！ 
-          </div>
-          <div className="mt-4 flex justify-center">
-            <CustomButton text="トップページに戻る" onClick={() => router.push("/")} />
+        <div className="mt-10 mb-5 p-4 rounded-lg w-full max-w-md mx-auto transform transition-transform duration-500 ease-out scale-110">
+          <div className="text-center">
+            {/* プリンのアニメーション */}
+            <div className="pudding-container mx-auto">
+              <div className="pudding"></div>
+            </div>
+            {/* メッセージ */}
+            <h1 className="text-cute">登録できました！</h1>
           </div>
         </div>
       )}
+
+      {/* ホームページに戻るボタン */}
+      <div className="flex justify-center">
+        <Link href="/">
+          <CustomButton
+            text="ホームに戻る"
+          />
+        </Link>
+      </div>
+
     </div>
   );
 }

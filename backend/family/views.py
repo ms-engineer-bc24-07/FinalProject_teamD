@@ -60,7 +60,12 @@ def get_group_info(request):
 
         # グループとメンバー情報を取得
         group = family_member.group
-        members = FamilyMember.objects.filter(group=group).values_list("user__user_name", flat=True)
+        members = FamilyMember.objects.filter(group=group).select_related("user")
+
+        # メンバー情報をリストとして構築（名前とアイコンを含む）
+        members_data = [
+            {"name": member.user.user_name, "icon_url": member.user.icon_url} for member in members
+        ]
 
         # 招待リンクの生成
         token = get_random_string(length=32)
@@ -71,7 +76,7 @@ def get_group_info(request):
         
         return Response({
             "groupName": group.name,
-            "members": list(members),
+            "members": members_data,
             "inviteLink": invite_link, 
         }, status=200)
 

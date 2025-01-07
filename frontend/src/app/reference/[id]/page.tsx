@@ -57,7 +57,7 @@ const ReferencePage = () => {
       
         {/* 記録を見るボタン */}
         <CustomButton
-          text="記録をみる"
+          text="片付け記録"
           onClick={() => router.push(`/cleanup-records/list/${id}`)}
         />
 

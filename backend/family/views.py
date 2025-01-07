@@ -71,7 +71,8 @@ def get_group_info(request):
         token = get_random_string(length=32)
         expires_at = now() + timedelta(days=7)
         invitation = Invitation.objects.create(group=group, token=token, expires_at=expires_at)
-        invite_link = f"http://localhost:3000/invite_accept?token={token}"
+        #invite_link = f"http://localhost:3000/invite_accept?token={token}"
+        invite_link = f"http://192.168.11.5:3000/invite_accept?token={token}"
 
         
         return Response({

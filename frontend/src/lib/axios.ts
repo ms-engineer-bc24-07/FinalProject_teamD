@@ -6,6 +6,6 @@ axios.defaults.xsrfHeaderName = "X-CSRFToken"; // DjangoのCSRFトークンヘ�
 axios.defaults.xsrfCookieName = "csrftoken"; // DjangoのCSRFトークンクッキー名
 
 // ベースURLを設定（必要に応じて）
-axios.defaults.baseURL = "http://localhost:8000";
+axios.defaults.baseURL = "http://192.168.11.5:8000";
 
 export default axios;

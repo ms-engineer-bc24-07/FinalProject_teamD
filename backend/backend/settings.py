@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-(hht-5qhb8hk#_vzr(mydlki4m4tch-49lofp5)9_ln_l_tt^n
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.11.5', '0.0.0.0']
 
 
 # Application definition
@@ -60,12 +60,13 @@ MIDDLEWARE = [
 ]
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # フロントエンドのURL（Reactなど）
+    "http://192.168.11.5:3000",
 ]
 
 # 認証情報（Cookie）を含める場合
 CORS_ALLOW_CREDENTIALS = True
 
-CORS_ALLOW_CREDENTIALS = True 
+
 ROOT_URLCONF = 'backend.urls'
 
 TEMPLATES = [

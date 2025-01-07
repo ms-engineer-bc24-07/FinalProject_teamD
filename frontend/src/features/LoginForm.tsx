@@ -26,7 +26,7 @@ const LoginForm = () => {
           // Firebaseトークンを取得
           const idToken = await user.getIdToken();
           const response = await axios.get(
-            "http://localhost:8000/api/family/get_group_info/", // グループ情報を取得するエンドポイント
+            "/api/family/get_group_info/", // グループ情報を取得するエンドポイント
             {
               headers: {
                 Authorization: `Bearer ${idToken}`, // Firebase トークンを設定
@@ -77,9 +77,9 @@ const LoginForm = () => {
     <div className="flex flex-col items-center justify-center">
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-8 rounded w-80"
+        className="mt-16 p-8 rounded w-80"
       >
-        <h1 className="text-3xl font-bold mb-6 text-customBlue">ログイン</h1>
+        <h1 className="text-3xl font-bold mb-6 text-customBlue text-center">ログイン</h1>
         {error && <p className="text-red-600 text-sm mb-4">{error}</p>}
   
         <div className="mb-6">
@@ -112,12 +112,12 @@ const LoginForm = () => {
   
         <button
           type="submit"
-          className="bg-customBlue text-customYellow px-4 py-2 rounded-full w-full text-xl font-bold transform transition-transform duration-150 active:scale-95 active:bg-customBlue-dark hover:bg-customLightblue"
+          className="button_solid012"
         >
           ログイン
         </button>
   
-        <p className="text-sm mt-3 text-gray-700">
+        <p className="text-sm mt-5 text-gray-700">
           アカウントを持っていない方は{" "}
           <a
             href="/auth/register"

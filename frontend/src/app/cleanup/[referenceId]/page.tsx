@@ -8,6 +8,7 @@ import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slide
 import { createImageFormData } from '@/utils/createImageData';
 import { auth } from '@/lib/firebase';
 import LinearColor from '@/features/LinearColor';
+import CustomButton from "../../../components/CustomButton";
 
 interface FormError {
   message: string;
@@ -27,7 +28,7 @@ export default function PhotoRegistration() {
 
     try {
       // 見本画像を取得
-      const referenceModel = await axios.get(`http://localhost:8000/api/references/${referenceId}/`);
+      const referenceModel = await axios.get(`/api/references/${referenceId}/`);
       const referenceImgUrl = referenceModel.data.image_url;
       setReferenceImageURL(referenceImgUrl);
 
@@ -45,7 +46,7 @@ export default function PhotoRegistration() {
       const formData = await createImageFormData(imageData, firebaseUid, undefined, referenceModel.data.id)
 
       // 比較画像をS3にアップしてDBに登録
-      const uploadResponse = await axios.post('http://localhost:8000/api/comparison-images/upload/', formData, {
+      const uploadResponse = await axios.post('/api/comparison-images/upload/', formData, {
         headers: { 
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${idToken}`  // トークンをヘッダーに追加
@@ -54,7 +55,7 @@ export default function PhotoRegistration() {
       console.log('Success ComparisonImg:', uploadResponse.data);
 
       // スコアの計算とDB登録
-      const scoreResponse = await axios.post('http://localhost:8000/api/scores/',
+      const scoreResponse = await axios.post('/api/scores/',
         {
           reference_image_url: referenceImgUrl,
           comparison_img_id: uploadResponse.data.id,
@@ -73,15 +74,9 @@ export default function PhotoRegistration() {
   return (
     <div className="flex flex-col items-center p-6">
       {/* ヘッダー部分 */}
-      <div className="flex items-center mb-6">
-        <button
-          onClick={() => router.back()}
-          className="text-customBlue mr-12 transform transition-transform duration-150 active:scale-95 active:bg-customBlue-dark hover:text-customDarkblue"
-        >
-          ← 戻る
-        </button>
-        <h1 className="text-l font-bold text-customBlue text-center flex-grow">
-          写真をアップロード
+      <div className="flex items-center mt-6 mb-6">
+        <h1 className="text-2xl font-bold text-customBlue text-center">
+          片付け後の写真登録
         </h1>
       </div>
 
@@ -114,6 +109,12 @@ export default function PhotoRegistration() {
           />
         </div>
       )}
+
+    {/* 前のページに戻るボタン */}
+    <div className="mt-2 flex justify-center">
+    <CustomButton text="前に戻る" onClick={() => window.history.back()} />
+    </div>
+
     </div>
   );
 }

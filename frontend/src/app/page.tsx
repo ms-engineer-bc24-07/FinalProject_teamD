@@ -40,7 +40,7 @@ const Page = () => {
         }
 
         const response = await axios.post(
-          "http://localhost:8000/api/users/get_user/",
+          "/api/users/get_user/",
           { email },
           {
             headers: {
@@ -74,7 +74,7 @@ const Page = () => {
         }
 
         const response = await axios.get(
-          "http://localhost:8000/api/references/group-references/",
+          "/api/references/group-references/",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -135,8 +135,8 @@ const Page = () => {
   
   return (
     <div className="flex-grow p-5 text-center">
-      <div className="flex justify-between items-center p-6">
-        <div className="ml-8 text-3xl font-extrabold text-customBlue">
+      <div className="flex justify-between items-center mt-9 p-6">
+        <div className="ml-7 text-3xl font-extrabold text-customBlue">
           {userName}
         </div>
         <div className="w-25 h-25">

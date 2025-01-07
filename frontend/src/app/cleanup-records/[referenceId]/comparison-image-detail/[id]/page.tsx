@@ -4,6 +4,8 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";  // Next.js 13 app router
 import axios from "../../../../../lib/axios";
 import Image from "next/image";  // Next.jsのImageコンポーネント
+import { useRouter } from "next/navigation";  // next/navigationのuseRouterを使用
+import CustomButton from "../../../../../components/CustomButton";
 
 // 日付をYYYY-MM-DDの形式に変換するヘルパー関数
 const formatDate = (date: string) => {
@@ -15,11 +17,12 @@ const formatDate = (date: string) => {
 const ComparisonImageDetailPage = () => {
   const { referenceId, id } = useParams();  // referenceIdとimageIdをURLパラメータとして取得
   const [image, setImage] = useState<any>(null);
+  const router = useRouter();
 
   useEffect(() => {
     if (id) {
       axios
-        .get(`http://localhost:8000/api/comparison-images/${id}/`) // imageIdでリクエスト
+        .get(`/api/comparison-images/${id}/`) // imageIdでリクエスト
         .then((response) => setImage(response.data))
         .catch((error) => {
           console.error("Error fetching comparison image details:", error);
@@ -27,24 +30,32 @@ const ComparisonImageDetailPage = () => {
     }
   }, [id]);
 
-  if (!image) return <div>Loading...</div>;
+  if (!image) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-xl font-bold text-customBlue text-center">Loading...</div>
+      </div>
+    );
+  }
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold text-customBlue mb-4">片付け記録の詳細</h1>
-
-      <div className="mb-4">
-        <h2 className="text-xl text-customBlue">{image.user_name}</h2> {/* ユーザー名 */}
-        <p className="text-sm text-gray-500">{formatDate(image.uploaded_at)}</p> {/* 日付表示 */}
-        <div className="mt-4">
+    <div className="flex-grow p-5 text-center">
+      <div className="mt-8 mb-4">
+        {/* ユーザー名と日付を横並びに */}
+        <div className="flex items-center justify-between">
+            <h2 className="text-xl text-customBlue">{image.user_name}</h2> {/* ユーザー名 */}
+            <p className="text-sm text-gray-500 ml-4">{formatDate(image.uploaded_at)}</p> {/* 日付表示 */}
+        </div>
+        
+         {/* 画像表示 */}
           <Image
             src={image.image_url}  // 比較画像
             alt="Comparison Image"
-            width={500}
+            width={300}
             height={300}
-            className="rounded-md"
+            className="mt-4 w-full h-64 object-cover rounded-md"
           />
-        </div>
+       
       </div>
 
       {/* 追加情報として説明があれば表示 */}
@@ -54,6 +65,16 @@ const ComparisonImageDetailPage = () => {
           <p className="text-gray-600">{image.record_description}</p>
         </div>
       )}
+
+        {/* 前のページに戻るボタン */}
+      <div className="mt-8 flex justify-center">
+        <CustomButton text="記録一覧に戻る" onClick={() => window.history.back()} />
+      </div>
+
+        {/* ホームに戻るボタン */}
+      <div className="mt-6 flex justify-center">
+        <CustomButton text="ホームに戻る" onClick={() => router.push("/")} />
+      </div>
     </div>
   );
 };

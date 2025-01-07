@@ -6,6 +6,7 @@ import { useParams } from "next/navigation";  // next/navigationからuseParams�
 import axios from "../../../lib/axios";
 import Image from "next/image"; // Next.jsのImageコンポーネントをインポート
 import CustomButton from "../../../components/CustomButton";
+import Link from "next/link";
 
 const ReferencePage = () => {
   const { id } = useParams();  // useParamsでURLパラメータを取得
@@ -16,7 +17,7 @@ const ReferencePage = () => {
   useEffect(() => {
     if (id) {
       axios
-        .get(`http://localhost:8000/api/references/${id}`)
+        .get(`/api/references/${id}`)
         .then((response) => setReference(response.data))
         .catch((error) => {
           console.error("Error fetching reference:", error);
@@ -24,22 +25,23 @@ const ReferencePage = () => {
     }
   }, [id]);
 
-  if (!reference) return <div>Loading...</div>;
+  if (!reference) 
+    return (
+      <div id="progressbar">
+        <span id="loading"></span>
+        <div id="load">loading</div>
+      </div>
+    );
 
   return (
       <div className="flex-grow p-5 text-center">
-        {/* ヘッダー部分 */}
-        <div className="flex items-center  justify-start gap-4">
-        {/* 戻るボタン */}
-        <button
-          onClick={() => router.back()}
-          className="mr-4 text-customBlue transform transition-transform duration-150 active:scale-95 active:bg-customBlue-dark hover:text-customDarkblue"
-        >
-          ← 戻る
-        </button>
         {/* タイトル */}
-        <h1 className="text-2xl font-bold text-customBlue">{reference.reference_name}</h1>
-      </div>
+      <div className="relative mt-6 mb-6">
+          {/* タイトル */}
+          <h1 className="text-2xl font-bold text-customBlue text-center">
+            {reference.reference_name}
+          </h1>
+        </div>
         
         {/* 画像表示 */}
         <Image
@@ -51,7 +53,7 @@ const ReferencePage = () => {
         />
       
     
-      <div className="flex flex-col items-center gap-4 w-full max-w-md mx-auto">
+      <div className="flex flex-col items-center gap-5 w-full max-w-md mx-auto mt-8">
       
         {/* 記録を見るボタン */}
         <CustomButton
@@ -61,9 +63,16 @@ const ReferencePage = () => {
 
         {/* 片付けボタン */}
         <CustomButton
-          text="片付け"
+          text="片付ける"
           onClick={() => router.push(`/cleanup/${id}`)}
         />
+
+        {/* ホームページに戻るボタン */}
+        <Link href="/">
+          <CustomButton
+            text="ホームに戻る"
+          />
+        </Link>
       </div>
     </div>
   );

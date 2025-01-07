@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";  // Next.js 13 app router
 import axios from "../../../../lib/axios";
+import Link from "next/link";
+import CustomButton from "../../../../components/CustomButton";
 
 // 日付をYYYY-MM-DDの形式に変換するヘルパー関数
 const formatDate = (date: string) => {
@@ -19,7 +21,7 @@ const ComparisonImageListPage = () => {
     if (referenceId) {
       console.log('Fetching comparison images for referenceId:', referenceId); 
       axios
-        .get(`http://localhost:8000/api/comparison-images/?reference=${referenceId}`)
+        .get(`/api/comparison-images/?reference=${referenceId}`)
         .then((response) => {
           console.log('Comparison images data:', response.data);  // レスポンスの確認
           setComparisonImages(response.data);
@@ -31,40 +33,46 @@ const ComparisonImageListPage = () => {
   }, [referenceId]);
 
   return (
-    <div className="flex-grow p-5 bg-red-200 w-full max-w-screen-lg mx-auto">
-     {/* タイトルと戻るボタンを配置 */}
-      <div className="relative mb-6">
-        {/* 戻るボタン */}
-        <button
-          onClick={() => window.history.back()}
-          className="absolute left-0 text-customBlue transform transition-transform duration-150 active:scale-95 active:bg-customBlue-dark hover:text-customDarkblue"
-        >
-          ← 戻る
-        </button>
-        {/* タイトル */}
-        <h1 className="text-2xl font-bold text-customBlue text-center">
-          片付け記録
-        </h1>
-      </div>
+    <div className="flex-grow p-5 text-center">
+    {/* タイトルと戻るボタンを配置 */}
+    <div className="relative mt-6 mb-6">
+      {/* タイトル */}
+      <h1 className="text-2xl font-bold text-customBlue text-center">
+        片付け記録
+      </h1>
+    </div>
 
-      {/* 記録がない場合 */}
+    {/* 記録の表示セクション */}
+    <div className="mypage-background p-5 rounded-md h-80 overflow-y-auto">
       {comparisonImages.length === 0 ? (
-        <p className="text-center text-gray-500">記録がありません。</p>
+        // 記録がない場合
+        <div className="flex items-center justify-center h-full">
+          <p className="text-center text-customBlue font-bold">記録がありません。</p>
+        </div>
       ) : (
         // 記録がある場合はリスト形式で表示
         <div className="space-y-4">
           {comparisonImages.map((image) => (
-            <div key={image.id} className="p-4 border-b-2 border-customPink flex justify-between items-center">
+            <div
+              key={image.id}
+              className="p-4 border-b-2 border-dashed border-customBlue flex justify-between items-center gap-4"
+            >
               {/* 左側にユーザー名と日付を表示 */}
               <div className="flex flex-col">
-                <p className="text-lg font-semibold text-customBlue">{image.user_name}</p>
-                <p className="text-sm text-gray-500">{formatDate(image.uploaded_at)}</p>
+                <p className="text-lg font-semibold text-customBlue">
+                  {image.user_name}
+                </p>
+                <p className="text-sm text-gray-500">
+                  {formatDate(image.uploaded_at)}
+                </p>
               </div>
 
               {/* 右側に詳細ページへのボタン */}
               <button
-                onClick={() => window.location.href = `/cleanup-records/${referenceId}/comparison-image-detail/${image.id}`}
-                className="text-blue-500 underline"
+                onClick={() =>
+                  (window.location.href = `/cleanup-records/${referenceId}/comparison-image-detail/${image.id}`)
+                }
+                className="button_solid012 button_solid012--small"
               >
                 詳細を見る
               </button>
@@ -73,7 +81,23 @@ const ComparisonImageListPage = () => {
         </div>
       )}
     </div>
-  );
+
+    {/* 前のページに戻るボタン */}
+    <div className="mt-8 flex justify-center">
+    <CustomButton text="前に戻る" onClick={() => window.history.back()} />
+    </div>
+
+    {/* ホームに戻るボタンを追加 */}
+    <div className="mt-8">
+    <Link href="/">
+        <CustomButton
+          text="ホームに戻る"
+        />
+      </Link>
+    </div>
+  </div>
+);
+  
 };
 
 export default ComparisonImageListPage;

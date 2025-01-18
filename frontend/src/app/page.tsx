@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -18,9 +18,11 @@ const Page = () => {
 
   useEffect(() => {
     const checkAuth = () => {
-      const unsubscribe = onAuthStateChanged(auth, (user) => {
+      const unsubscribe = onAuthStateChanged(auth, async (user) => {
         if (user) {
-          fetchUser(user);
+          // ユーザー情報の取得
+          await fetchUser(user);
+          // 参照情報の取得
           fetchReferences();
         } else {
           router.push("/auth/login");
@@ -31,29 +33,27 @@ const Page = () => {
 
     const fetchUser = async (user: any) => {
       try {
+        // ユーザーのメールアドレスを使ってユーザー情報を取得
         const email = user.email;
-        const token = await user.getIdToken();
+        const token = await user.getIdToken(); // トークンの取得
 
         if (!token) {
-          console.error("fetchUserユーザーが認証されていません");
+          console.error("ユーザーが認証されていません");
           return;
         }
 
         const response = await axios.post(
-          "http://localhost:8000/api/users/get_user/",
-          { email },
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
+          "/api/users/get_user/", 
+          { email }, 
+          { headers: { Authorization: `Bearer ${token}` } }
         );
 
         if (response.status === 200) {
           const data = response.data;
           setUserName(data.user_name);
           setUserIcon(data.icon_url || null);
+        } else {
+          console.error("ユーザー情報取得エラー", response);
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -66,25 +66,27 @@ const Page = () => {
     const fetchReferences = async () => {
       try {
         const user = auth.currentUser;
-        const token = await user?.getIdToken(true);
-
-        if (!token) {
-          console.error("fetchReferencesユーザーが認証されていません");
+        if (!user) {
+          console.error("ユーザーが認証されていません");
           return;
         }
 
-        const response = await axios.get(
-          "http://localhost:8000/api/references/group-references/",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const token = await user.getIdToken(true); // トークンの再取得
+
+        if (!token) {
+          console.error("トークンが取得できません");
+          return;
+        }
+
+        const response = await axios.get("/api/references/group-references/", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
         if (response.status === 200) {
-          console.log('Received references:', response.data); 
+          console.log("Received references:", response.data);
           setReferences(response.data);
+        } else {
+          console.error("参照情報取得エラー", response);
         }
       } catch (error) {
         console.error("Error fetching group references:", error);
@@ -102,12 +104,11 @@ const Page = () => {
 
   const getReferenceButton = (reference: any | null, id: number) => {
     console.log('Processing reference:', reference);
-  
-    // reference が null の場合の処理
+
     if (reference && reference.reference_name) {
       return (
         <ToppageButton
-          key={reference.id} // reference.id を使用
+          key={reference.id}
           text={reference.reference_name}
           onClick={() => {
             console.log(`Navigating to reference ${reference.id}`); // デバッグ用
@@ -118,21 +119,20 @@ const Page = () => {
     } else {
       return (
         <ToppageButton
-          key={`no-reference-${id}`} // null の場合、ユニークな key を使用
+          key={`no-reference-${id}`}
           icon={<FaCamera className="text-customBlue text-4xl" />}
-          onClick={() => router.push(`/SampleRegistration`)} // 参考写真がない場合、カメラアイコンを表示
+          onClick={() => router.push(`/SampleRegistration`)}
         />
       );
     }
   };
-  
+
   const buttons = [];
   for (let i = 0; i < 4; i++) {
-    // referencesの中からi番目の見本写真を取得
     const reference = references[i] || null;
-    buttons.push(getReferenceButton(reference, i + 1)); // IDは1から始まると仮定
+    buttons.push(getReferenceButton(reference, i + 1)); 
   }
-  
+
   return (
     <div className="flex-grow p-5 text-center">
       <div className="flex justify-between items-center mt-9 p-6">
@@ -158,10 +158,10 @@ const Page = () => {
           )}
         </div>
       </div>
-  
+
       <div className="flex-grow p-5 text-center">
         <div className="grid grid-cols-2 gap-10 mt-4">
-          {buttons} {/* buttons 配列をここでレンダリング */}
+          {buttons}
         </div>
       </div>
     </div>

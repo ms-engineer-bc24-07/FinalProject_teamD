@@ -1,23 +1,40 @@
-import os #仮にいれたやつ
-
 import cv2
 import numpy as np
+import urllib.request
 from matplotlib import pyplot as plt
 from skimage.metrics import structural_similarity as ssim
 
-def process_images():
-  ## ---------処理フロー-------------
-  ## S3から見本画像と登録画像を取得する
-  ## 画像解析
-  ## （scoreをDBに登録 →　これはviewで処理する？）
-  ## scoreをreturn
+def load_image_from_url(url):
+  # URLから画像をダウンロードしてOpenCV形式に変換する関数
+  try:
+      # URLから画像をダウンロード
+      req = urllib.request.Request(url)
+      with urllib.request.urlopen(req) as res:
+        body = res.read()
+      
+      # バイナリデータをNumPy配列に変換
+      arr = np.frombuffer(body, dtype=np.uint8)
 
-  # 画像を読み込む（後でS３からの取得に変える）
-  image_path1 = os.path.join(os.getcwd(), "backend/static/images/current.jpg")  # 絶対パスに変換
-  image_path2 = os.path.join(os.getcwd(), "backend/static/images/reference.jpg")  # 絶対パスに変換
-  
-  image1 = cv2.imread(image_path1)
-  image2 = cv2.imread(image_path2)
+      # NumPy配列をOpenCV形式にデコード
+      img = cv2.imdecode(arr, flags=cv2.IMREAD_COLOR)
+
+      if img is None:
+        raise ValueError(f"Failed to decode image from URL: {url}")
+
+      return img
+  except Exception as e:
+      raise ValueError(f"Error loading image from URL: {url}. Details: {e}")
+    
+def process_images(reference_image_url, comparison_image_url):
+  # S3にアップロードされた画像のURL
+  reference_image_url = reference_image_url
+  comparison_image_url = comparison_image_url
+  print(reference_image_url, flush=True)
+  print(comparison_image_url, flush=True )
+
+  # URLから画像をロード
+  image1 = load_image_from_url(reference_image_url)
+  image2 = load_image_from_url(comparison_image_url)
 
   # ガウシアンブラーでノイズ除去
   # エッジ検出前に平滑化を行うことで、小さな光の影響を抑えられます。

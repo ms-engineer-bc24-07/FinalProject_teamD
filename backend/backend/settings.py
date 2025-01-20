@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'scores',
     'references',
     'comparison_images',
+    'family', 
 ]
 
 MIDDLEWARE = [
@@ -53,13 +54,16 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware', #認証が有効であることを確認
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # フロントエンドのURL（Reactなど）
 ]
+
+# 認証情報（Cookie）を含める場合
+CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOW_CREDENTIALS = True 
 ROOT_URLCONF = 'backend.urls'
@@ -151,11 +155,39 @@ AWS_S3_SIGNATURE_VERSION = os.getenv('AWS_S3_SIGNATURE_VERSION')
 
 # S3ストレージの設定
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-# REST_FRAMEWORK = {
-#     'DEFAULT_AUTHENTICATION_CLASSES': [
-#         'rest_framework.authentication.TokenAuthentication',  # トークン認証
-#     ],
-#     'DEFAULT_PERMISSION_CLASSES': [
-#         'rest_framework.permissions.IsAuthenticated',  # 認証されていないユーザーはアクセスできない
-#     ],
-# }
+
+# メールバックエンドをコンソールに設定
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+#DEBUG=True が設定されている場合、ブラウザにエラーの詳細が表示されます。
+DEBUG = True
+
+#カスタム認証バックエンドを追加
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',  # デフォルト
+    'users.authentication.FirebaseAuthenticationBackend',  # Firebase認証バックエンド
+]
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'level': 'ERROR',
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+         'django.template': {  # テンプレート関連ログを制御
+            'handlers': ['console'],
+            'level': 'WARNING',  # DEBUG を WARNING に変更
+            'propagate': False,
+        },
+    },
+}
+

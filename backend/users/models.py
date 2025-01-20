@@ -4,6 +4,7 @@ from django.db import models
 
 class User(models.Model):
     id = models.AutoField(primary_key=True)
+    firebase_uid = models.CharField(max_length=50, unique=True, null=True, blank=True)  # Firebase UID
     user_name = models.CharField(max_length=50, unique=True)
     email = models.EmailField(max_length=255, unique=True)
     password = models.CharField(max_length=255)

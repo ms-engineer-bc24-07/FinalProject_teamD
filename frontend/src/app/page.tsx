@@ -1,92 +1,119 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation"; // next/navigation の useRouter をインポート
-import { FaCamera } from "react-icons/fa"; // カメラアイコンをインポート
-import Image from "next/image"; // Next.jsのImageコンポーネントをインポート
-import { auth } from "../lib/firebase"; // Firebaseの初期化設定をインポート
-import { onAuthStateChanged } from "firebase/auth"; // Firebaseの認証状態を確認する
+import { useRouter } from "next/navigation";
+import { FaCamera } from "react-icons/fa";
+import Image from "next/image";
+import { auth } from "../lib/firebase";
+import { onAuthStateChanged } from "firebase/auth";
 import ToppageButton from "../components/ToppageButton";
-import axios from "axios"; // axiosをインポート
+import axios from "../lib/axios";
 
 const Page = () => {
   const [userName, setUserName] = useState<string>("ゲスト");
-  const [userIcon, setUserIcon] = useState<string>("/icons/icon-1.png");
-  const [references, setReferences] = useState<any[]>([]); // references を保存するためのステート
+  const [userIcon, setUserIcon] = useState<string | null>(null);
+  const [references, setReferences] = useState<any[]>([]);
 
   const router = useRouter();
 
   useEffect(() => {
     const checkAuth = () => {
-      // Firebaseの認証状態を監視
-      const unsubscribe = onAuthStateChanged(auth, (user) => {
+      const unsubscribe = onAuthStateChanged(auth, async (user) => {
         if (user) {
-          // ログイン状態の場合、ユーザー情報を取得
-          fetchUser(user);
+          // ユーザー情報の取得
+          await fetchUser(user);
+          // 参照情報の取得
+          fetchReferences();
         } else {
-          // ログインしていない場合はログインページにリダイレクト
           router.push("/auth/login");
         }
       });
-      return unsubscribe; // クリーンアップ
+      return unsubscribe;
     };
 
     const fetchUser = async (user: any) => {
       try {
+        // ユーザーのメールアドレスを使ってユーザー情報を取得
         const email = user.email;
-        const token = await user.getIdToken(); // Firebaseトークンを取得
+        const token = await user.getIdToken(); // トークンの取得
+
+        if (!token) {
+          console.error("ユーザーが認証されていません");
+          return;
+        }
 
         const response = await axios.post(
-          "http://localhost:8000/api/users/get_user/",
-          { email },
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
+          "/api/users/get_user/", 
+          { email }, 
+          { headers: { Authorization: `Bearer ${token}` } }
         );
 
         if (response.status === 200) {
           const data = response.data;
-          setUserName(data.user_name); // ユーザー名を更新
+          setUserName(data.user_name);
+          setUserIcon(data.icon_url || null);
         } else {
-          console.error("ユーザー情報の取得に失敗しました。");
+          console.error("ユーザー情報取得エラー", response);
         }
       } catch (error) {
-        console.error("エラーが発生しました:", error);
+        console.error("Error fetching user data:", error);
+        if (axios.isAxiosError(error) && error.response?.status === 401) {
+          router.push("/auth/login");
+        }
       }
     };
 
     const fetchReferences = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:8000/api/references/"
-        );
+        const user = auth.currentUser;
+        if (!user) {
+          console.error("ユーザーが認証されていません");
+          return;
+        }
+
+        const token = await user.getIdToken(true); // トークンの再取得
+
+        if (!token) {
+          console.error("トークンが取得できません");
+          return;
+        }
+
+        const response = await axios.get("/api/references/group-references/", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
         if (response.status === 200) {
-          setReferences(response.data); // 取得したreferencesをstateに保存
+          console.log("Received references:", response.data);
+          setReferences(response.data);
+        } else {
+          console.error("参照情報取得エラー", response);
         }
       } catch (error) {
-        console.error("Error fetching references:", error);
+        console.error("Error fetching group references:", error);
+        if (axios.isAxiosError(error)) {
+          if (error.response?.status === 401) {
+            router.push("/auth/login");
+          }
+        }
       }
     };
 
     const unsubscribe = checkAuth();
-    fetchReferences();
-
-    return () => unsubscribe(); // コンポーネントがアンマウントされたら監視を停止
+    return () => unsubscribe();
   }, [router]);
 
-  // `references` のidに基づいて、ページボタンを作成
-  const getReferenceButton = (id: number) => {
-    const reference = references.find((ref) => ref.id === id);
+  const getReferenceButton = (reference: any | null, id: number) => {
+    console.log('Processing reference:', reference);
 
-    if (reference) {
+    if (reference && reference.reference_name) {
       return (
         <ToppageButton
           key={reference.id}
           text={reference.reference_name}
-          onClick={() => router.push(`/reference/${reference.id}`)} // 動的に遷移
+          onClick={() => {
+            console.log(`Navigating to reference ${reference.id}`); // デバッグ用
+            router.push(`/reference/${reference.id}`);
+          }}
         />
       );
     } else {
@@ -94,39 +121,46 @@ const Page = () => {
         <ToppageButton
           key={`no-reference-${id}`}
           icon={<FaCamera className="text-customBlue text-4xl" />}
-          onClick={() => router.push(`/register-reference/${id}`)} // 参考写真がない場合、カメラアイコンを表示
+          onClick={() => router.push(`/SampleRegistration`)}
         />
       );
     }
   };
 
-  // ボタンが常に4つ表示されるように、足りない分は見本写真登録ボタンを追加
-  const buttonCount = 4;
   const buttons = [];
-  for (let i = 1; i <= buttonCount; i++) {
-    buttons.push(getReferenceButton(i));
+  for (let i = 0; i < 4; i++) {
+    const reference = references[i] || null;
+    buttons.push(getReferenceButton(reference, i + 1)); 
   }
 
   return (
     <div className="flex-grow p-5 text-center">
-      {/* 上部のユーザー情報 */}
-      <div className="flex justify-between items-center p-6">
-        <div className="text-lg font-bold text-customBlue">{userName}さん</div>
+      <div className="flex justify-between items-center mt-9 p-6">
+        <div className="ml-7 text-3xl font-extrabold text-customBlue">
+          {userName}
+        </div>
         <div className="w-25 h-25">
-          <Image
-            src={userIcon || "/icons/icon-1.png"}
-            alt={`${userName}のアイコン`}
-            width={100}
-            height={100}
-            className="rounded-full"
-          />
+          {userIcon ? (
+            <Image
+              src={userIcon}
+              alt={`${userName}のアイコン`}
+              width={100}
+              height={100}
+              className="rounded-full border-4 border-customBlue"
+            />
+          ) : (
+            <div
+              className="w-24 h-24 rounded-full border border-customBlue flex items-center justify-center bg-gray-100"
+              title="アイコン未設定"
+            >
+              <span className="text-customBlue text-sm">No Icon</span>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* メインコンテンツ */}
       <div className="flex-grow p-5 text-center">
         <div className="grid grid-cols-2 gap-10 mt-4">
-          {/* 動的にボタンを表示 */}
           {buttons}
         </div>
       </div>

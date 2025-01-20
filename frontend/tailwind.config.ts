@@ -10,6 +10,8 @@ export default {
     extend: {
       colors: {
         customBlue: '#5292ca', // カスタムカラーを定義
+        customLightblue:'#5A9BD5',
+        customDarkblue:'#004A9B', 
         customYellow: '#fff168', 
         customPink: '#f7c9dd', 
         background: "var(--background)",

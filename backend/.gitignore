@@ -48,5 +48,5 @@ build/
 # PostgreSQLのデータファイルを無視
 db_data/
 
-# firebase-adminsdk.json
+firebase-adminsdk.json
 finalproject-teamd-firebase-adminsdk-wi4w6-33f4158e98.json

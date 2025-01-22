@@ -1,6 +1,6 @@
 # Tide Up
 画像比較で家族のお片付けをサポートするアプリです
-
+![Image](https://github.com/user-attachments/assets/044d3439-8098-4f58-a6c8-d379e57c004f)
 
 ## 機能   
 - セッション認証

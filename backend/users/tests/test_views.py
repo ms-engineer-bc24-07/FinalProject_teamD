@@ -4,13 +4,11 @@ from rest_framework import status
 from users.models import User
 import firebase_admin
 from firebase_admin import auth
-from django.contrib.auth import get_user_model
 
-
-def get_firebase_token(firebase_uid):
+# FIXME:以下全てのテストがfirebase認証が邪魔してテストできない。モックするか、フロントエンド通さずに認証してテストするか。
+def get_firebase_token(user_id):
     # テスト用にユーザーIDでカスタムトークンを生成
-    return auth.create_custom_token(firebase_uid)
-
+    return auth.create_custom_token(user_id)
 
 class UserViewsTestCase(TestCase):
     
@@ -20,13 +18,22 @@ class UserViewsTestCase(TestCase):
             user_name="testuser",  # 'username'ではなく'user_name'
             email="testuser@example.com",
             password="password123",
-            firebase_uid="some-firebase-uid",  # firebase_uidを指定
+            #firebase_uid="test-firebase-uid",  # firebase_uidを指定
         )
         
-        # カスタムトークンを生成
-        self.token = get_firebase_token(self.user.firebase_uid)
+    self.token = get_firebase_token(self.user.firebase_uid)
 
-        self.client = APIClient()
+    self.client = APIClient()
+
+    def test_get_user(self):
+        """
+        ログインユーザー情報を取得するテスト
+        """
+        url = "/api/users/get_user/"
+        headers = {"Authorization": f"Bearer {self.token}"}
+        response = self.client.post(url, {"email": self.user.email}, headers=headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["user_name"], self.user.user_name)
 
     def test_register_user(self):
         """

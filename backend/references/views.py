@@ -9,6 +9,7 @@ from references.serializers import ReferenceSerializer
 from users.models import User  # Userモデルをインポート
 from family.models import FamilyMember, FamilyGroup
 import boto3
+from utils.s3_utils import upload_to_s3
 
 # @csrf_exempt
 # def fetch_references(request):
@@ -95,32 +96,16 @@ class ReferenceView(APIView):
             )
 
 
-        # S3にアップロードするための設定
-        s3 = boto3.client(
-            's3',
-            aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
-            region_name=settings.AWS_S3_REGION_NAME
-        )
-
-        bucket_name = settings.AWS_STORAGE_BUCKET_NAME
-        object_name = f"references/{image_file.name}"
-
         try:
-            # S3にファイルをアップロード
-            print(f"Uploading image to S3: {object_name}")
-            s3.upload_fileobj(image_file, bucket_name, object_name)
-            print(f"Image uploaded successfully to S3: {object_name}")
+            # S3にアップロードして画像URLを取得
+            image_url = upload_to_s3(image_file, 'references')
+            print(f"Image uploaded successfully to S3: {image_url}")
         except Exception as e:
             print(f"Error while uploading to S3: {str(e)}")
             return Response(
                 {"error": "S3アップロードに失敗しました", "details": str(e)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
-
-        # アップロードされた画像のURLを生成
-        image_url = f"https://{bucket_name}.s3.{settings.AWS_S3_REGION_NAME}.amazonaws.com/{object_name}"
-        print(f"Image URL: {image_url}")
 
         # Referenceモデルに保存（user_id を設定）
         reference = Reference.objects.create(

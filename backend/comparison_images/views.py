@@ -6,8 +6,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from comparison_images.models import ComparisonImage
 from comparison_images.serializers import ComparisonImageSerializer
-import boto3
-from django.conf import settings
+from utils.s3_utils import upload_to_s3
 from references.models import Reference
 
 # 比較画像のリストを取得するためのビュー
@@ -50,28 +49,14 @@ class ComparisonImageCreateView(APIView):
                 status=status.HTTP_404_NOT_FOUND,
             )
 
-        # S3にアップロードするための設定
-        s3 = boto3.client(
-            's3',
-            aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
-            region_name=settings.AWS_S3_REGION_NAME
-        )
-
-        bucket_name = settings.AWS_STORAGE_BUCKET_NAME
-        object_name = f"comparison_images/{image_file.name}"
-
         try:
-            # S3にファイルをアップロード
-            s3.upload_fileobj(image_file, bucket_name, object_name)
+            # S3にアップロードして画像URLを取得
+            image_url = upload_to_s3(image_file, 'comparison_images')
         except Exception as e:
             return Response(
                 {"error": "S3アップロードに失敗しました", "details": str(e)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
-
-        # アップロードされた画像のURLを生成
-        image_url = f"https://{bucket_name}.s3.{settings.AWS_S3_REGION_NAME}.amazonaws.com/{object_name}"
 
         # reference_idでDBの見本画像を検索
         reference_instance = Reference.objects.get(id=reference_id)
